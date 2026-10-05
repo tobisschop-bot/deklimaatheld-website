@@ -28,7 +28,7 @@ export const warmtepompen: Warmtepomp[] = [
   { slug: 'flint', name: 'Weheat Flint P40', tag: 'Compact & scherp geprijsd', from: 4248, img: CDN + '680a992ae6196a42fa131878_Weheat%20warmtepomp-flint.webp', photo: true, page: '/warmtepompen/flint/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
   { slug: 'sparrow', name: 'Weheat Sparrow P60', tag: 'Populaire allrounder', from: 5722, img: CDN + '680a98ecbde35b827bb60c63_Weheat%20warmtepomop-sparrow.webp', photo: true, page: '/warmtepompen/sparrow/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
   { slug: 'blackbird', name: 'Weheat Blackbird P80', tag: 'Voor grotere woningen', from: 6498, img: CDN + '68134c373abc353d78e00443_Weheat_Blackbird_Products%20(1).avif', photo: true, page: null, types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
-  { slug: 'swift', name: 'Weheat Swift', tag: 'Onzichtbaar in het schuine dak', from: 9851, img: placeholderImg('[Productfoto Weheat Swift]'), photo: false, page: null, types: ['dakmontage'], badge: 'Dakintegratie', includes: 'Inclusief dakmontage' },
+  { slug: 'swift', name: 'Weheat Swift', tag: 'Onzichtbaar in het schuine dak', from: 9851, img: '/img/weheat-swift.webp', photo: true, page: null, types: ['dakmontage'], badge: 'Dakintegratie', includes: 'Inclusief dakmontage' },
 ];
 
 /** Link + knoptekst voor een warmtepompkaart */

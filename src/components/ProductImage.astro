@@ -18,10 +18,11 @@ const bh = c ? c.box[3] - c.box[1] : 0;
       style={`width:${(c.w / bw) * 100}%;left:${(-c.box[0] / bw) * 100}%;top:${(-c.box[1] / bh) * 100}%`} />
   </span>
 ) : (
-  <img class={cls} src={src} alt={alt} loading={loading} />
+  <img class:list={['pi-flat', cls]} src={src} alt={alt} loading={loading} />
 )}
 
 <style>
   .pi { position: relative; display: block; width: 100%; overflow: hidden; }
   .pi img { position: absolute; max-width: none; height: auto; }
+  .pi-flat { height: auto; filter: none !important; } /* eigen uitsnede heeft al een schaduw */
 </style>
