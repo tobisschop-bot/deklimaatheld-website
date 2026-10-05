@@ -104,7 +104,7 @@ const { compact = false } = Astro.props;
       <button type="button" data-uitv="all-electric">All-electric</button>
     </div>
     <dl class="bc__table">
-      <div><dt>Gasverbruik nu</dt><dd><strong data-r="gas"></strong> per jaar</dd></div>
+      <div><dt><label for="bc-gas-live">Gasverbruik nu</label></dt><dd class="bc__live"><input id="bc-gas-live" data-gas-live type="number" inputmode="numeric" min="100" max="10000" step="10" aria-describedby="bc-gas-hint" /> m³ per jaar</dd></div>
       <div><dt>Besparing op gas</dt><dd><strong data-r="besparing"></strong> per maand</dd></div>
       <div><dt>Extra stroomverbruik</dt><dd><strong data-r="stroom"></strong> per maand</dd></div>
       <div data-r-row="investering"><dt>Investering</dt><dd><strong data-r="investering"></strong> per maand</dd></div>
@@ -228,7 +228,7 @@ const { compact = false } = Astro.props;
     // Stap 4 → 5
     function render() {
       const r = bereken({ soort: st.soort!, uitvoering: st.uitvoering, gasM3: st.gas!, personen: st.personen!, type: st.type, ruimtes: st.ruimtes, modellen });
-      q('[data-r="gas"]').textContent = `${st.gas!.toLocaleString('nl-NL')} m³`;
+      const live = q<HTMLInputElement>('[data-gas-live]'); if (document.activeElement !== live) live.value = String(st.gas);
       q('[data-r="besparing"]').textContent = eur(r.besparingGasMaand);
       q('[data-r="stroom"]').textContent = eur(r.extraStroomMaand);
       const heeftInv = r.investeringMaand != null;
@@ -267,6 +267,14 @@ const { compact = false } = Astro.props;
       const g = Number(q<HTMLInputElement>('[data-f="gas"]').value);
       if (!g || g < 100 || g > 10000) return err(4, 'Vul een gasverbruik tussen 100 en 10.000 m³ in.');
       err(4); st.gas = Math.round(g); render(); show(5);
+    });
+    // Gasverbruik op de uitkomst aanpassen: besparing rekent direct mee
+    q<HTMLInputElement>('[data-gas-live]').addEventListener('input', (e) => {
+      const g = Number((e.target as HTMLInputElement).value);
+      if (!g || g < 100 || g > 10000) return;
+      st.gas = Math.round(g);
+      q<HTMLInputElement>('[data-f="gas"]').value = String(st.gas);
+      render();
     });
     root.querySelectorAll<HTMLButtonElement>('[data-uitv]').forEach((b) =>
       b.addEventListener('click', () => { st.uitvoering = b.dataset.uitv as typeof st.uitvoering; render(); }),
@@ -318,6 +326,8 @@ const { compact = false } = Astro.props;
   .bc__table dt { font-weight: 700; }
   .bc__table dd { margin: 0; white-space: nowrap; color: var(--muted); }
   .bc__table dd strong { color: var(--navy); }
+  .bc__live input { width: 84px; font: inherit; font-weight: 700; color: var(--navy); text-align: right; border: 1px solid #CED4DA; border-radius: 6px; padding: 6px 8px; }
+  .bc__live input:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(214,40,58,.15); }
   .bc__win { display: flex; gap: 12px; align-items: center; border: 1.5px solid var(--green); background: #F0FAF4; border-radius: var(--radius); padding: 14px; margin-top: 16px; }
   .bc__win svg { width: 40px; height: 40px; flex: none; }
   .bc__win span { display: block; color: var(--green); font-weight: 600; font-size: .9rem; }
