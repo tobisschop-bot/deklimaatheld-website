@@ -64,6 +64,7 @@ const modelNamen = Object.fromEntries(warmtepompen.map((w) => [w.slug, w.name]))
         <p class="hp"><label>Niet invullen: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
         <!-- Configurator-keuze (wordt door JS gevuld vanuit de URL) -->
         <input type="hidden" name="model" data-prefill="model" />
+        <input type="hidden" name="besparingscheck" data-prefill-check />
         <input type="hidden" name="uitvoering" data-prefill="uitvoering" />
         <input type="hidden" name="kleur" data-prefill="kleur" />
         <input type="hidden" name="boiler" data-prefill="boiler" />
@@ -200,6 +201,13 @@ const modelNamen = Object.fromEntries(warmtepompen.map((w) => [w.slug, w.name]))
       const el = form.elements.namedItem(k);
       if (v && el) el.value = v.trim().toUpperCase();
     });
+    const dienstParam = params.get('dienst');
+    if (dienstParam) {
+      const d = form.querySelector('input[name="dienst"][value="' + dienstParam + '"]');
+      if (d) d.checked = true;
+    }
+    const check = params.get('check');
+    if (check) form.querySelector('[data-prefill-check]').value = check;
     const model = params.get('model');
     if (model) {
       ['model', 'uitvoering', 'kleur', 'boiler'].forEach((k) => {

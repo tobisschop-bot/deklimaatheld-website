@@ -1,0 +1,327 @@
+---
+// Besparingscheck: soort warmtepomp → adres (PDOK/BAG) → woning → gasverbruik → resultaat.
+// Rekenregels en aannames: src/lib/rekenmodel.ts
+import { WONINGTYPES, AANNAMES } from '../../lib/rekenmodel';
+import { configurators } from '../../data/configurator';
+
+const kw: Record<string, number> = { flint: 4, sparrow: 6, blackbird: 8 };
+const modellen = Object.values(configurators)
+  .filter((m) => kw[m.slug])
+  .map((m) => ({
+    slug: m.slug,
+    name: m.name,
+    kwMin10: kw[m.slug],
+    hybride: m.uitvoeringen.find((u) => u.id === 'hybride')?.price ?? null,
+    allElectric: m.uitvoeringen.find((u) => u.id === 'all-electric')?.price ?? null,
+  }));
+interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+---
+<div class:list={['bc', { 'bc--compact': compact }]} data-bc data-modellen={JSON.stringify(modellen)}>
+  <!-- Stap 1: soort -->
+  <section class="bc__step" data-s="1">
+    <h2 class="bc__title">Hoeveel kan jij besparen?</h2>
+    <p class="bc__sub">Wil je besparen met een lucht-waterwarmtepomp of een lucht-luchtwarmtepomp?</p>
+    <div class="bc__choices bc__choices--2">
+      <button type="button" class="bc__tile" data-soort="lucht-water">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="12" width="36" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="19" cy="25" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M19 17v16M11 25h16" stroke="currentColor" stroke-width="2"/><path d="M32 20h6M32 25h6M32 30h6" stroke="#D6283A" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <strong>Lucht-water­warmtepomp</strong>
+        <span>Verwarmt via radiatoren of vloerverwarming, hybride of all-electric</span>
+      </button>
+      <button type="button" class="bc__tile" data-soort="lucht-lucht">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="5" y="12" width="38" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M10 21h28" stroke="currentColor" stroke-width="2"/><path d="M14 31c0 4-3 4-3 8M24 31c0 4-3 4-3 8M34 31c0 4-3 4-3 8" fill="none" stroke="#D6283A" stroke-width="2.5" stroke-linecap="round"/></svg>
+        <strong>Lucht-lucht­warmtepomp</strong>
+        <span>Airco die ook verwarmt, per ruimte</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Stap 2: adres -->
+  <section class="bc__step" data-s="2" hidden>
+    <h2 class="bc__title">Wat is je adres?</h2>
+    <p class="bc__sub">Hiermee zoeken we het bouwjaar en de oppervlakte van je woning op.</p>
+    <div class="bc__row">
+      <label><span>Postcode</span><input data-f="postcode" placeholder="2511 AB" autocomplete="postal-code" /></label>
+      <label class="bc__nr"><span>Huisnr.</span><input data-f="huisnummer" inputmode="numeric" placeholder="12" /></label>
+      <label class="bc__nr"><span>Toev.</span><input data-f="toevoeging" placeholder="A" /></label>
+    </div>
+    <p class="bc__err" data-err hidden></p>
+    <button type="button" class="bc__btn" data-next="2">Ga verder naar stap 3 →</button>
+    <button type="button" class="bc__back" data-back>‹ Vorige stap</button>
+  </section>
+
+  <!-- Stap 3: woning -->
+  <section class="bc__step" data-s="3" hidden>
+    <h2 class="bc__title">Over je woning</h2>
+    <p class="bc__found" data-found hidden></p>
+    <p class="bc__q">In wat voor huis woon je?</p>
+    <div class="bc__choices bc__choices--5" data-group="type">
+      {WONINGTYPES.map((t) => (
+        <button type="button" class="bc__chip" data-type={t.id}>
+          <svg viewBox="0 0 40 28" aria-hidden="true">
+            {t.id === 'appartement' && <><rect x="6" y="3" width="28" height="22" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 14h28M20 3v22" stroke="currentColor" stroke-width="2"/><rect x="21" y="4" width="12" height="9" fill="#D6283A"/></>}
+            {t.id === 'tussenwoning' && <><path d="M2 14l6-6 6 6v10H2zM14 14l6-6 6 6v10H14zM26 14l6-6 6 6v10H26z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M14 14l6-6 6 6v10H14z" fill="#D6283A"/></>}
+            {t.id === 'hoekwoning' && <><path d="M2 14l6-6 6 6v10H2zM14 14l6-6 6 6v10H14zM26 14l6-6 6 6v10H26z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 14l6-6 6 6v10H2z" fill="#D6283A"/></>}
+            {t.id === 'twee-onder-een-kap' && <><path d="M8 14l6-6 6 6v10H8zM20 14l6-6 6 6v10H20z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 14l6-6 6 6v10H8z" fill="#D6283A"/></>}
+            {t.id === 'vrijstaand' && <path d="M12 14l8-8 8 8v10H12z" fill="#D6283A" stroke="currentColor" stroke-width="2"/>}
+          </svg>
+          <span>{t.label}</span>
+        </button>
+      ))}
+    </div>
+    <p class="bc__q">Uit hoeveel personen bestaat je huishouden?</p>
+    <div class="bc__choices bc__choices--5" data-group="personen">
+      {[1, 2, 3, 4, 5].map((n) => <button type="button" class="bc__num" data-personen={n}>{n === 5 ? '5+' : n}</button>)}
+    </div>
+    <div data-airco-only hidden>
+      <p class="bc__q">Hoeveel ruimtes wil je met airco verwarmen?</p>
+      <div class="bc__choices bc__choices--4" data-group="ruimtes">
+        {[1, 2, 3, 4].map((n) => <button type="button" class="bc__num" data-ruimtes={n}>{n === 4 ? '4+' : n}</button>)}
+      </div>
+    </div>
+    <p class="bc__err" data-err hidden></p>
+    <button type="button" class="bc__btn" data-next="3">Ga verder naar stap 4 →</button>
+    <button type="button" class="bc__back" data-back>‹ Vorige stap</button>
+  </section>
+
+  <!-- Stap 4: gasverbruik -->
+  <section class="bc__step" data-s="4" hidden>
+    <h2 class="bc__title">Controleer het gasverbruik</h2>
+    <p class="bc__sub">Op basis van je woning hebben we een schatting gemaakt. Weet je je werkelijke gasverbruik? Pas het dan hieronder aan.</p>
+    <p class="bc__q">Geschat gasverbruik</p>
+    <p class="bc__addr" data-addr></p>
+    <label class="bc__gas"><input data-f="gas" type="number" inputmode="numeric" min="100" max="10000" step="10" /><span>m³ per jaar</span></label>
+    <p class="bc__err" data-err hidden></p>
+    <button type="button" class="bc__btn bc__btn--green" data-next="4">Bereken de besparing</button>
+    <button type="button" class="bc__back" data-back>‹ Vorige stap</button>
+  </section>
+
+  <!-- Stap 5: resultaat -->
+  <section class="bc__step" data-s="5" hidden>
+    <h2 class="bc__title">Dit kun je besparen</h2>
+    <div class="bc__toggle" data-uitv-toggle role="group" aria-label="Uitvoering">
+      <button type="button" data-uitv="hybride">Hybride</button>
+      <button type="button" data-uitv="all-electric">All-electric</button>
+    </div>
+    <dl class="bc__table">
+      <div><dt>Gasverbruik nu</dt><dd><strong data-r="gas"></strong> per jaar</dd></div>
+      <div><dt>Besparing op gas</dt><dd><strong data-r="besparing"></strong> per maand</dd></div>
+      <div><dt>Extra stroomverbruik</dt><dd><strong data-r="stroom"></strong> per maand</dd></div>
+      <div data-r-row="investering"><dt>Investering</dt><dd><strong data-r="investering"></strong> per maand</dd></div>
+    </dl>
+    <div class="bc__win">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#D9F0E2"/><path d="M12 21l6 6 11-13" fill="none" stroke="#2E8B57" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div><span data-r="netto-label">Besparing na investering</span><strong data-r="netto"></strong></div>
+    </div>
+    <a class="bc__advies" data-advies hidden></a>
+    <a class="bc__btn" data-cta href="/offerte/">Ontvang vrijblijvend een offerte →</a>
+    <button type="button" class="bc__back" data-back>‹ Vorige stap</button>
+    <details class="bc__how">
+      <summary>Hoe rekenen we dit uit?</summary>
+      <p>Indicatieve berekening op basis van je woning en gasverbruik, met een gasprijs van € {AANNAMES.gasprijs.toFixed(2).replace('.', ',')}/m³ en een stroomprijs van € {AANNAMES.stroomprijs.toFixed(2).replace('.', ',')}/kWh (gemiddelden incl. belastingen). Een hybride warmtepomp neemt ongeveer {Math.round(AANNAMES.hybrideAandeel * 100)}% van de ruimteverwarming over; all-electric ook het warme water. De investering per maand is de indicatieve prijs (excl. subsidie) gespreid over {AANNAMES.looptijdJaren} jaar tegen {(AANNAMES.rente * 100).toString().replace('.', ',')}% rente. Je werkelijke besparing hangt af van je woning, gebruik en energiecontract; die berekenen we precies bij de installatiecheck.</p>
+    </details>
+  </section>
+</div>
+
+<script>
+  import { schatGasverbruik, bereken, type Woningtype, type Model } from '../../lib/rekenmodel';
+
+  const eur = (n: number) => '€ ' + Math.round(n).toLocaleString('nl-NL');
+
+  document.querySelectorAll<HTMLElement>('[data-bc]').forEach((root) => {
+    const modellen: Model[] = JSON.parse(root.dataset.modellen || '[]');
+    const st: {
+      soort?: 'lucht-water' | 'lucht-lucht'; uitvoering: 'hybride' | 'all-electric';
+      type?: Woningtype; personen?: number; ruimtes?: number;
+      m2?: number | null; bouwjaar?: number | null; adres?: string; gas?: number;
+    } = { uitvoering: 'hybride' };
+    const steps = [...root.querySelectorAll<HTMLElement>('.bc__step')];
+    let cur = 1;
+    const q = <T extends Element = HTMLElement>(s: string, el: ParentNode = root) => el.querySelector<T>(s)!;
+    const show = (n: number) => {
+      cur = n;
+      steps.forEach((s) => (s.hidden = Number(s.dataset.s) !== n));
+      const top = root.getBoundingClientRect().top;
+      if (top < 0) window.scrollBy({ top: top - 90, behavior: 'smooth' });
+    };
+    const err = (n: number, msg = '') => {
+      const e = q(`[data-s="${n}"] [data-err]`);
+      e.textContent = msg; e.hidden = !msg;
+    };
+    root.querySelectorAll('[data-back]').forEach((b) => b.addEventListener('click', () => show(Math.max(1, cur - 1))));
+
+    // Stap 1
+    root.querySelectorAll<HTMLButtonElement>('[data-soort]').forEach((b) =>
+      b.addEventListener('click', () => {
+        st.soort = b.dataset.soort as typeof st.soort;
+        q('[data-airco-only]').hidden = st.soort !== 'lucht-lucht';
+        q('[data-uitv-toggle]').hidden = st.soort !== 'lucht-water';
+        show(2);
+      }),
+    );
+
+    // Stap 2: adres opzoeken bij PDOK (Locatieserver + BAG)
+    const val = (f: string) => q<HTMLInputElement>(`[data-f="${f}"]`).value.trim();
+    async function zoekAdres() {
+      const pc = val('postcode').replace(/\s+/g, '').toUpperCase();
+      const nr = val('huisnummer'); const toev = val('toevoeging');
+      st.m2 = null; st.bouwjaar = null; st.adres = `${pc} ${nr}${toev}`;
+      const ls = await fetch(`https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=postcode:${pc}%20and%20huisnummer:${encodeURIComponent(nr)}&fq=type:adres&rows=10`).then((r) => r.json());
+      const docs: any[] = ls?.response?.docs ?? [];
+      const t = toev.toLowerCase();
+      const doc = docs.find((d) => ((d.huisletter ?? '') + (d.huisnummertoevoeging ?? '')).toLowerCase() === t) ?? docs[0];
+      if (!doc) return false;
+      st.adres = doc.weergavenaam;
+      const vbo = await fetch(`https://api.pdok.nl/kadaster/bag/ogc/v2/collections/verblijfsobject/items?f=json&limit=1&identificatie=${doc.adresseerbaarobject_id}`).then((r) => r.json());
+      const p = vbo?.features?.[0]?.properties;
+      st.m2 = p?.oppervlakte ?? null;
+      const pandHref = p?.['pand.href']?.[0];
+      if (pandHref) {
+        const pand = await fetch(pandHref + (pandHref.includes('?') ? '&' : '?') + 'f=json').then((r) => r.json());
+        st.bouwjaar = pand?.properties?.bouwjaar ?? null;
+        if (!st.type && (pand?.properties?.aantal_verblijfsobjecten ?? 1) > 2) kies('type', 'appartement');
+      }
+      return true;
+    }
+    q('[data-next="2"]').addEventListener('click', async (e) => {
+      const btn = e.currentTarget as HTMLButtonElement;
+      if (!/^\d{4}\s?[a-zA-Z]{2}$/.test(val('postcode')) || !/^\d+$/.test(val('huisnummer'))) return err(2, 'Vul een geldige postcode en huisnummer in.');
+      err(2); btn.disabled = true; const label = btn.textContent; btn.textContent = 'Adres opzoeken…';
+      try {
+        const ok = await zoekAdres();
+        if (!ok) { btn.disabled = false; btn.textContent = label; return err(2, 'We konden dit adres niet vinden. Controleer postcode en huisnummer.'); }
+      } catch { /* geen verbinding met PDOK: verder zonder woninggegevens */ }
+      btn.disabled = false; btn.textContent = label;
+      const f = q('[data-found]');
+      const bits = [st.adres, st.m2 ? `${st.m2} m²` : '', st.bouwjaar ? `bouwjaar ${st.bouwjaar}` : ''].filter(Boolean);
+      f.textContent = bits.join(' · '); f.hidden = !bits.length;
+      show(3);
+    });
+
+    // Stap 3: keuzes
+    function kies(group: string, v: string) {
+      root.querySelectorAll<HTMLElement>(`[data-group="${group}"] button`).forEach((b) => {
+        const on = b.dataset[group === 'type' ? 'type' : group] === v;
+        b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on));
+      });
+      if (group === 'type') st.type = v as Woningtype;
+      if (group === 'personen') st.personen = Number(v);
+      if (group === 'ruimtes') st.ruimtes = Number(v);
+    }
+    root.querySelectorAll<HTMLElement>('[data-group] button').forEach((b) =>
+      b.addEventListener('click', () => {
+        const g = b.closest<HTMLElement>('[data-group]')!.dataset.group!;
+        kies(g, (b.dataset as any)[g === 'type' ? 'type' : g]);
+      }),
+    );
+    q('[data-next="3"]').addEventListener('click', () => {
+      if (!st.type) return err(3, 'Kies je type woning.');
+      if (!st.personen) return err(3, 'Kies het aantal personen.');
+      if (st.soort === 'lucht-lucht' && !st.ruimtes) return err(3, 'Kies het aantal ruimtes.');
+      err(3);
+      st.gas = schatGasverbruik({ type: st.type, m2: st.m2, bouwjaar: st.bouwjaar, personen: st.personen });
+      q<HTMLInputElement>('[data-f="gas"]').value = String(st.gas);
+      q('[data-addr]').textContent = st.adres ? `Voor ${st.adres}` : '';
+      show(4);
+    });
+
+    // Stap 4 → 5
+    function render() {
+      const r = bereken({ soort: st.soort!, uitvoering: st.uitvoering, gasM3: st.gas!, personen: st.personen!, ruimtes: st.ruimtes, modellen });
+      q('[data-r="gas"]').textContent = `${st.gas!.toLocaleString('nl-NL')} m³`;
+      q('[data-r="besparing"]').textContent = eur(r.besparingGasMaand);
+      q('[data-r="stroom"]').textContent = eur(r.extraStroomMaand);
+      const heeftInv = r.investeringMaand != null;
+      q('[data-r-row="investering"]').hidden = !heeftInv;
+      if (heeftInv) q('[data-r="investering"]').textContent = eur(r.investeringMaand!);
+      q('[data-r="netto-label"]').textContent = heeftInv ? 'Besparing na investering' : 'Netto besparing op energie';
+      q('[data-r="netto"]').textContent = `${eur(r.nettoMaand)},- per maand`;
+      root.querySelectorAll<HTMLElement>('[data-uitv]').forEach((b) => b.classList.toggle('is-on', b.dataset.uitv === st.uitvoering));
+
+      const adv = q<HTMLAnchorElement>('[data-advies]');
+      if (r.advies && st.soort === 'lucht-water') {
+        adv.hidden = false;
+        adv.href = `/warmtepompen/${r.advies.slug}/`;
+        adv.innerHTML = `<span>Ons advies voor jouw woning</span><strong>${r.advies.name}</strong><em>Bekijk en stel samen →</em>`;
+      } else adv.hidden = true;
+
+      const p = new URLSearchParams({
+        dienst: st.soort === 'lucht-lucht' ? 'Airco' : 'Warmtepomp',
+        postcode: val('postcode'), huisnummer: val('huisnummer'), toevoeging: val('toevoeging'),
+        check: [
+          st.soort === 'lucht-lucht' ? `Lucht-lucht, ${st.ruimtes} ruimte(s)` : `Lucht-water ${st.uitvoering}`,
+          `${st.type}`, `${st.personen} pers.`, `${st.gas} m³ gas`,
+          st.m2 ? `${st.m2} m²` : '', st.bouwjaar ? `bouwjaar ${st.bouwjaar}` : '',
+          `besparing ±${eur(r.nettoZonderInvestering)}/mnd`,
+        ].filter(Boolean).join(' · '),
+      });
+      if (r.advies && st.soort === 'lucht-water') { p.set('model', r.advies.slug); p.set('uitvoering', st.uitvoering); }
+      q<HTMLAnchorElement>('[data-cta]').href = `/offerte/?${p}`;
+    }
+    q('[data-next="4"]').addEventListener('click', () => {
+      const g = Number(q<HTMLInputElement>('[data-f="gas"]').value);
+      if (!g || g < 100 || g > 10000) return err(4, 'Vul een gasverbruik tussen 100 en 10.000 m³ in.');
+      err(4); st.gas = Math.round(g); render(); show(5);
+    });
+    root.querySelectorAll<HTMLButtonElement>('[data-uitv]').forEach((b) =>
+      b.addEventListener('click', () => { st.uitvoering = b.dataset.uitv as typeof st.uitvoering; render(); }),
+    );
+  });
+</script>
+
+<style>
+  .bc [hidden] { display: none !important; }
+  .bc { background: #fff; color: var(--text); border-radius: 12px; padding: 22px; box-shadow: 0 24px 48px -12px rgba(11,19,43,.4); border-top: 3px solid var(--red); }
+  .bc__title { font-size: 1.6rem; margin-bottom: 4px; }
+  .bc__sub { color: var(--muted); margin-bottom: 14px; }
+  .bc__q { font-weight: 700; margin: 16px 0 8px; }
+  .bc__choices { display: grid; gap: 8px; }
+  .bc__choices--2 { grid-template-columns: 1fr; }
+  .bc__choices--5 { grid-template-columns: repeat(5, 1fr); }
+  .bc__choices--4 { grid-template-columns: repeat(4, 1fr); }
+  .bc__tile { display: grid; grid-template-columns: 48px 1fr; gap: 2px 12px; align-items: center; text-align: left; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; font: inherit; color: var(--navy); }
+  .bc__tile svg { grid-row: span 2; width: 48px; height: 48px; }
+  .bc__tile strong { font-size: 1.02rem; }
+  .bc__tile span { font-size: .8rem; color: var(--muted); }
+  .bc__tile:hover, .bc__tile:focus-visible { border-color: var(--red); }
+  .bc__chip, .bc__num { display: grid; place-items: center; gap: 4px; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 8px 2px; cursor: pointer; font: inherit; color: var(--navy); min-height: 52px; min-width: 0; }
+  .bc__chip svg { width: 36px; height: 26px; }
+  .bc__chip span { font-size: .62rem; line-height: 1.15; text-align: center; }
+  .bc__num { font-size: 1.35rem; font-weight: 700; color: var(--red); }
+  .bc__chip.is-on, .bc__num.is-on { border-color: var(--red); background: var(--red-soft); }
+  .bc__row { display: grid; grid-template-columns: 1fr 72px 60px; gap: 8px; }
+  .bc label > span { display: block; font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .bc input { font: inherit; font-size: 1rem; color: var(--text); background: #fff; border: 1px solid #CED4DA; border-radius: 6px; padding: 12px; width: 100%; min-width: 0; }
+  .bc input:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(214,40,58,.15); }
+  .bc__gas { display: flex; align-items: center; gap: 10px; max-width: 240px; }
+  .bc__gas span { white-space: nowrap; color: var(--muted); }
+  .bc__btn { display: flex; justify-content: center; align-items: center; width: 100%; margin-top: 16px; min-height: 50px; background: var(--red); color: #fff; border: 0; border-radius: 6px; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+  .bc__btn:hover { background: var(--red-dark); }
+  .bc__btn:disabled { opacity: .7; cursor: wait; }
+  .bc__btn--green { background: var(--green); }
+  .bc__btn--green:hover { background: #256f46; }
+  .bc__back { display: block; margin: 10px auto 0; background: none; border: 0; color: var(--muted); font: inherit; font-size: .85rem; cursor: pointer; padding: 8px; }
+  .bc__err { color: var(--red); font-size: .85rem; font-weight: 600; margin: 10px 0 0; }
+  .bc__found, .bc__addr { font-size: .85rem; color: var(--muted); background: var(--bg); border-radius: 6px; padding: 8px 10px; margin: 0; }
+  .bc__addr { background: none; padding: 0 0 8px; }
+  .bc__toggle { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg); border-radius: 8px; padding: 4px; margin: 6px 0 10px; }
+  .bc__toggle button { border: 0; background: none; font: inherit; font-weight: 700; padding: 10px; border-radius: 6px; color: var(--muted); cursor: pointer; }
+  .bc__toggle button.is-on { background: #fff; color: var(--navy); box-shadow: var(--shadow); }
+  .bc__table { margin: 0 -22px; }
+  .bc__table > div { display: flex; justify-content: space-between; gap: 8px; padding: 12px 22px; border-bottom: 1px solid var(--border); }
+  .bc__table > div:nth-child(even) { background: var(--bg); }
+  .bc__table dt { font-weight: 700; }
+  .bc__table dd { margin: 0; white-space: nowrap; color: var(--muted); }
+  .bc__table dd strong { color: var(--navy); }
+  .bc__win { display: flex; gap: 12px; align-items: center; border: 1.5px solid var(--green); background: #F0FAF4; border-radius: var(--radius); padding: 14px; margin-top: 16px; }
+  .bc__win svg { width: 40px; height: 40px; flex: none; }
+  .bc__win span { display: block; color: var(--green); font-weight: 600; font-size: .9rem; }
+  .bc__win strong { font-size: 1.5rem; color: var(--navy); }
+  .bc__advies { display: grid; margin-top: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius); text-decoration: none; }
+  .bc__advies span { font-size: .75rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .bc__advies strong { font-size: 1.05rem; }
+  .bc__advies em { font-style: normal; color: var(--red); font-weight: 700; font-size: .9rem; }
+  .bc__how { margin-top: 12px; font-size: .8rem; color: var(--muted); }
+  .bc__how summary { cursor: pointer; font-weight: 600; }
+  .bc__how p { margin: 8px 0 0; }
+</style>

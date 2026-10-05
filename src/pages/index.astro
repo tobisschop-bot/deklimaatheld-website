@@ -2,7 +2,7 @@
 import ProductImage from '../components/ProductImage.astro';
 import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
-import PostcodeForm from '../components/PostcodeForm.astro';
+import Besparingscheck from '../components/besparingscheck/Besparingscheck.astro';
 import { warmtepompen, euro, kaartLink } from '../data/warmtepompen';
 
 const stappen = [
@@ -22,12 +22,7 @@ const stappen = [
         <h1>Duizenden euro’s besparen op je energierekening?</h1>
         <p class="hero__lead">Kies voor een duurzame warmtepomp, inclusief vakkundige installatie en de ISDE-subsidie voor je geregeld.</p>
       </div>
-      <div class="hero__card">
-        <h2 class="hero__card-title">Hoeveel kan jij besparen?</h2>
-        <p>Bereken snel en eenvoudig de gasbesparing voor jouw woning.</p>
-        <PostcodeForm />
-        <p class="hero__hint">⚡ Binnen 1 minuut vrijblijvend advies</p>
-      </div>
+      <div id="besparingscheck"><Besparingscheck /></div>
     </div>
   </section>
 
@@ -53,7 +48,7 @@ const stappen = [
       <h2>Zorgeloos verduurzamen</h2>
       <p class="lead">De Klimaatheld doet meer dan alleen een warmtepomp installeren. We ontzorgen je van A tot Z.</p>
       <p>We begeleiden je bij het hele traject: van isolatieadvies tot het aanvragen van de ISDE-subsidie. Is je woning nog niet goed genoeg geïsoleerd? Dan stippelen we samen het juiste traject uit.</p>
-      <Button href="/offerte/">Doe de besparingscheck</Button>
+      <Button href="#besparingscheck">Doe de besparingscheck</Button>
     </div>
   </section>
 
@@ -136,7 +131,7 @@ const stappen = [
           <li>ISDE-subsidie voor je geregeld</li>
         </ul>
       </div>
-      <div class="hero__card"><PostcodeForm /></div>
+      <div><Button href="#besparingscheck" variant="light">Doe de besparingscheck →</Button></div>
     </div>
   </section>
 </Base>
@@ -150,6 +145,7 @@ const stappen = [
   .hero__chip { display: inline-block; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); padding: 6px 12px; border-radius: 999px; font-size: .85rem; font-weight: 600; margin-bottom: 16px; }
   .hero__lead { color: #C9CFDA; font-size: 1.1rem; max-width: 560px; }
   .hero__grid { display: grid; gap: 28px; align-items: center; }
+  #besparingscheck { scroll-margin-top: 90px; }
   .hero__card { background: #fff; color: var(--text); border-radius: 12px; padding: 22px; box-shadow: 0 24px 48px -12px rgba(11,19,43,.4); border-top: 3px solid var(--red); }
   .hero__card-title { font-size: 1.6rem; margin-bottom: 4px; }
   .hero__card > p { color: var(--muted); }
