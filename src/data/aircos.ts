@@ -9,7 +9,7 @@ export interface AircoVermogen {
   m2: string; // indicatieve ruimtegrootte
   prijs: number | null; // v.a. incl. montage, indicatief
 }
-export interface AircoKleur { id: string; naam: string; hex: string; toeslag: number | null }
+export interface AircoKleur { id: string; naam: string; hex: string; toeslag: number | null; img?: string }
 export interface AircoSerie {
   slug: string; // url: /airco/<slug>/
   merk: string;
@@ -18,7 +18,6 @@ export interface AircoSerie {
   positionering: string; // korte tag
   lead: string;
   img: string | null; // productfoto (uitgesneden, 1200×520); null = placeholder
-  fotoKleur?: string; // kleur op de foto, als die afwijkt van de eerste kleurkeuze
   kenmerken: { value: string; label: string }[]; // 3 kerncijfers
   specs: { value: string; label: string }[];
   waarom: { title: string; text: string }[];
@@ -86,7 +85,7 @@ export const aircos: AircoSerie[] = [
     type: 'FTXA',
     positionering: 'Compact design',
     lead: 'Compact en strak vormgegeven, in wit, zilver of zwart. Met het Coanda-effect blaast hij de lucht langs het plafond voor een gelijkmatige temperatuur.',
-    img: '/img/airco/daikin-stylish.webp',
+    img: '/img/airco/daikin-stylish-wit.webp',
     kenmerken: [
       { value: 'A+++', label: 'Energielabel (2,0–3,5 kW)' },
       { value: '19 dB(A)', label: 'Fluisterstil' },
@@ -107,9 +106,9 @@ export const aircos: AircoSerie[] = [
     ],
     vermogens: [v('20', 2.0, 2.5), v('25', 2.5, 2.8), v('35', 3.4, 4.0), v('42', 4.2, 5.4), v('50', 5.0, 5.8)],
     kleuren: [
-      { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 },
-      { id: 'zilver', naam: 'Zilver', hex: '#B9BEC4', toeslag: null },
-      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: null },
+      { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0, img: '/img/airco/daikin-stylish-wit.webp' },
+      { id: 'zilver', naam: 'Zilver', hex: '#B9BEC4', toeslag: null, img: '/img/airco/daikin-stylish-zilver.webp' },
+      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: null, img: '/img/airco/daikin-stylish-zwart.webp' },
     ],
     faq: faqAlgemeen,
     bron: 'https://www.daikin.nl/nl_nl/installateurs/products/product.html/FTXA-CW.html',
@@ -121,7 +120,7 @@ export const aircos: AircoSerie[] = [
     type: 'FTXJ',
     positionering: 'Premium design',
     lead: 'Het designicoon van Daikin. Een vlak front zonder zichtbare roosters, in mat kristalwit, zilver of zwart.',
-    img: '/img/airco/daikin-emura.webp', fotoKleur: 'zwart',
+    img: '/img/airco/daikin-emura-kristalwit.webp',
     kenmerken: [
       { value: 'A+++', label: 'Energielabel (2,0–2,5 kW)' },
       { value: '19 dB(A)', label: 'Fluisterstil' },
@@ -142,9 +141,9 @@ export const aircos: AircoSerie[] = [
     ],
     vermogens: [v('20', 2.0, 2.5), v('25', 2.5, 2.8), v('35', 3.4, 4.0), v('42', 4.2, 5.4), v('50', 5.0, 5.8)],
     kleuren: [
-      { id: 'kristalwit', naam: 'Kristalwit', hex: '#F4F4F2', toeslag: 0 },
-      { id: 'zilver', naam: 'Zilver', hex: '#B9BEC4', toeslag: null },
-      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: null },
+      { id: 'kristalwit', naam: 'Kristalwit', hex: '#F4F4F2', toeslag: 0, img: '/img/airco/daikin-emura-kristalwit.webp' },
+      { id: 'zilver', naam: 'Zilver', hex: '#B9BEC4', toeslag: null, img: '/img/airco/daikin-emura-zilver.webp' },
+      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: null, img: '/img/airco/daikin-emura-zwart.webp' },
     ],
     faq: faqAlgemeen,
     bron: 'https://www.daikin.nl/nl_nl/consument/products-and-advice/product-categories/air-conditioners.html',
@@ -190,7 +189,7 @@ export const aircos: AircoSerie[] = [
     type: 'AS-XC',
     positionering: 'Zuinig en schoon',
     lead: 'Hoogwaardige airco met A+++, zelfreinigende filtertechniek en ingebouwde wifi. In wit of mat zwart.',
-    img: '/img/airco/haier-expert.webp', fotoKleur: 'zwart',
+    img: '/img/airco/haier-expert-wit.webp',
     kenmerken: [
       { value: 'A+++', label: 'Energielabel koelen' },
       { value: '17 dB(A)', label: 'Fluisterstil (3,5 kW)' },
@@ -211,8 +210,8 @@ export const aircos: AircoSerie[] = [
     ],
     vermogens: [v('25', 2.5, null), v('35', 3.5, 4.2, 2439), v('50', 5.0, null)],
     kleuren: [
-      { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 },
-      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: null },
+      { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0, img: '/img/airco/haier-expert-wit.webp' },
+      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: null, img: '/img/airco/haier-expert-zwart.webp' },
     ],
     faq: faqAlgemeen,
     bron: 'https://airconditioningenwarmtepompservicenederland.nl/product/haier-expert-wit-35-kw-a-a/',
@@ -258,7 +257,7 @@ export const aircos: AircoSerie[] = [
     type: 'SRK-ZS-W',
     positionering: 'Betrouwbare allrounder',
     lead: 'De Premium-serie van Mitsubishi Heavy Industries: stil, zuinig en met ingebouwde wifi. Een degelijke keuze voor elke kamer.',
-    img: '/img/airco/mhi-premium.webp',
+    img: '/img/airco/mhi-premium-wit.webp',
     kenmerken: [
       { value: 'A+++', label: 'Energielabel koelen (2,0–2,5 kW)' },
       { value: '19 dB(A)', label: 'Fluisterstil' },
@@ -279,9 +278,9 @@ export const aircos: AircoSerie[] = [
     ],
     vermogens: [v('20', 2.0, null, 1725), v('25', 2.5, null, 1770), v('35', 3.5, null, 1885), v('50', 5.0, 5.8, 2295)],
     kleuren: [
-      { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 },
-      { id: 'titanium', naam: 'Titanium', hex: '#8A8D91', toeslag: null },
-      { id: 'zwart-wit', naam: 'Zwart/wit', hex: '#1F2024', toeslag: null },
+      { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0, img: '/img/airco/mhi-premium-wit.webp' },
+      { id: 'titanium', naam: 'Titanium', hex: '#B3AC9C', toeslag: null, img: '/img/airco/mhi-premium-titanium.webp' },
+      { id: 'zwart-wit', naam: 'Zwart/wit', hex: 'linear-gradient(90deg,#1F2024 50%,#F7F7F5 50%)', toeslag: null, img: '/img/airco/mhi-premium-zwart-wit.webp' },
     ],
     faq: faqAlgemeen,
     bron: 'https://www.aircoprofs.nl/airconditioning/mitsubishi/premium/',
@@ -293,7 +292,7 @@ export const aircos: AircoSerie[] = [
     type: 'SRK-ZSX-W',
     positionering: 'Topmodel, dubbel A+++',
     lead: 'Het topmodel van Mitsubishi Heavy Industries: dubbel A+++ (koelen én verwarmen), een aanwezigheidssensor en ingebouwde wifi. Ideaal als je de airco ook veel gebruikt om te verwarmen.',
-    img: '/img/airco/mhi-diamond.webp', fotoKleur: 'titanium',
+    img: '/img/airco/mhi-diamond-wit.webp',
     kenmerken: [
       { value: 'A+++ / A+++', label: 'Koelen én verwarmen (2,0–3,5 kW)' },
       { value: 'SCOP 5,2', label: 'Zeer zuinig verwarmen' },
@@ -314,9 +313,9 @@ export const aircos: AircoSerie[] = [
     ],
     vermogens: [v('20', 2.0, 2.0, 2260), v('25', 2.5, 2.5, 2430), v('35', 3.5, 3.5, 2625), v('50', 5.0, 5.0, 3150)],
     kleuren: [
-      { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 },
-      { id: 'titanium', naam: 'Titanium', hex: '#8A8D91', toeslag: null },
-      { id: 'zwart-wit', naam: 'Zwart/wit', hex: '#1F2024', toeslag: null },
+      { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0, img: '/img/airco/mhi-diamond-wit.webp' },
+      { id: 'titanium', naam: 'Titanium', hex: '#B3AC9C', toeslag: null, img: '/img/airco/mhi-diamond-titanium.webp' },
+      { id: 'zwart-wit', naam: 'Zwart/wit', hex: 'linear-gradient(90deg,#1F2024 50%,#F7F7F5 50%)', toeslag: null, img: '/img/airco/mhi-diamond-zwart-wit.webp' },
     ],
     faq: faqAlgemeen,
     bron: 'https://www.aircoprofs.nl/airconditioning/mitsubishi/diamond/',

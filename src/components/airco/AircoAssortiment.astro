@@ -15,15 +15,22 @@ const merken = [...new Set(aircos.map((a) => a.merk))];
           {aircos.filter((a) => a.merk === m).map((a) => {
             const p = vanafPrijs(a);
             return (
-              <a class="card aa__card" href={`/airco/${a.slug}/`}>
-                <div class:list={["aa__img", { "aa__img--ph": !a.img }]}>{a.img ? <img src={a.img} alt={`${a.naam} binnenunit`} width="1200" height="520" loading="lazy" /> : <span>[Productfoto {a.naam}]</span>}</div>
-                <span class="aa__tag">{a.positionering}</span>
-                <h3>{a.naam}</h3>
-                <p class="aa__kleuren"><span class="aa__dots">{a.kleuren.map((k) => <i style={`background:${k.hex}`} title={k.naam}></i>)}</span>{a.kleuren.map((k) => k.naam).join(' · ')}</p>
+              <div class="card aa__card" data-aa>
+                <a class="aa__main" href={`/airco/${a.slug}/`} data-link>
+                  <div class:list={["aa__img", { "aa__img--ph": !a.img }]}>{a.img ? <img data-img src={a.img} alt={`${a.naam} binnenunit in ${a.kleuren[0].naam.toLowerCase()}`} width="1200" height="520" loading="lazy" /> : <span>[Productfoto {a.naam}]</span>}</div>
+                  <span class="aa__tag">{a.positionering}</span>
+                  <h3>{a.naam}</h3>
+                </a>
+                <div class="aa__kleuren" role="group" aria-label={`Kleuren ${a.naam}`}>
+                  {a.kleuren.map((k, i) => (
+                    <button type="button" class:list={['aa__dot', { 'is-on': i === 0 }]} style={`background:${k.hex}`} title={k.naam} aria-label={k.naam} aria-pressed={i === 0 ? 'true' : 'false'} data-kleur={k.id} data-naam={k.naam} data-src={k.img ?? ''} disabled={a.kleuren.length === 1}></button>
+                  ))}
+                  <span data-kleurnaam>{a.kleuren.length === 1 ? `Alleen ${a.kleuren[0].naam.toLowerCase()}` : a.kleuren[0].naam}</span>
+                </div>
                 <ul class="aa__facts">{a.kenmerken.map((k) => <li>{k.value} <small>{k.label}</small></li>)}</ul>
                 <p class="aa__prijs">{p == null ? 'Prijs op aanvraag' : <>v.a. <strong>{euro(p)}</strong> <small>incl. montage, indicatief</small></>}</p>
-                <span class="aa__link">Stel samen →</span>
-              </a>
+                <a class="aa__link" href={`/airco/${a.slug}/`} data-link>Stel samen →</a>
+              </div>
             );
           })}
         </div>
@@ -32,9 +39,29 @@ const merken = [...new Set(aircos.map((a) => a.merk))];
   </div>
 </section>
 
+<script>
+  // Kleurbolletjes wisselen de foto in de kaart; de gekozen kleur gaat mee naar de configurator
+  document.querySelectorAll<HTMLElement>('[data-aa]').forEach((card) => {
+    const img = card.querySelector<HTMLImageElement>('[data-img]');
+    const naam = card.querySelector('[data-kleurnaam]');
+    const links = [...card.querySelectorAll<HTMLAnchorElement>('[data-link]')];
+    const base = links[0]?.getAttribute('href') ?? '';
+    card.querySelectorAll<HTMLButtonElement>('.aa__dot:not([disabled])').forEach((b) => {
+      if (b.dataset.src) { const pre = new Image(); pre.src = b.dataset.src; }
+      b.addEventListener('click', () => {
+        card.querySelectorAll('.aa__dot').forEach((d) => { d.classList.toggle('is-on', d === b); d.setAttribute('aria-pressed', String(d === b)); });
+        if (img && b.dataset.src) { img.src = b.dataset.src; img.alt = img.alt.replace(/in .*$/, 'in ' + b.dataset.naam!.toLowerCase()); }
+        if (naam) naam.textContent = b.dataset.naam!;
+        links.forEach((l) => (l.href = `${base}?kleur=${b.dataset.kleur}`));
+      });
+    });
+  });
+</script>
+
 <style>
   .aa__merk { margin: 24px 0 12px; color: var(--muted); font-size: 1rem; letter-spacing: .06em; }
-  .aa__card { text-decoration: none; display: flex; flex-direction: column; }
+  .aa__card { display: flex; flex-direction: column; }
+  .aa__main { text-decoration: none; display: block; }
   .aa__img { background: var(--bg); border-radius: 8px; aspect-ratio: 16/9; display: grid; place-items: center; margin-bottom: 12px; color: var(--muted); font-size: .85rem; }
   .aa__img--ph { border: 2px dashed var(--border); }
   .aa__img img { width: 92%; height: auto; filter: drop-shadow(0 10px 12px rgba(20,26,46,.16)); }
@@ -44,9 +71,11 @@ const merken = [...new Set(aircos.map((a) => a.merk))];
   .aa__facts li { background: var(--bg); border-radius: 6px; padding: 4px 8px; font-weight: 700; font-size: .82rem; }
   .aa__facts small { font-weight: 500; color: var(--muted); }
   .aa__kleuren { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--muted); margin: 0 0 10px; }
-  .aa__dots { display: inline-flex; gap: 4px; }
-  .aa__dots i { width: 16px; height: 16px; border-radius: 50%; border: 1px solid #CBD2DB; display: inline-block; }
+  .aa__dot { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #CBD2DB; padding: 0; cursor: pointer; box-shadow: 0 0 0 2px #fff inset; }
+  .aa__dot.is-on { outline: 2px solid var(--red); outline-offset: 2px; }
+  .aa__dot[disabled] { cursor: default; }
+  .aa__kleuren span { margin-left: 4px; }
   .aa__prijs { margin: 0 0 6px; }
   .aa__prijs small { color: var(--muted); }
-  .aa__link { color: var(--red); font-weight: 700; margin-top: auto; }
+  .aa__link { color: var(--red); font-weight: 700; margin-top: auto; text-decoration: none; }
 </style>

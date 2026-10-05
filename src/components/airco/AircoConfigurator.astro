@@ -30,8 +30,8 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
   <div class="ac" data-ac data-slug={s.slug} data-naam={s.naam}>
     <section class="container ac__photo-wrap">
       <figure class="ac__photo card">
-        {s.img ? <img src={s.img} alt={`${s.naam} binnenunit${s.fotoKleur ? ' in ' + s.fotoKleur : ''}`} width="1200" height="520" /> : <div class="ac__ph"><span>[Productfoto {s.naam}]</span></div>}
-        {s.fotoKleur && <figcaption class="ac__shown">Getoonde kleur: {s.fotoKleur}</figcaption>}
+        {s.img ? <img data-photo src={startKleur.img ?? s.img} alt={`${s.naam} binnenunit in ${startKleur.naam.toLowerCase()}`} width="1200" height="520" /> : <div class="ac__ph"><span>[Productfoto {s.naam}]</span></div>}
+        {s.kleuren.length > 1 && <figcaption class="ac__shown" data-shown>{startKleur.naam}</figcaption>}
       </figure>
       <ul class="ac__facts">
         {s.kenmerken.map((k) => <li><strong>{k.value}</strong><span>{k.label}</span></li>)}
@@ -46,7 +46,7 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
           <div class="ac__colors">
             {s.kleuren.map((k) => (
               <label class="ac__color">
-                <input class="sr" type="radio" name={`${s.slug}-kleur`} value={k.id} data-naam={k.naam} data-toeslag={k.toeslag ?? ''} checked={k.id === startKleur.id} />
+                <input class="sr" type="radio" name={`${s.slug}-kleur`} value={k.id} data-naam={k.naam} data-toeslag={k.toeslag ?? ''} data-img={k.img ?? ''} checked={k.id === startKleur.id} />
                 <span class="ac__swatch" style={`background:${k.hex}`}></span>
                 <span>{k.naam}</span>
                 {k.toeslag == null && <small>toeslag op aanvraag</small>}
@@ -154,7 +154,19 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
       const q = new URLSearchParams({ dienst: 'Airco', model: root.dataset.slug!, uitvoering: `${kw.dataset.kw} kW`, kleur: kl.value, ruimtes: r.value });
       root.querySelector<HTMLAnchorElement>('[data-cta]')!.href = `/offerte/?${q}`;
     };
+    // foto wisselt mee met de gekozen kleur (+ alvast vooraf laden)
+    const photo = root.querySelector<HTMLImageElement>('[data-photo]');
+    root.querySelectorAll<HTMLInputElement>(`input[name="${root.dataset.slug}-kleur"]`).forEach((i) => {
+      if (i.dataset.img) { const pre = new Image(); pre.src = i.dataset.img; }
+      i.addEventListener('change', () => {
+        if (photo && i.dataset.img) { photo.src = i.dataset.img; photo.alt = `${root.dataset.naam} binnenunit in ${i.dataset.naam!.toLowerCase()}`; }
+        const shown = root.querySelector('[data-shown]'); if (shown) shown.textContent = i.dataset.naam!;
+      });
+    });
     root.querySelectorAll('input[type=radio]').forEach((i) => i.addEventListener('change', update));
+    const kleurParam = new URLSearchParams(location.search).get('kleur');
+    const pre = kleurParam && root.querySelector<HTMLInputElement>(`input[name="${root.dataset.slug}-kleur"][value="${CSS.escape(kleurParam)}"]`);
+    if (pre) { pre.checked = true; pre.dispatchEvent(new Event('change')); }
     update();
   });
 </script>
