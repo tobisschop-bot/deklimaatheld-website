@@ -1,0 +1,42 @@
+---
+import Logo from './Logo.astro';
+import { site, nav } from '../data/site';
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="container footer__grid">
+    <div>
+      <div class="footer__logo"><Logo /></div>
+      <p>{site.tagline}. Eerlijk advies, vakwerk en geen gedoe.</p>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <ul>
+        <li>{site.address}</li>
+        <li>{site.phone}</li>
+        <li>{site.email}</li>
+        <li>{site.hours}</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Diensten</h3>
+      <ul>{nav.map((i) => <li><a href={i.href}>{i.label}</a></li>)}</ul>
+    </div>
+  </div>
+  <div class="container footer__bottom">
+    <span>© {year} {site.name}</span>
+    <span><a href="/privacy/">Privacy</a> · <a href="/voorwaarden/">Voorwaarden</a></span>
+  </div>
+</footer>
+
+<style>
+  .footer { background: var(--navy); color: #C9CFDA; padding: 56px 0 24px; margin-top: 0; }
+  .footer h3 { color: #fff; font-size: 1rem; margin-bottom: 12px; }
+  .footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+  .footer a { text-decoration: none; }
+  .footer a:hover { color: #fff; }
+  .footer__grid { display: grid; gap: 32px; }
+  .footer__logo { background: #fff; display: inline-block; padding: 8px 12px; border-radius: var(--radius); margin-bottom: 12px; }
+  .footer__bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; border-top: 1px solid rgba(255,255,255,.12); margin-top: 40px; padding-top: 20px; font-size: .85rem; }
+  @media (min-width: 720px) { .footer__grid { grid-template-columns: 2fr 1fr 1fr; } }
+</style>
