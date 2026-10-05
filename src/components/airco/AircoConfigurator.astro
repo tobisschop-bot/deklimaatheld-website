@@ -30,7 +30,8 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
   <div class="ac" data-ac data-slug={s.slug} data-naam={s.naam}>
     <section class="container ac__photo-wrap">
       <figure class="ac__photo card">
-        {s.img ? <img src={s.img} alt={s.naam} /> : <div class="ac__ph"><span>[Productfoto {s.naam}]</span></div>}
+        {s.img ? <img src={s.img} alt={`${s.naam} binnenunit${s.fotoKleur ? ' in ' + s.fotoKleur : ''}`} width="1200" height="520" /> : <div class="ac__ph"><span>[Productfoto {s.naam}]</span></div>}
+        {s.fotoKleur && <figcaption class="ac__shown">Getoonde kleur: {s.fotoKleur}</figcaption>}
       </figure>
       <ul class="ac__facts">
         {s.kenmerken.map((k) => <li><strong>{k.value}</strong><span>{k.label}</span></li>)}
@@ -165,7 +166,9 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
 
   .ac__photo-wrap { padding-top: 24px; }
   .ac__photo { margin: 0; padding: 16px; background: var(--bg); aspect-ratio: 16 / 9; display: grid; place-items: center; }
-  .ac__photo img { width: 88%; height: auto; object-fit: contain; }
+  .ac__photo { position: relative; }
+  .ac__photo img { width: 96%; height: auto; object-fit: contain; filter: drop-shadow(0 12px 14px rgba(20,26,46,.16)); }
+  .ac__shown { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); background: rgba(255,255,255,.92); border: 1px solid var(--border); border-radius: 999px; padding: 3px 12px; font-size: .75rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
   .ac__ph { color: var(--muted); font-size: .9rem; text-align: center; border: 2px dashed var(--border); border-radius: var(--radius); width: 100%; height: 100%; display: grid; place-items: center; }
   .ac__facts { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .ac__facts li { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 6px; text-align: center; display: grid; gap: 2px; }

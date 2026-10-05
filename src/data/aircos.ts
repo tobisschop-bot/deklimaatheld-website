@@ -17,7 +17,8 @@ export interface AircoSerie {
   type: string; // typecode binnenunit
   positionering: string; // korte tag
   lead: string;
-  img: string | null; // productfoto; null = placeholder
+  img: string | null; // productfoto (uitgesneden, 1200×520); null = placeholder
+  fotoKleur?: string; // kleur op de foto, als die afwijkt van de eerste kleurkeuze
   kenmerken: { value: string; label: string }[]; // 3 kerncijfers
   specs: { value: string; label: string }[];
   waarom: { title: string; text: string }[];
@@ -54,7 +55,7 @@ export const aircos: AircoSerie[] = [
     type: 'FTXM-R',
     positionering: 'Bestverkochte allrounder',
     lead: 'Het bestverkochte wandmodel van Daikin: stil, zuinig en slim, met een bewegingssensor die de lucht van je af stuurt.',
-    img: null,
+    img: '/img/airco/daikin-perfera.webp',
     kenmerken: [
       { value: 'tot A+++', label: 'Energielabel' },
       { value: '19 dB(A)', label: 'Fluisterstil' },
@@ -85,7 +86,7 @@ export const aircos: AircoSerie[] = [
     type: 'FTXA',
     positionering: 'Compact design',
     lead: 'Compact en strak vormgegeven, in wit, zilver of zwart. Met het Coanda-effect blaast hij de lucht langs het plafond voor een gelijkmatige temperatuur.',
-    img: null,
+    img: '/img/airco/daikin-stylish.webp',
     kenmerken: [
       { value: 'A+++', label: 'Energielabel (2,0–3,5 kW)' },
       { value: '19 dB(A)', label: 'Fluisterstil' },
@@ -120,7 +121,7 @@ export const aircos: AircoSerie[] = [
     type: 'FTXJ',
     positionering: 'Premium design',
     lead: 'Het designicoon van Daikin. Een vlak front zonder zichtbare roosters, in mat kristalwit, zilver of zwart.',
-    img: null,
+    img: '/img/airco/daikin-emura.webp', fotoKleur: 'zwart',
     kenmerken: [
       { value: 'A+++', label: 'Energielabel (2,0–2,5 kW)' },
       { value: '19 dB(A)', label: 'Fluisterstil' },
@@ -158,7 +159,7 @@ export const aircos: AircoSerie[] = [
     type: 'AS-RV',
     positionering: 'Voordelige instapper',
     lead: 'Stijlvolle, zuinige airco met ingebouwde wifi en een stille werking. De voordelige keuze om te koelen én te verwarmen.',
-    img: null,
+    img: '/img/airco/haier-revive-plus.webp',
     kenmerken: [
       { value: 'A++', label: 'Energielabel koelen' },
       { value: '19 dB(A)', label: 'Stil (2,7 kW)' },
@@ -189,7 +190,7 @@ export const aircos: AircoSerie[] = [
     type: 'AS-XC',
     positionering: 'Zuinig en schoon',
     lead: 'Hoogwaardige airco met A+++, zelfreinigende filtertechniek en ingebouwde wifi. In wit of mat zwart.',
-    img: null,
+    img: '/img/airco/haier-expert.webp', fotoKleur: 'zwart',
     kenmerken: [
       { value: 'A+++', label: 'Energielabel koelen' },
       { value: '17 dB(A)', label: 'Fluisterstil (3,5 kW)' },
@@ -223,7 +224,7 @@ export const aircos: AircoSerie[] = [
     type: 'AS-PB',
     positionering: 'Ideaal voor multi-split',
     lead: 'Comfort in meerdere kamers met één buitendeel. Met UV-C-sterilisatie, Coanda Plus-luchtstroom en bediening via de hOn-app.',
-    img: null,
+    img: '/img/airco/haier-pearl-premium.webp',
     kenmerken: [
       { value: 'A+++', label: 'Energielabel koelen' },
       { value: '19 dB(A)', label: 'Fluisterstil' },
@@ -257,7 +258,7 @@ export const aircos: AircoSerie[] = [
     type: 'SRK-ZS-W',
     positionering: 'Betrouwbare allrounder',
     lead: 'De Premium-serie van Mitsubishi Heavy Industries: stil, zuinig en met ingebouwde wifi. Een degelijke keuze voor elke kamer.',
-    img: null,
+    img: '/img/airco/mhi-premium.webp',
     kenmerken: [
       { value: 'A+++', label: 'Energielabel koelen (2,0–2,5 kW)' },
       { value: '19 dB(A)', label: 'Fluisterstil' },
@@ -292,7 +293,7 @@ export const aircos: AircoSerie[] = [
     type: 'SRK-ZSX-W',
     positionering: 'Topmodel, dubbel A+++',
     lead: 'Het topmodel van Mitsubishi Heavy Industries: dubbel A+++ (koelen én verwarmen), een aanwezigheidssensor en ingebouwde wifi. Ideaal als je de airco ook veel gebruikt om te verwarmen.',
-    img: null,
+    img: '/img/airco/mhi-diamond.webp', fotoKleur: 'titanium',
     kenmerken: [
       { value: 'A+++ / A+++', label: 'Koelen én verwarmen (2,0–3,5 kW)' },
       { value: 'SCOP 5,2', label: 'Zeer zuinig verwarmen' },

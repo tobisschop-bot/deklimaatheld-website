@@ -16,7 +16,7 @@ const merken = [...new Set(aircos.map((a) => a.merk))];
             const p = vanafPrijs(a);
             return (
               <a class="card aa__card" href={`/airco/${a.slug}/`}>
-                <div class="aa__img">{a.img ? <img src={a.img} alt={a.naam} loading="lazy" /> : <span>[Productfoto {a.naam}]</span>}</div>
+                <div class:list={["aa__img", { "aa__img--ph": !a.img }]}>{a.img ? <img src={a.img} alt={`${a.naam} binnenunit`} width="1200" height="520" loading="lazy" /> : <span>[Productfoto {a.naam}]</span>}</div>
                 <span class="aa__tag">{a.positionering}</span>
                 <h3>{a.naam}</h3>
                 <ul class="aa__facts">{a.kenmerken.map((k) => <li>{k.value} <small>{k.label}</small></li>)}</ul>
@@ -34,8 +34,9 @@ const merken = [...new Set(aircos.map((a) => a.merk))];
 <style>
   .aa__merk { margin: 24px 0 12px; color: var(--muted); font-size: 1rem; letter-spacing: .06em; }
   .aa__card { text-decoration: none; display: flex; flex-direction: column; }
-  .aa__img { background: var(--bg); border-radius: 8px; aspect-ratio: 16/9; display: grid; place-items: center; margin-bottom: 12px; color: var(--muted); font-size: .85rem; border: 2px dashed var(--border); }
-  .aa__img img { width: 88%; height: auto; }
+  .aa__img { background: var(--bg); border-radius: 8px; aspect-ratio: 16/9; display: grid; place-items: center; margin-bottom: 12px; color: var(--muted); font-size: .85rem; }
+  .aa__img--ph { border: 2px dashed var(--border); }
+  .aa__img img { width: 92%; height: auto; filter: drop-shadow(0 10px 12px rgba(20,26,46,.16)); }
   .aa__tag { font-size: .75rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--red); }
   .aa__card h3 { margin: 2px 0 8px; }
   .aa__facts { list-style: none; padding: 0; margin: 0 0 10px; display: flex; flex-wrap: wrap; gap: 6px; }
