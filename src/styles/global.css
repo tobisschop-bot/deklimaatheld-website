@@ -43,8 +43,8 @@ h1, h2, h3 {
   line-height: 1.05;
   margin: 0 0 .5em;
 }
-h1 { font-size: clamp(2.2rem, 7vw, 3.6rem); }
-h2 { font-size: clamp(1.7rem, 5vw, 2.6rem); }
+h1 { font-size: 2.5rem; }
+h2 { font-size: 1.9rem; }
 h3 { font-size: 1.25rem; }
 p { margin: 0 0 1em; }
 
@@ -67,12 +67,6 @@ p { margin: 0 0 1em; }
 }
 
 .grid { display: grid; gap: 16px; }
-@media (min-width: 720px) {
-  .grid-2 { grid-template-columns: repeat(2, 1fr); }
-  .grid-3 { grid-template-columns: repeat(3, 1fr); }
-  .grid-4 { grid-template-columns: repeat(4, 1fr); }
-  .section { padding: 88px 0; }
-}
 
 .placeholder {
   background: var(--bg);
@@ -81,4 +75,11 @@ p { margin: 0 0 1em; }
   color: var(--muted);
   display: grid; place-items: center;
   min-height: 160px; font-size: .9rem; text-align: center; padding: 16px;
+}
+
+/* Tijdelijk: zolang er geen desktopontwerp is, tonen we op grote schermen
+   de mobiele site in een gecentreerde kolom. Verwijderen zodra desktop.css aan staat. */
+@media (min-width: 600px) {
+  html { background: #E6E9EF; }
+  body { max-width: 480px; margin: 0 auto; box-shadow: 0 0 0 1px var(--border), 0 20px 60px rgba(20,26,46,.12); min-height: 100vh; }
 }
