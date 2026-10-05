@@ -27,7 +27,7 @@ const uid = `cfg-${m.slug}`;
 <div class="cfg" data-cfg data-model={m.slug} data-short={m.short}>
   <section class="cfg__photo-wrap container">
     <figure class="cfg__photo card">
-      <img src={m.img} alt={m.imgAlt} width="600" height="600" />
+      <img src={m.img} alt={m.imgAlt} width="800" height="600" />
       <figcaption class="cfg__shown">Getoonde kleur: {m.photoColor}</figcaption>
     </figure>
     <ul class="cfg__facts">
@@ -151,14 +151,17 @@ const uid = `cfg-${m.slug}`;
 
   /* Foto */
   .cfg__photo-wrap { padding-top: 24px; }
-  .cfg__photo { margin: 0; padding: 16px; position: relative; }
+  .cfg__photo {
+    margin: 0; padding: 20px 20px 44px; position: relative;
+    background: var(--bg); aspect-ratio: 4 / 3;
+    display: grid; place-items: center; overflow: hidden;
+  }
   .cfg__photo img {
-    width: 100%; aspect-ratio: 1 / 1; object-fit: contain;
-    background: var(--bg); border-radius: var(--radius);
-    filter: drop-shadow(0 12px 18px rgba(20, 26, 46, .18));
+    width: 80%; height: auto; max-height: 100%; object-fit: contain;
+    filter: drop-shadow(0 14px 14px rgba(20, 26, 46, .22));
   }
   .cfg__shown {
-    position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%);
+    position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%);
     background: rgba(255, 255, 255, .92); border: 1px solid var(--border); border-radius: 999px;
     padding: 3px 12px; font-size: .75rem; font-weight: 600; color: var(--muted); white-space: nowrap;
   }
