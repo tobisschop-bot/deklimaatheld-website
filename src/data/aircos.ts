@@ -5,7 +5,7 @@
 export interface AircoVermogen {
   id: string; // bijv. '25'
   kw: number; // koelvermogen (nominaal)
-  kwVerwarmen: number;
+  kwVerwarmen: number | null;
   m2: string; // indicatieve ruimtegrootte
   prijs: number | null; // v.a. incl. montage, indicatief
 }
@@ -27,8 +27,9 @@ export interface AircoSerie {
   bron: string;
 }
 
-const ruimte = { '20': '± 25 m²', '25': '± 35 m²', '35': '± 45 m²', '42': '± 55 m²', '50': '± 65 m²' } as Record<string, string>;
-const v = (id: string, kw: number, kwV: number, prijs: number | null = null): AircoVermogen => ({ id, kw, kwVerwarmen: kwV, m2: ruimte[id], prijs });
+// Indicatieve ruimtegrootte op basis van koelvermogen
+const m2Voor = (kw: number) => (kw <= 2.1 ? '± 25 m²' : kw <= 2.8 ? '± 35 m²' : kw <= 3.7 ? '± 45 m²' : kw <= 4.3 ? '± 55 m²' : kw <= 5.4 ? '± 65 m²' : kw <= 6.3 ? '± 80 m²' : '± 90 m²');
+const v = (id: string, kw: number, kwV: number | null, prijs: number | null = null): AircoVermogen => ({ id, kw, kwVerwarmen: kwV, m2: m2Voor(kw), prijs });
 
 const faqAlgemeen = [
   {
@@ -146,6 +147,105 @@ export const aircos: AircoSerie[] = [
     ],
     faq: faqAlgemeen,
     bron: 'https://www.daikin.nl/nl_nl/consument/products-and-advice/product-categories/air-conditioners.html',
+  },
+
+  // ---------------- HAIER ----------------
+  // Prijzen v.a. (incl. installatie en btw) = indicatief, marktprijs De Warmteman okt 2026
+  {
+    slug: 'haier-revive-plus',
+    merk: 'Haier',
+    naam: 'Haier Revive Plus',
+    type: 'AS-RV',
+    positionering: 'Voordelige instapper',
+    lead: 'Stijlvolle, zuinige airco met ingebouwde wifi en een stille werking. De voordelige keuze om te koelen én te verwarmen.',
+    img: null,
+    kenmerken: [
+      { value: 'A++', label: 'Energielabel koelen' },
+      { value: '19 dB(A)', label: 'Stil (2,7 kW)' },
+      { value: 'Wifi', label: 'Ingebouwd' },
+    ],
+    specs: [
+      { value: '2,7 – 6,2 kW', label: 'Koelvermogen' },
+      { value: 'SEER 6,5 / SCOP 4,0', label: 'Rendement (2,7 kW)' },
+      { value: 'A++ / A+', label: 'Energielabel koelen / verwarmen' },
+      { value: '19 dB(A)', label: 'Laagste geluidsniveau binnenunit (2,7 kW)' },
+      { value: 'R32', label: 'Koudemiddel' },
+      { value: 'Wifi', label: 'Bediening via app' },
+    ],
+    waarom: [
+      { title: 'Scherp geprijsd', text: 'De Revive Plus is de voordelige manier om te koelen en te verwarmen, zonder in te leveren op comfort.' },
+      { title: 'Stil in de slaapkamer', text: 'De 2,7 kW-uitvoering draait vanaf 19 dB(A) op de laagste stand.' },
+      { title: 'Slim bedienen', text: 'Met de ingebouwde wifi bedien je de airco via de app, ook als je niet thuis bent.' },
+    ],
+    vermogens: [v('27', 2.7, 2.9, 1249), v('35', 3.5, 3.9), v('48', 4.8, 4.8), v('62', 6.2, 6.3)],
+    kleuren: [{ id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 }],
+    faq: faqAlgemeen,
+    bron: 'https://www.pelletkachelverkoop.nl/producten/airco-koelen-en-verwarmen/airco-split-unit/airco-single-split-unit/specificaties-haier-revive-plus',
+  },
+  {
+    slug: 'haier-expert',
+    merk: 'Haier',
+    naam: 'Haier Expert',
+    type: 'AS-XC',
+    positionering: 'Zuinig en schoon',
+    lead: 'Hoogwaardige airco met A+++, zelfreinigende filtertechniek en ingebouwde wifi. In wit of mat zwart.',
+    img: null,
+    kenmerken: [
+      { value: 'A+++', label: 'Energielabel koelen' },
+      { value: '17 dB(A)', label: 'Fluisterstil (3,5 kW)' },
+      { value: '2 kleuren', label: 'Wit of zwart' },
+    ],
+    specs: [
+      { value: '2,5 / 3,5 / 5,0 kW', label: 'Koelvermogen' },
+      { value: 'SEER 8,5 / SCOP 4,75', label: 'Rendement (3,5 kW)' },
+      { value: 'A+++ / A++', label: 'Energielabel koelen / verwarmen (3,5 kW)' },
+      { value: '17 dB(A)', label: 'Laagste geluidsniveau binnenunit (3,5 kW)' },
+      { value: 'Zelfreinigend', label: 'Filtertechniek' },
+      { value: 'Wifi', label: 'Ingebouwd, bediening via app' },
+    ],
+    waarom: [
+      { title: 'Heel zuinig', text: 'Met een SEER van 8,5 en A+++ voor koelen (3,5 kW) is de Expert een van de zuinigste modellen van Haier.' },
+      { title: 'Schone lucht', text: 'De zelfreinigende techniek houdt de binnenunit en het filter schoon, voor frissere lucht.' },
+      { title: 'Wit of mat zwart', text: 'Kies de kleur die bij je interieur past.' },
+    ],
+    vermogens: [v('25', 2.5, null), v('35', 3.5, 4.2, 2439), v('50', 5.0, null)],
+    kleuren: [
+      { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 },
+      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: null },
+    ],
+    faq: faqAlgemeen,
+    bron: 'https://airconditioningenwarmtepompservicenederland.nl/product/haier-expert-wit-35-kw-a-a/',
+  },
+  {
+    slug: 'haier-pearl-premium',
+    merk: 'Haier',
+    naam: 'Haier Pearl Premium',
+    type: 'AS-PB',
+    positionering: 'Ideaal voor multi-split',
+    lead: 'Comfort in meerdere kamers met één buitendeel. Met UV-C-sterilisatie, Coanda Plus-luchtstroom en bediening via de hOn-app.',
+    img: null,
+    kenmerken: [
+      { value: 'A+++', label: 'Energielabel koelen' },
+      { value: '19 dB(A)', label: 'Fluisterstil' },
+      { value: 'Tot 5', label: 'Binnenunits op 1 buitendeel' },
+    ],
+    specs: [
+      { value: '2,7 / 3,6 / 5,3 / 7,1 kW', label: 'Koelvermogen' },
+      { value: 'A+++ / A++', label: 'Energielabel koelen / verwarmen (3,6 kW)' },
+      { value: '19 dB(A)', label: 'Laagste geluidsniveau binnenunit' },
+      { value: 'UV-C', label: 'Sterilisatie van bacteriën en virussen' },
+      { value: 'Coanda Plus', label: 'Luchtstroom langs het plafond' },
+      { value: 'hOn-app', label: 'Wifi, ook met Google Assistant en Alexa' },
+    ],
+    waarom: [
+      { title: 'Meerdere kamers, één buitendeel', text: 'Sluit tot 5 binnenunits aan op één buitenunit. Minder op de gevel, comfort in het hele huis.' },
+      { title: 'Gezonde lucht', text: 'De UV-C-lamp en de Steri-Clean-functie houden de binnenunit schoon en de lucht fris.' },
+      { title: 'Comfortabele luchtstroom', text: 'Met Coanda Plus gaat de lucht langs het plafond, zodat je geen koude luchtstroom op je voelt.' },
+    ],
+    vermogens: [v('27', 2.7, null, 1969), v('36', 3.6, null), v('53', 5.3, null), v('71', 7.1, null)],
+    kleuren: [{ id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 }],
+    faq: faqAlgemeen,
+    bron: 'https://www.vrijzon.nl/producten/airco-hoge-wandmodellen-haier-pearl-premium-airco-36-kw/',
   },
 ];
 

@@ -9,7 +9,7 @@ import type { AircoSerie } from '../../data/aircos';
 
 interface Props { serie: AircoSerie }
 const { serie: s } = Astro.props;
-const start = s.vermogens.find((x) => x.id === '25') ?? s.vermogens[0];
+const start = s.vermogens.find((x) => x.prijs != null) ?? s.vermogens.find((x) => x.id === '25') ?? s.vermogens[0];
 const startKleur = s.kleuren[0];
 const inbegrepen = [
   { value: 'Advies aan huis', label: 'We bepalen samen het juiste vermogen en de beste plek' },

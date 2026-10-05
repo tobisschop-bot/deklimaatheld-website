@@ -1,0 +1,6 @@
+---
+import AircoConfigurator from '../../components/airco/AircoConfigurator.astro';
+import { aircos } from '../../data/aircos';
+const serie = aircos.find((a) => a.slug === 'haier-revive-plus')!;
+---
+<AircoConfigurator serie={serie} />
