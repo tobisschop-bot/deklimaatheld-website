@@ -1,0 +1,161 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import CtaCard from '../components/CtaCard.astro';
+import { site } from '../data/site';
+
+const waarden = [
+  { icon: '🤝', t: 'Eerlijk advies', d: 'We adviseren alleen wat past bij jouw woning. Geen overgedimensioneerde systemen of onnodige kosten.' },
+  { icon: '🔧', t: 'Vakwerk', d: 'Eigen monteurs, geen onderaannemers. Installateurs met oog voor nette afwerking.' },
+  { icon: '✅', t: 'Ontzorgen', d: 'Van advies tot subsidie geregeld. Wij verzorgen de ISDE-aanvraag voor je.' },
+];
+
+const team = [
+  { naam: '[Naam]', functie: '[Functie]' },
+  { naam: '[Naam]', functie: '[Functie]' },
+];
+
+const diensten = [
+  { label: 'Warmtepompen', href: '/warmtepompen/' },
+  { label: 'Airco', href: '/airco/' },
+  { label: 'CV-ketels' },
+  { label: 'Vloerverwarming' },
+  { label: 'Zonnepanelen' },
+];
+---
+<Base title="Over ons – De Klimaatheld" description="De Klimaatheld: installateurs uit Den Haag die verduurzamen simpel maken.">
+  <PageHero
+    label="Over ons"
+    title="Wij zijn De Klimaatheld"
+    lead="Installateurs uit Den Haag die verduurzamen simpel maken. Eerlijk advies, vakwerk en geen gedoe."
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'Over ons' }]}
+  >
+    <div class="placeholder mascot">[Klimaatheld-mascotte]</div>
+  </PageHero>
+
+  <!-- ONS VERHAAL -->
+  <section class="section section--white">
+    <div class="container">
+      <span class="label">Ons verhaal</span>
+      <h2>Verduurzamen zonder gedoe</h2>
+      <p>De energietransitie hoeft niet ingewikkeld of ondoorzichtig te zijn. De Klimaatheld is opgericht vanuit een nuchtere technische visie: woningen verduurzamen met betrouwbare warmtepomptechniek, zonder loze verkooppraatjes.</p>
+      <p>Wij geloven in direct contact tussen bewoner en vakman. Van de eerste berekening tot de montage en nazorg: we kijken kritisch naar jouw woonsituatie, zodat je comfortabel woont en zoveel mogelijk bespaart.</p>
+    </div>
+  </section>
+
+  <!-- WAARDEN -->
+  <section class="section">
+    <div class="container">
+      <span class="label">Waar wij voor staan</span>
+      <h2>Onze waarden</h2>
+      <div class="grid">
+        {waarden.map((w) => (
+          <div class="card value">
+            <span class="value__icon" aria-hidden="true">{w.icon}</span>
+            <h3>{w.t}</h3>
+            <p>{w.d}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- HEAT GEEK -->
+  <section class="section section--white">
+    <div class="container">
+      <div class="hg">
+        <span class="label">Heat Geek-methode</span>
+        <h2>De Klimaatheld × Heat Geek</h2>
+        <p>Wij ontwerpen en installeren volgens de Heat Geek-methode. Dat betekent: ontwerpen op lage temperatuur, een warmteverliesberekening per kamer en het waterzijdig inregelen van de installatie.</p>
+        <p class="hg__punch">Meer rendement, lagere energierekening.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="section">
+    <div class="container">
+      <span class="label">De mensen</span>
+      <h2>Ons team</h2>
+      <div class="team">
+        {team.map((p) => (
+          <div class="card member">
+            <div class="member__avatar" role="img" aria-label="Foto volgt"></div>
+            <strong>{p.naam}</strong>
+            <span>{p.functie}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- WAT WE DOEN -->
+  <section class="section section--white">
+    <div class="container">
+      <span class="label">Diensten</span>
+      <h2>Wat we doen</h2>
+      <ul class="services">
+        {diensten.map((d) => (
+          <li>
+            {d.href
+              ? <a href={d.href}><span>{d.label}</span><span aria-hidden="true">→</span></a>
+              : <div><span>{d.label}</span></div>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- WERKGEBIED -->
+  <section class="section">
+    <div class="container">
+      <span class="label">Werkgebied</span>
+      <div class="card area">
+        <h3>📍 {site.region}</h3>
+        <p>Actief in Den Haag en de omliggende gemeenten, met lokale monteurs voor snelle service.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section section--cta">
+    <div class="container">
+      <CtaCard
+        title="Kennismaken?"
+        text="Benieuwd wat een warmtepomp voor jouw woning kan betekenen? We kijken vrijblijvend met je mee."
+        button="Plan een gratis installatiecheck →"
+      />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .section--white { background: #fff; }
+  .section--cta { padding-top: 0; }
+
+  .mascot { margin-top: 24px; min-height: 200px; background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.2); color: #C9CFDA; }
+
+  .value__icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--red-soft); font-size: 1.2rem; margin-bottom: 12px; }
+  .value h3 { margin-bottom: 6px; }
+  .value p { margin: 0; color: var(--muted); }
+
+  .hg { background: var(--navy); color: #fff; border-radius: var(--radius); padding: 28px 22px; border-left: 4px solid var(--red); }
+  .hg h2 { color: #fff; }
+  .hg .label { color: #FF8A95; }
+  .hg p { color: #C9CFDA; }
+  .hg .hg__punch { color: #fff; font-weight: 700; margin: 0; }
+
+  .team { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .member { display: grid; justify-items: center; text-align: center; gap: 4px; padding: 20px 12px; }
+  .member__avatar { width: 88px; height: 88px; border-radius: 50%; background: #D5DAE2; margin-bottom: 8px; }
+  .member span { color: var(--muted); font-size: .9rem; }
+
+  .services { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); }
+  .services li { border-bottom: 1px solid var(--border); }
+  .services a, .services div { display: flex; justify-content: space-between; align-items: center; min-height: 52px; padding: 12px 4px; font-weight: 700; text-decoration: none; }
+  .services a span:last-child { color: var(--red); }
+  .services div { color: var(--muted); font-weight: 600; }
+
+  .area h3 { margin-bottom: 6px; }
+  .area p { margin: 0; color: var(--muted); }
+</style>

@@ -5,6 +5,8 @@ export const site = {
   phone: '[Telefoonnummer]',
   phoneHref: 'tel:',
   email: '[E-mailadres]',
+  whatsapp: '[WhatsApp-nummer]',
+  whatsappHref: 'https://wa.me/',
   address: '[Adres volgt]',
   region: 'Den Haag en omstreken',
   hours: 'ma–vr 08:00–17:00',

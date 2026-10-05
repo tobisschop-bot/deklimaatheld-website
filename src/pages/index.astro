@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
 import PostcodeForm from '../components/PostcodeForm.astro';
-import { warmtepompen, euro } from '../data/warmtepompen';
+import { warmtepompen, euro, kaartLink } from '../data/warmtepompen';
 
 const stappen = [
   { n: '01', icon: '/icons/01-besparingscheck.svg', t: 'Besparingscheck', d: 'Je doet vrijblijvend de gratis online besparingscheck. Zo zie je direct hoeveel gas en euro’s je kunt besparen.' },
@@ -80,12 +80,12 @@ const stappen = [
       <h2>Weheat warmtepompen</h2>
       <div class="grid grid-3">
         {warmtepompen.map((w) => (
-          <a class="card pump" href={`/warmtepompen/${w.slug}/`}>
+          <a class="card pump" href={kaartLink(w).href}>
             <div class="pump__img"><img src={w.img} alt={w.name} loading="lazy" /></div>
             <span class="pump__tag">{w.tag}</span>
             <h3>{w.name}</h3>
             <p class="pump__price">v.a. <strong>{euro(w.from)}</strong> <small>indicatief</small></p>
-            <span class="pump__link">Stel samen →</span>
+            <span class="pump__link">{w.page ? 'Stel samen' : kaartLink(w).label} →</span>
           </a>
         ))}
       </div>

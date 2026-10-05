@@ -1,0 +1,240 @@
+---
+import Base from '../../layouts/Base.astro';
+import Button from '../../components/Button.astro';
+import PageHero from '../../components/PageHero.astro';
+import PostcodeForm from '../../components/PostcodeForm.astro';
+import Faq from '../../components/Faq.astro';
+import { warmtepompen, euro, kaartLink } from '../../data/warmtepompen';
+
+const filters = [
+  { id: 'alle', label: `Alle (${warmtepompen.length})` },
+  { id: 'hybride', label: 'Hybride' },
+  { id: 'all-electric', label: 'All-electric' },
+  { id: 'dakmontage', label: 'Dakmontage' },
+];
+
+const keuzehulp = [
+  { woning: 'Kleine woning / app.', gas: 'Tot ca. 1.200 m³ gasverbruik', model: 'Flint P40', slug: 'flint' },
+  { woning: 'Rijtjeshuis', gas: '1.200 – 2.000 m³ gasverbruik', model: 'Sparrow P60', slug: 'sparrow' },
+  { woning: 'Vrijstaand / 2-onder-1-kap', gas: 'Vanaf 2.000 m³ gasverbruik', model: 'Blackbird P80', slug: 'blackbird' },
+].map((k) => ({ ...k, href: kaartLink(warmtepompen.find((w) => w.slug === k.slug)!).href }));
+
+const stappen = [
+  { n: '01', icon: '/icons/01-besparingscheck.svg', t: 'Besparingscheck', d: 'Vrijblijvende online berekening van je gasverbruik en besparing.' },
+  { n: '02', icon: '/icons/02-installatiecheck.svg', t: 'Installatiecheck', d: 'Grondige schouw van leidingen, meterkast en afgiftesysteem.' },
+  { n: '03', icon: '/icons/03-installatieplan.svg', t: 'Installatieplan op maat', d: 'Technisch plan en offerte op maat, via videocall of bij je thuis.' },
+  { n: '04', icon: '/icons/04-installatie.svg', t: 'Vakkundige installatie', d: 'Geplaatst door onze eigen monteurs, meestal binnen één tot twee dagen.' },
+  { n: '05', icon: '/icons/05-subsidie-nazorg.svg', t: 'Subsidie & nazorg', d: 'Wij regelen de ISDE-aanvraag en blijven bereikbaar voor onderhoud en service.' },
+];
+
+const faq = [
+  { q: 'Wat is een warmtepomp?', a: 'Een warmtepomp haalt energie uit de buitenlucht en zet die efficiënt om in warmte voor je centrale verwarming en tapwater. Ook als het buiten koud is, haalt hij nog warmte uit de lucht.' },
+  { q: 'Hybride of all-electric?', a: 'Een hybride warmtepomp werkt samen met je huidige cv-ketel en neemt het grootste deel van de verwarming over, zodat je direct minder gas verbruikt. All-electric verwarmt je woning en tapwater volledig zonder gasaansluiting.' },
+  { q: 'Hoeveel subsidie krijg ik?', a: 'Via de ISDE-regeling van de Rijksoverheid krijg je subsidie op een warmtepomp; het bedrag (€ [bedrag]) hangt af van het type en vermogen. Indicatief, zie de RVO-lijst voor actuele bedragen. De Klimaatheld verzorgt de aanvraag voor je.' },
+  { q: 'Hoe lang duurt de installatie?', a: 'Een hybride warmtepomp plaatsen we meestal in één dag. Een all-electric systeem met buffervat en aanpassingen duurt meestal één tot twee dagen.' },
+  { q: 'Is mijn woning geschikt?', a: 'Veel woningen met dak-, gevel- of glasisolatie zijn geschikt voor een hybride warmtepomp. Vul de postcodecheck hieronder in, dan kijken we samen naar jouw situatie.' },
+];
+---
+<Base title="Warmtepompen – De Klimaatheld" description="Weheat-warmtepompen, hybride of all-electric, vakkundig geplaatst in Den Haag en omstreken. Inclusief installatie en ISDE-subsidieaanvraag.">
+  <PageHero
+    label="Warmtepompen"
+    title="Slimme warmtepompen, vakkundig geplaatst"
+    lead="Hybride of volledig gasvrij. Wij adviseren, installeren en regelen je ISDE-subsidie."
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'Warmtepompen' }]}
+  >
+    <ul class="hero-checks">
+      <li>Inclusief installatie</li>
+      <li>Subsidie geregeld</li>
+      <li>Ontwerp volgens Heat Geek-methode</li>
+    </ul>
+  </PageHero>
+
+  <!-- MODELLEN -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="chips" role="group" aria-label="Filter warmtepompen" data-filters hidden>
+        {filters.map((f, i) => (
+          <button type="button" class="chip" data-filter={f.id} aria-pressed={i === 0 ? 'true' : 'false'}>{f.label}</button>
+        ))}
+      </div>
+
+      <div class="models" data-models>
+        {warmtepompen.map((w) => {
+          const link = kaartLink(w);
+          return (
+            <article class="card model" data-types={w.types.join(' ')}>
+              <div class="model__media">
+                <span class="model__badge">{w.badge}</span>
+                {w.photo
+                  ? <img src={w.img} alt={`${w.name} warmtepomp`} loading="lazy" />
+                  : <div class="placeholder model__ph">[Productfoto {w.name}]</div>}
+              </div>
+              <h2 class="model__name">{w.name}</h2>
+              <p class="model__tag">{w.tag}</p>
+              <ul class="model__facts">
+                <li class="model__price">v.a. <strong>{euro(w.from)},-</strong> <small>indicatief</small></li>
+                <li>Tot € [bedrag] ISDE-subsidie<sup>*</sup></li>
+                <li>{w.includes}</li>
+              </ul>
+              <Button href={link.href} variant={w.page ? 'primary' : 'outline'} full>{link.label}</Button>
+            </article>
+          );
+        })}
+      </div>
+      <p class="note" data-empty hidden>Geen modellen in deze categorie.</p>
+      <p class="note">Prijzen zijn indicatief en afhankelijk van je woning en installatie. *Subsidiebedrag indicatief, zie de RVO-lijst.</p>
+    </div>
+  </section>
+
+  <!-- KEUZEHULP -->
+  <section class="section section--white">
+    <div class="container">
+      <span class="label">Keuzehulp</span>
+      <h2>Welke past bij jouw woning?</h2>
+      <p class="lead">Een eerste indicatie van het vermogen dat bij je woning past.</p>
+      <ul class="fit">
+        {keuzehulp.map((k) => (
+          <li>
+            <a class="card fit__item" href={k.href}>
+              <span class="fit__txt"><strong>{k.woning}</strong><small>{k.gas}</small></span>
+              <span class="fit__model">{k.model}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="note">Indicatief. Het juiste vermogen berekenen we tijdens de installatiecheck.</p>
+    </div>
+  </section>
+
+  <!-- STAPPEN -->
+  <section class="section">
+    <div class="container">
+      <span class="label">Helder & transparant</span>
+      <h2>Zo werkt De Klimaatheld</h2>
+      <p class="lead">Van berekening tot installatie in vijf stappen.</p>
+      <ol class="steps">
+        {stappen.map((s) => (
+          <li class="step">
+            <div class="step__icon"><span>{s.n}</span><img src={s.icon} alt="" width="56" height="56" loading="lazy" /></div>
+            <div><h3>{s.t}</h3><p>{s.d}</p></div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- USP'S -->
+  <section class="usps">
+    <div class="container usps__grid">
+      <div class="usp">Eigen monteurs</div>
+      <div class="usp">Advies op maat</div>
+      <div class="usp">ISDE-subsidie geregeld</div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <div class="container">
+      <span class="label">Antwoord op je vragen</span>
+      <Faq items={faq} />
+    </div>
+  </section>
+
+  <!-- POSTCODECHECK -->
+  <section class="final">
+    <div class="container">
+      <span class="label">Klaar voor de volgende stap?</span>
+      <h2>Hoeveel kan jij besparen?</h2>
+      <p class="final__lead">Bereken snel en eenvoudig de gasbesparing voor jouw woning.</p>
+      <div class="final__card">
+        <PostcodeForm />
+        <p class="final__hint">Binnen 1 minuut vrijblijvend advies</p>
+      </div>
+      <ul class="checks">
+        <li>Gratis advies van specialisten</li>
+        <li>Eigen monteurs, geen onderaannemers</li>
+        <li>ISDE-subsidie voor je geregeld</li>
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-filters]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-models] > [data-types]');
+  const empty = document.querySelector<HTMLElement>('[data-empty]');
+  if (bar) {
+    bar.hidden = false;
+    bar.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-filter]');
+      if (!btn) return;
+      const f = btn.dataset.filter!;
+      bar.querySelectorAll('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      let shown = 0;
+      cards.forEach((c) => {
+        const ok = f === 'alle' || (c.dataset.types || '').split(' ').includes(f);
+        c.hidden = !ok;
+        if (ok) shown++;
+      });
+      if (empty) empty.hidden = shown > 0;
+    });
+  }
+</script>
+
+<style>
+  .section--white { background: #fff; }
+  .section--tight { padding-top: 24px; }
+  .note { font-size: .8rem; color: var(--muted); margin: 12px 0 0; }
+
+  .hero-checks { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 8px; font-size: .95rem; font-weight: 600; }
+  .hero-checks li::before { content: '✓'; color: #4CC38A; font-weight: 800; margin-right: 8px; }
+
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin: 0 calc(-1 * var(--gutter)) 16px; padding-left: var(--gutter); padding-right: var(--gutter); scrollbar-width: none; }
+  .chips[hidden] { display: none; }
+  .chip { flex: 0 0 auto; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--navy); font: inherit; font-weight: 700; font-size: .9rem; cursor: pointer; }
+  .chip[aria-pressed='true'] { background: var(--navy); border-color: var(--navy); color: #fff; }
+
+  .models { display: grid; gap: 16px; }
+  .model[hidden] { display: none; }
+  .model__media { position: relative; background: var(--bg); border-radius: 8px; aspect-ratio: 4/3; display: grid; place-items: center; padding: 20px; margin-bottom: 16px; }
+  .model__media img { max-height: 100%; object-fit: contain; filter: drop-shadow(0 10px 12px rgba(20,26,46,.18)); }
+  .model__ph { width: 100%; height: 100%; min-height: 0; background: #fff; }
+  .model__badge { position: absolute; top: 10px; left: 10px; z-index: 1; background: var(--navy); color: #fff; font-size: .7rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; }
+  .model__name { font-size: 1.5rem; margin-bottom: 2px; }
+  .model__tag { color: var(--muted); margin-bottom: 12px; }
+  .model__facts { list-style: none; padding: 0; margin: 0 0 18px; display: grid; gap: 8px; font-size: .95rem; }
+  .model__facts li { padding-left: 24px; position: relative; }
+  .model__facts li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 800; }
+  .model__facts .model__price { padding-left: 0; font-size: 1.05rem; }
+  .model__facts .model__price::before { content: none; }
+  .model__price strong { font-size: 1.4rem; color: var(--red); }
+  .model__price small { color: var(--muted); font-size: .8rem; }
+
+  .fit { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 10px; }
+  .fit__item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; text-decoration: none; min-height: 64px; }
+  .fit__txt { display: grid; }
+  .fit__txt small { color: var(--muted); font-size: .85rem; }
+  .fit__model { flex: 0 0 auto; background: var(--red-soft); color: var(--red); font-weight: 700; font-size: .85rem; padding: 6px 10px; border-radius: 6px; white-space: nowrap; }
+
+  .steps { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 14px; }
+  .step { display: flex; gap: 14px; align-items: flex-start; }
+  .step h3 { font-size: 1.1rem; margin-bottom: 2px; }
+  .step p { margin: 0; color: var(--muted); font-size: .95rem; }
+  .step__icon { position: relative; flex: 0 0 64px; height: 64px; border-radius: 50%; background: #fff; border: 1px solid var(--border); display: grid; place-items: center; }
+  .step__icon img { width: 48px; height: 48px; }
+  .step__icon span { position: absolute; top: -4px; left: -4px; background: var(--red); color: #fff; font-size: .7rem; font-weight: 800; padding: 3px 6px; border-radius: 6px; }
+
+  .usps { background: var(--navy); color: #fff; padding: 20px 0; }
+  .usps__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .usp { text-align: center; font-size: .8rem; font-weight: 700; line-height: 1.25; padding: 8px 4px; }
+  .usp::before { content: '✓'; display: block; color: #4CC38A; font-size: 1.1rem; margin-bottom: 4px; }
+
+  .final { background: linear-gradient(165deg, #0B132B, var(--navy)); color: #fff; padding: 56px 0; }
+  .final h2 { color: #fff; }
+  .final .label { color: #FF8A95; }
+  .final__lead { color: #C9CFDA; }
+  .final__card { background: #fff; color: var(--text); border-radius: 12px; padding: 22px; border-top: 3px solid var(--red); margin-bottom: 24px; }
+  .final__hint { font-size: .85rem; color: var(--muted); margin: 12px 0 0; }
+  .checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .checks li::before { content: '✓  '; color: #4CC38A; font-weight: 800; }
+</style>

@@ -1,0 +1,15 @@
+---
+import Button from './Button.astro';
+interface Props { title: string; text?: string; button: string; href?: string }
+const { title, text, button, href = '/offerte/' } = Astro.props;
+---
+<div class="cta-card">
+  <h2>{title}</h2>
+  {text && <p>{text}</p>}
+  <Button href={href} variant="light">{button}</Button>
+</div>
+
+<style>
+  .cta-card { background: var(--red); color: #fff; border-radius: var(--radius); padding: 32px 22px; }
+  .cta-card h2 { color: #fff; }
+</style>

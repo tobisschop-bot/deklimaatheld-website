@@ -1,0 +1,26 @@
+---
+// Standaard paginakop (navy) voor binnenpagina's
+interface Props { label?: string; title: string; lead?: string; crumbs?: { label: string; href?: string }[] }
+const { label, title, lead, crumbs } = Astro.props;
+---
+<section class="ph">
+  <div class="container">
+    {crumbs && (
+      <nav class="ph__crumbs" aria-label="Kruimelpad">
+        {crumbs.map((c, i) => <>{i > 0 && <span> / </span>}{c.href ? <a href={c.href}>{c.label}</a> : <span>{c.label}</span>}</>)}
+      </nav>
+    )}
+    {label && <span class="label label--pill">{label}</span>}
+    <h1>{title}</h1>
+    {lead && <p class="ph__lead">{lead}</p>}
+    <slot />
+  </div>
+</section>
+
+<style>
+  .ph { background: radial-gradient(120% 80% at 100% 0%, rgba(214,40,58,.3) 0%, transparent 55%), linear-gradient(165deg, #0B132B 0%, var(--navy) 60%, #1A1A1A 100%); color: #fff; padding: 32px 0 40px; }
+  .ph h1 { color: #fff; font-size: 2.2rem; }
+  .ph__lead { color: #C9CFDA; font-size: 1.05rem; margin: 0; }
+  .ph__crumbs { font-size: .8rem; color: #9AA3B2; margin-bottom: 14px; }
+  .ph__crumbs a { text-decoration: none; }
+</style>

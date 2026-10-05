@@ -1,0 +1,370 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+import { warmtepompen } from '../data/warmtepompen';
+
+const stappen = ['Dienst', 'Woning', 'Wensen', 'Gegevens'];
+
+const diensten = [
+  { v: 'warmtepomp', t: 'Warmtepomp', icon: '<rect height="16" rx="2" width="20" x="2" y="4"/><circle cx="12" cy="12" r="5"/><path d="M12 7v2M12 15v2M7 12h2M15 12h2"/>' },
+  { v: 'airco', t: 'Airco', icon: '<rect height="9" rx="2" width="18" x="3" y="5"/><path d="M6 14v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-4"/><path d="M8 18h.01M16 18h.01"/>' },
+  { v: 'cv-ketel', t: 'CV-ketel', icon: '<path d="M12 2c.5 3 2 4.5 3.5 7.5a6 6 0 1 1-7 0C10 6.5 11.5 5 12 2z"/>' },
+  { v: 'vloerverwarming', t: 'Vloerverwarming', icon: '<path d="M4 19h16"/><path d="M4 15h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3H7a3 3 0 0 1-3-3 3 3 0 0 1 3-3h13"/>' },
+  { v: 'zonnepanelen', t: 'Zonnepanelen', icon: '<rect height="12" rx="1" width="18" x="3" y="7"/><path d="M9 7v12M15 7v12M3 13h18M7 3l1 2M12 2v2M17 3l-1 2"/>' },
+  { v: 'weet-ik-nog-niet', t: 'Weet ik nog niet', icon: '<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.6 1 1.5 1 2.3h6c0-.8.4-1.7 1-2.3A7 7 0 0 0 12 2z"/>' },
+];
+
+const bouwjaren = ['Voor 1945', '1945 – 1974', '1975 – 1991', '1992 – 2005', '2006 – 2014', '2015 of later', 'Weet ik niet'];
+const woningtypes = ['Tussenwoning', 'Hoekwoning', '2-onder-1-kap', 'Vrijstaand', 'Appartement', 'Anders'];
+const verwarming = ['CV-ketel (gas)', 'Hybride warmtepomp', 'All-electric warmtepomp', 'Stadsverwarming', 'Anders / weet ik niet'];
+const wanneer = ['Zo snel mogelijk', 'Binnen 3 maanden', 'Binnen 6 maanden', 'Later dan 6 maanden', 'Ik oriënteer me nog'];
+
+const na = [
+  { t: 'We bellen je binnen 1 werkdag', d: 'Korte telefonische intake om je situatie door te spreken en eventuele vragen te beantwoorden.' },
+  { t: 'Installatiecheck bij je thuis', d: 'Onze specialist kijkt vrijblijvend naar je leidingen, isolatie en meterkast.' },
+  { t: 'Offerte op maat met subsidie al verrekend', d: 'Een helder voorstel inclusief montage, met de ISDE-subsidie waar je recht op hebt al meegerekend.' },
+];
+
+// modelnamen voor het 'Jouw keuze'-kaartje (prefill vanuit de configurator)
+const modelNamen = Object.fromEntries(warmtepompen.map((w) => [w.slug, w.name]));
+---
+<Base title="Offerte aanvragen – De Klimaatheld" description="Vraag gratis en vrijblijvend een offerte aan voor een warmtepomp, airco, cv-ketel, vloerverwarming of zonnepanelen in Den Haag en omstreken.">
+  <PageHero label="Gratis & vrijblijvend" title="Vraag je offerte aan" lead="Binnen 1 werkdag een persoonlijk advies. Geen verkooppraatjes." />
+
+  <section class="section of">
+    <div class="container">
+      <!-- Voortgang (alleen zichtbaar met JS) -->
+      <div class="progress" data-progress hidden>
+        <p class="progress__status" aria-live="polite" data-status>Stap 1 van 4: Dienst</p>
+        <div class="progress__bar" aria-hidden="true"><span data-bar></span></div>
+        <ol class="progress__steps" aria-hidden="true">
+          {stappen.map((s, i) => <li data-dot={i}><span>{i + 1}</span>{s}</li>)}
+        </ol>
+      </div>
+
+      <div class="choice card" data-choice hidden>
+        <span class="label">Jouw keuze</span>
+        <p class="choice__name" data-choice-name></p>
+        <p class="choice__meta" data-choice-meta></p>
+        <a href="/warmtepompen/">Wijzigen</a>
+      </div>
+
+      <form
+        class="of__form"
+        name="offerte"
+        method="POST"
+        action="/bedankt/"
+        enctype="multipart/form-data"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        data-offerte
+      >
+        <input type="hidden" name="form-name" value="offerte" />
+        <p class="hp"><label>Niet invullen: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+        <!-- Configurator-keuze (wordt door JS gevuld vanuit de URL) -->
+        <input type="hidden" name="model" data-prefill="model" />
+        <input type="hidden" name="uitvoering" data-prefill="uitvoering" />
+        <input type="hidden" name="kleur" data-prefill="kleur" />
+        <input type="hidden" name="boiler" data-prefill="boiler" />
+
+        <!-- STAP 1 -->
+        <fieldset class="card step" data-step="0">
+          <legend><span class="step__nr">Stap 1</span> Waar kunnen we je mee helpen?</legend>
+          <div class="tiles">
+            {diensten.map((d) => (
+              <label class="tile">
+                <input type="radio" name="dienst" value={d.t} required />
+                <span class="tile__box">
+                  <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={d.icon} />
+                  <span>{d.t}</span>
+                  <svg class="tile__check" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10" /></svg>
+                </span>
+              </label>
+            ))}
+          </div>
+          <p class="err" data-err hidden>Kies een dienst om verder te gaan.</p>
+          <div class="nav"><button type="button" class="btn btn--primary" data-next>Volgende stap →</button></div>
+        </fieldset>
+
+        <!-- STAP 2 -->
+        <fieldset class="card step" data-step="1">
+          <legend><span class="step__nr">Stap 2</span> Jouw woning</legend>
+          <div class="row row--addr">
+            <label class="f"><span>Postcode *</span><input name="postcode" placeholder="2511 AB" autocomplete="postal-code" pattern="\s*[1-9][0-9]{3}\s?[A-Za-z]{2}\s*" required /></label>
+            <label class="f"><span>Huisnr. *</span><input name="huisnummer" inputmode="numeric" placeholder="12" pattern="\s*[0-9]+\s*" required /></label>
+            <label class="f"><span>Toev.</span><input name="toevoeging" placeholder="A" /></label>
+          </div>
+          <label class="f"><span>Bouwjaar</span>
+            <select name="bouwjaar"><option value="">Kies een periode</option>{bouwjaren.map((b) => <option>{b}</option>)}</select>
+          </label>
+          <label class="f"><span>Type woning</span>
+            <select name="type-woning"><option value="">Kies een type</option>{woningtypes.map((b) => <option>{b}</option>)}</select>
+          </label>
+          <label class="f"><span>Huidige verwarming</span>
+            <select name="huidige-verwarming"><option value="">Kies je huidige verwarming</option>{verwarming.map((b) => <option>{b}</option>)}</select>
+          </label>
+          <p class="err" data-err hidden>Vul een geldige postcode en huisnummer in.</p>
+          <div class="nav"><button type="button" class="btn btn--ghost" data-prev>← Vorige</button><button type="button" class="btn btn--primary" data-next>Volgende stap →</button></div>
+        </fieldset>
+
+        <!-- STAP 3 -->
+        <fieldset class="card step" data-step="2">
+          <legend><span class="step__nr">Stap 3</span> Jouw wensen</legend>
+          <label class="f"><span>Wanneer wil je starten?</span>
+            <select name="wanneer"><option value="">Maak een keuze</option>{wanneer.map((b) => <option>{b}</option>)}</select>
+          </label>
+          <label class="f"><span>Opmerkingen</span>
+            <textarea name="opmerkingen" rows="4" placeholder="Bijvoorbeeld: grootte van de woning, isolatie, specifieke wensen…"></textarea>
+          </label>
+          <label class="f"><span>Foto van je cv-ketel of meterkast (optioneel)</span>
+            <input type="file" name="fotos" accept="image/*" />
+          </label>
+          <div class="nav"><button type="button" class="btn btn--ghost" data-prev>← Vorige</button><button type="button" class="btn btn--primary" data-next>Volgende stap →</button></div>
+        </fieldset>
+
+        <!-- STAP 4 -->
+        <fieldset class="card step" data-step="3">
+          <legend><span class="step__nr">Stap 4</span> Jouw gegevens</legend>
+          <label class="f"><span>Naam *</span><input name="naam" autocomplete="name" required /></label>
+          <label class="f"><span>E-mailadres *</span><input type="email" name="email" autocomplete="email" required /></label>
+          <label class="f"><span>Telefoonnummer *</span><input type="tel" name="telefoon" autocomplete="tel" required /></label>
+          <label class="check">
+            <input type="checkbox" name="akkoord-privacy" value="ja" required />
+            <span>Ik ga akkoord met de <a href="/privacy/" target="_blank">privacyverklaring</a>. *</span>
+          </label>
+          <p class="err" data-err hidden>Vul je naam, e-mailadres en telefoonnummer in en ga akkoord met de privacyverklaring.</p>
+          <div class="nav"><button type="button" class="btn btn--ghost" data-prev>← Vorige</button><button type="submit" class="btn btn--primary">Verstuur aanvraag</button></div>
+        </fieldset>
+      </form>
+    </div>
+  </section>
+
+  <!-- WAT GEBEURT ER NA JE AANVRAAG -->
+  <section class="section section--white">
+    <div class="container">
+      <h2>Wat gebeurt er na je aanvraag?</h2>
+      <ol class="after">
+        {na.map((s, i) => (
+          <li><span class="after__nr">{i + 1}</span><div><h3>{s.t}</h3><p>{s.d}</p></div></li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- DIRECT CONTACT -->
+  <section class="section">
+    <div class="container">
+      <div class="contact">
+        <h2>Liever direct contact?</h2>
+        <p>Heb je een specifieke vraag of spreek je liever meteen een adviseur? We staan voor je klaar.</p>
+        <div class="contact__btns">
+          <a class="cbtn cbtn--red" href={site.phoneHref}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>
+            Bellen: {site.phone}
+          </a>
+          <a class="cbtn" href={site.whatsappHref}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.4A8.4 8.4 0 1 1 21 11.5z"/></svg>
+            WhatsApp: {site.whatsapp}
+          </a>
+          <a class="cbtn" href={`mailto:${site.email}`}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>
+            E-mail: {site.email}
+          </a>
+        </div>
+        <ul class="contact__meta">
+          <li>Bereikbaar: {site.hours}</li>
+          <li>Werkgebied: {site.region}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script define:vars={{ modelNamen }}>
+  (function () {
+    const form = document.querySelector('[data-offerte]');
+    if (!form) return;
+    const steps = Array.from(form.querySelectorAll('[data-step]'));
+    const progress = document.querySelector('[data-progress]');
+    const bar = progress.querySelector('[data-bar]');
+    const status = progress.querySelector('[data-status]');
+    const dots = Array.from(progress.querySelectorAll('[data-dot]'));
+    const names = ['Dienst', 'Woning', 'Wensen', 'Gegevens'];
+    let current = 0;
+
+    // --- Prefill vanuit de URL ---
+    const params = new URLSearchParams(location.search);
+    ['postcode', 'huisnummer', 'toevoeging'].forEach((k) => {
+      const v = params.get(k);
+      const el = form.elements.namedItem(k);
+      if (v && el) el.value = v.trim().toUpperCase();
+    });
+    const model = params.get('model');
+    if (model) {
+      ['model', 'uitvoering', 'kleur', 'boiler'].forEach((k) => {
+        const v = params.get(k);
+        const el = form.querySelector('[data-prefill="' + k + '"]');
+        if (v && el) el.value = v;
+      });
+      const wp = form.querySelector('input[name="dienst"][value="Warmtepomp"]');
+      if (wp) wp.checked = true;
+      const choice = document.querySelector('[data-choice]');
+      const nice = (s) => s.charAt(0).toUpperCase() + s.slice(1).replace(/[-_]/g, ' ');
+      choice.querySelector('[data-choice-name]').textContent = modelNamen[model.toLowerCase()] || nice(model);
+      const meta = [];
+      if (params.get('uitvoering')) meta.push('Uitvoering: ' + nice(params.get('uitvoering')));
+      if (params.get('kleur')) meta.push('Kleur: ' + nice(params.get('kleur')));
+      if (params.get('boiler')) meta.push('Boiler: ' + nice(params.get('boiler')));
+      choice.querySelector('[data-choice-meta]').textContent = meta.join(' · ');
+      choice.hidden = false;
+    }
+
+    // --- Stappen ---
+    form.classList.add('is-js');
+    form.noValidate = true; // validatie per stap via JS
+    progress.hidden = false;
+
+    function show(i) {
+      current = i;
+      steps.forEach((s, n) => { s.hidden = n !== i; });
+      bar.style.width = ((i + 1) / steps.length) * 100 + '%';
+      status.textContent = 'Stap ' + (i + 1) + ' van ' + steps.length + ': ' + names[i];
+      dots.forEach((d, n) => {
+        d.classList.toggle('is-active', n === i);
+        d.classList.toggle('is-done', n < i);
+      });
+    }
+
+    function valid(step) {
+      const fields = Array.from(step.querySelectorAll('input, select, textarea'));
+      const bad = fields.find((f) => !f.checkValidity());
+      const err = step.querySelector('[data-err]');
+      if (err) err.hidden = !bad;
+      if (bad) {
+        bad.focus();
+        if (bad.type !== 'radio') bad.reportValidity();
+        return false;
+      }
+      return true;
+    }
+
+    form.addEventListener('click', (e) => {
+      const next = e.target.closest('[data-next]');
+      const prev = e.target.closest('[data-prev]');
+      if (next && valid(steps[current]) && current < steps.length - 1) {
+        show(current + 1);
+        progress.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const first = steps[current].querySelector('input:not([type=hidden]), select, textarea');
+        if (first) first.focus({ preventScroll: true });
+      }
+      if (prev && current > 0) {
+        show(current - 1);
+        progress.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+
+    form.addEventListener('change', (e) => {
+      const err = e.target.closest('[data-step]')?.querySelector('[data-err]');
+      if (err && !err.hidden && e.target.closest('[data-step]').querySelectorAll(':invalid').length === 0) err.hidden = true;
+    });
+
+    form.addEventListener('submit', (e) => {
+      for (let i = 0; i < steps.length; i++) {
+        if (steps[i].querySelector(':invalid')) {
+          e.preventDefault();
+          show(i);
+          valid(steps[i]);
+          return;
+        }
+      }
+    });
+
+    show(0);
+  })();
+</script>
+
+<style>
+  .section--white { background: #fff; }
+  .of { padding-top: 24px; }
+
+  /* Voortgang */
+  .progress { margin-bottom: 16px; scroll-margin-top: 96px; } /* ruimte voor sticky header */
+  .progress[hidden] { display: none; }
+  .progress__status { font-weight: 700; font-size: .9rem; margin: 0 0 8px; }
+  .progress__bar { height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .progress__bar span { display: block; height: 100%; width: 25%; background: var(--red); border-radius: inherit; transition: width .25s; }
+  .progress__steps { list-style: none; padding: 0; margin: 12px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); text-align: center; }
+  .progress__steps li { display: grid; justify-items: center; gap: 4px; }
+  .progress__steps span { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: #fff; border: 2px solid var(--border); font-size: .8rem; }
+  .progress__steps .is-active { color: var(--navy); }
+  .progress__steps .is-active span { background: var(--red); border-color: var(--red); color: #fff; }
+  .progress__steps .is-done span { background: var(--navy); border-color: var(--navy); color: #fff; }
+
+  /* Jouw keuze */
+  .choice { margin-bottom: 16px; padding: 14px 16px; border-left: 4px solid var(--red); }
+  .choice[hidden] { display: none; }
+  .choice .label { margin-bottom: 2px; }
+  .choice__name { font-weight: 800; margin: 0; }
+  .choice__meta { color: var(--muted); font-size: .9rem; margin: 0 0 4px; }
+  .choice__meta:empty { display: none; }
+  .choice a { font-size: .85rem; font-weight: 700; color: var(--red); display: inline-block; padding: 6px 0; }
+
+  /* Formulier */
+  .of__form { display: grid; gap: 16px; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .step { margin: 0; display: grid; gap: 14px; min-width: 0; }
+  .step[hidden] { display: none; }
+  .step legend { float: left; width: 100%; padding: 0; font-family: var(--font-display); font-weight: 800; font-stretch: 75%; text-transform: uppercase; font-size: 1.35rem; line-height: 1.1; }
+  .step legend + * { clear: both; }
+  .step__nr { display: block; font-family: var(--font-body); font-stretch: 100%; font-size: .75rem; letter-spacing: .08em; color: var(--red); margin-bottom: 4px; }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile { position: relative; display: block; cursor: pointer; }
+  .tile input { position: absolute; opacity: 0; inset: 0; margin: 0; }
+  .tile__box { position: relative; display: grid; justify-items: center; align-content: center; gap: 8px; min-height: 104px; padding: 14px 8px; text-align: center; font-weight: 700; font-size: .9rem; line-height: 1.2; background: var(--bg); border: 2px solid var(--border); border-radius: var(--radius); transition: border-color .15s, background .15s; }
+  .tile__box svg:first-child { color: var(--navy); }
+  .tile__check { position: absolute; top: 8px; right: 8px; color: var(--red); opacity: 0; }
+  .tile input:checked + .tile__box { background: #fff; border-color: var(--red); box-shadow: 0 0 0 1px var(--red); }
+  .tile input:checked + .tile__box svg:first-child { color: var(--red); }
+  .tile input:checked + .tile__box .tile__check { opacity: 1; }
+  .tile input:focus-visible + .tile__box { outline: 3px solid rgba(214,40,58,.35); outline-offset: 2px; }
+
+  .row--addr { display: grid; grid-template-columns: 1fr 76px 64px; gap: 8px; }
+  .f { display: grid; gap: 4px; font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .f input, .f select, .f textarea { font: inherit; font-size: 1rem; text-transform: none; letter-spacing: 0; color: var(--text); background: #fff; border: 1px solid #CED4DA; border-radius: 6px; padding: 12px; min-width: 0; width: 100%; min-height: 48px; }
+  .f textarea { resize: vertical; }
+  .f input[type=file] { padding: 10px; font-size: .9rem; }
+  .f input:focus, .f select:focus, .f textarea:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(214,40,58,.15); }
+
+  .check { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; font-size: .95rem; cursor: pointer; min-height: 44px; }
+  .check input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--red); }
+  .check a { color: var(--red); font-weight: 700; }
+
+  .err { color: var(--red-dark); background: var(--red-soft); border-radius: 6px; padding: 10px 12px; font-size: .9rem; margin: 0; }
+  .err[hidden] { display: none; }
+
+  .nav { display: flex; gap: 10px; }
+  .btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px 18px; border-radius: var(--radius); font: inherit; font-weight: 700; cursor: pointer; border: 2px solid transparent; }
+  .btn--primary { background: var(--red); color: #fff; }
+  .btn--primary:hover { background: var(--red-dark); }
+  .btn--ghost { flex: 0 0 auto; background: transparent; border-color: var(--border); color: var(--navy); }
+  /* Zonder JS: geen Volgende/Vorige-knoppen, alleen verzenden */
+  .of__form:not(.is-js) [data-next], .of__form:not(.is-js) [data-prev] { display: none; }
+
+  /* Na de aanvraag */
+  .after { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 20px; }
+  .after li { display: grid; grid-template-columns: 40px 1fr; gap: 14px; }
+  .after__nr { width: 40px; height: 40px; border-radius: 50%; background: var(--red-soft); color: var(--red); font-weight: 800; display: grid; place-items: center; }
+  .after h3 { font-size: 1.1rem; margin-bottom: 4px; }
+  .after p { margin: 0; color: var(--muted); }
+
+  /* Contact */
+  .contact { background: var(--navy); color: #fff; border-radius: var(--radius); padding: 28px 20px; }
+  .contact h2 { color: #fff; }
+  .contact > p { color: #C9CFDA; }
+  .contact__btns { display: grid; gap: 10px; margin: 20px 0; }
+  .cbtn { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 12px 16px; border-radius: var(--radius); background: var(--navy-2); border: 1px solid rgba(255,255,255,.12); color: #fff; font-weight: 700; text-decoration: none; overflow-wrap: anywhere; }
+  .cbtn--red { background: var(--red); border-color: var(--red); }
+  .contact__meta { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; font-size: .9rem; color: #C9CFDA; }
+</style>

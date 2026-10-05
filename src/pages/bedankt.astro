@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import Button from '../components/Button.astro';
+---
+<Base title="Bedankt voor je aanvraag – De Klimaatheld">
+  <section class="section">
+    <div class="container">
+      <div class="card thanks">
+        <span class="thanks__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10" /></svg>
+        </span>
+        <h1>Bedankt!</h1>
+        <p class="lead">We nemen binnen 1 werkdag contact met je op.</p>
+        <Button href="/" full>Terug naar home</Button>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .thanks { text-align: center; padding: 36px 20px; }
+  .thanks h1 { font-size: 2.2rem; }
+  .thanks__icon { width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; background: var(--green-soft); color: var(--green); display: grid; place-items: center; }
+</style>

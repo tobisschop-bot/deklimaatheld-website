@@ -42,6 +42,8 @@ h1, h2, h3 {
   letter-spacing: -.01em;
   line-height: 1.05;
   margin: 0 0 .5em;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 h1 { font-size: 2.5rem; }
 h2 { font-size: 1.9rem; }
@@ -67,6 +69,7 @@ p { margin: 0 0 1em; }
 }
 
 .grid { display: grid; gap: 16px; }
+.grid > *, [class*='__grid'] > * { min-width: 0; }
 
 .placeholder {
   background: var(--bg);

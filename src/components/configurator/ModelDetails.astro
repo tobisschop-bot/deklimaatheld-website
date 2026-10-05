@@ -1,0 +1,85 @@
+---
+// Specificaties, 'waarom'-kaarten, inbegrepen, FAQ en CTA – allemaal uit de modeldata.
+import Faq from '../Faq.astro';
+import PostcodeForm from '../PostcodeForm.astro';
+import type { ConfigModel } from '../../data/configurator';
+interface Props { model: ConfigModel }
+const { model: m } = Astro.props;
+---
+<section class="section section--white">
+  <div class="container">
+    <span class="label">Specificaties</span>
+    <h2>Technische gegevens {m.short}</h2>
+    <dl class="specs">
+      {m.specs.map((s) => <div class="specs__item"><dt>{s.label}</dt><dd>{s.value}</dd></div>)}
+    </dl>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <span class="label">Kenmerken</span>
+    <h2>Waarom kiezen voor de {m.short.split(' ')[0]}?</h2>
+    <div class="grid">
+      {m.waarom.map((w) => (
+        <article class="card why">
+          <h3>{w.title}</h3>
+          <p>{w.text}</p>
+          {w.check && <p class="why__check">✓ {w.check}</p>}
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="section section--white">
+  <div class="container">
+    <span class="label">Volledige ontzorging</span>
+    <h2>Inbegrepen in de offerte</h2>
+    <p class="lead">Geen verrassingen achteraf: van installatie tot subsidieaanvraag.</p>
+    <ul class="incl">
+      {m.inbegrepen.map((i) => <li><span class="incl__ic" aria-hidden="true">✓</span><span><strong>{i.value}</strong><small>{i.label}</small></span></li>)}
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <span class="label">Veelgestelde vragen</span>
+    <Faq title={`Vragen over de ${m.short}`} items={m.faq} />
+  </div>
+</section>
+
+<section class="section cta-wrap">
+  <div class="container">
+    <div class="cta">
+      <span class="label">Klaar voor de volgende stap?</span>
+      <h2>Hoeveel kan jij besparen?</h2>
+      <p>Vul je postcode in voor vrijblijvend advies en een passend voorstel voor jouw woning.</p>
+      <PostcodeForm dark />
+    </div>
+  </div>
+</section>
+
+<style>
+  .section--white { background: #fff; }
+  .specs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 0; }
+  .specs__item { background: var(--bg); border-radius: var(--radius); padding: 12px 14px; display: flex; flex-direction: column-reverse; gap: 2px; }
+  .specs dt { font-size: .78rem; color: var(--muted); line-height: 1.25; }
+  .specs dd { margin: 0; font-weight: 800; font-size: 1.2rem; color: var(--navy); }
+
+  .why h3 { margin-bottom: .4em; }
+  .why p { color: var(--muted); margin: 0; }
+  .why .why__check { color: var(--green); font-weight: 700; font-size: .88rem; margin-top: 10px; }
+
+  .incl { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .incl li { display: flex; gap: 12px; align-items: flex-start; background: var(--bg); border-radius: var(--radius); padding: 12px 14px; }
+  .incl__ic { flex: 0 0 28px; height: 28px; border-radius: 50%; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-weight: 800; }
+  .incl strong { display: block; }
+  .incl small { color: var(--muted); font-size: .85rem; }
+
+  .cta-wrap { padding-top: 0; }
+  .cta { background: var(--navy); color: #fff; border-radius: var(--radius); padding: 28px 20px; }
+  .cta h2 { color: #fff; }
+  .cta p { color: #C9CFDA; }
+</style>

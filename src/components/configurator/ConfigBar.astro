@@ -1,0 +1,41 @@
+---
+// Sticky navy offertebalk met samenvatting en live (indicatief) totaal.
+import { euro } from '../../data/warmtepompen';
+interface Props { short: string; uitvoering: string; kleur: string; boiler: string; total: number; href: string }
+const { short, uitvoering, kleur, boiler, total, href } = Astro.props;
+---
+<div class="bar" role="region" aria-label="Jouw samenstelling">
+  <p class="bar__sum" data-sum>{[short, uitvoering, kleur, boiler].filter(Boolean).join(' · ')}</p>
+  <div class="bar__row">
+    <p class="bar__total">
+      <span class="bar__lbl">Totaal v.a.</span>
+      <strong data-total aria-live="polite">{euro(total)}</strong>
+      <small>indicatief · incl. boilervat indien gekozen</small>
+    </p>
+    <a class="bar__btn" href={href} data-cta>Vraag offerte aan →</a>
+  </div>
+</div>
+
+<style>
+  .bar {
+    position: fixed; z-index: 40; bottom: 0; left: 0; right: 0;
+    /* max-width volgt de tijdelijke gecentreerde mobiele kolom uit global.css */
+    max-width: 480px; margin: 0 auto;
+    background: var(--navy); color: #fff;
+    padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom));
+    box-shadow: 0 -8px 24px rgba(20, 26, 46, .25);
+  }
+  .bar p { margin: 0; }
+  .bar__sum { font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: #9AA3B2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
+  .bar__total { display: grid; line-height: 1.15; min-width: 0; }
+  .bar__lbl { font-size: .72rem; color: #C9CFDA; }
+  .bar__total strong { font-size: 1.45rem; font-weight: 800; }
+  .bar__total small { font-size: .66rem; color: #9AA3B2; }
+  .bar__btn {
+    flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 48px; padding: 0 16px;
+    background: var(--red); color: #fff; border-radius: var(--radius); font-weight: 700; text-decoration: none; white-space: nowrap;
+  }
+  .bar__btn:hover { background: var(--red-dark); }
+  :global(body) { padding-bottom: 104px; }
+</style>
