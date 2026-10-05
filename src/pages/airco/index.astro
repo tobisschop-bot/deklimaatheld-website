@@ -1,0 +1,8 @@
+---
+import DienstPagina from '../../components/dienst/DienstPagina.astro';
+import AircoAssortiment from '../../components/airco/AircoAssortiment.astro';
+import { airco } from '../../data/diensten';
+---
+<DienstPagina data={airco}>
+  <AircoAssortiment slot="producten" />
+</DienstPagina>

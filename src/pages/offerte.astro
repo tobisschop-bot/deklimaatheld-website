@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import { site } from '../data/site';
+import { aircoNamen } from '../data/aircos';
 import { warmtepompen } from '../data/warmtepompen';
 
 const stappen = ['Dienst', 'Woning', 'Wensen', 'Gegevens'];
@@ -27,7 +28,7 @@ const na = [
 ];
 
 // modelnamen voor het 'Jouw keuze'-kaartje (prefill vanuit de configurator)
-const modelNamen = Object.fromEntries(warmtepompen.map((w) => [w.slug, w.name]));
+const modelNamen = { ...Object.fromEntries(warmtepompen.map((w) => [w.slug, w.name])), ...aircoNamen };
 ---
 <Base title="Offerte aanvragen – De Klimaatheld" description="Vraag gratis en vrijblijvend een offerte aan voor een warmtepomp, airco, cv-ketel, vloerverwarming of zonnepanelen in Den Haag en omstreken.">
   <PageHero label="Gratis & vrijblijvend" title="Vraag je offerte aan" lead="Binnen 1 werkdag een persoonlijk advies. Geen verkooppraatjes." />
@@ -68,6 +69,7 @@ const modelNamen = Object.fromEntries(warmtepompen.map((w) => [w.slug, w.name]))
         <input type="hidden" name="uitvoering" data-prefill="uitvoering" />
         <input type="hidden" name="kleur" data-prefill="kleur" />
         <input type="hidden" name="boiler" data-prefill="boiler" />
+        <input type="hidden" name="ruimtes" data-prefill="ruimtes" />
 
         <!-- STAP 1 -->
         <fieldset class="card step" data-step="0">
@@ -210,13 +212,13 @@ const modelNamen = Object.fromEntries(warmtepompen.map((w) => [w.slug, w.name]))
     if (check) form.querySelector('[data-prefill-check]').value = check;
     const model = params.get('model');
     if (model) {
-      ['model', 'uitvoering', 'kleur', 'boiler'].forEach((k) => {
+      ['model', 'uitvoering', 'kleur', 'boiler', 'ruimtes'].forEach((k) => {
         const v = params.get(k);
         const el = form.querySelector('[data-prefill="' + k + '"]');
         if (v && el) el.value = v;
       });
       const wp = form.querySelector('input[name="dienst"][value="Warmtepomp"]');
-      if (wp) wp.checked = true;
+      if (wp && !dienstParam) wp.checked = true;
       const choice = document.querySelector('[data-choice]');
       const nice = (s) => s.charAt(0).toUpperCase() + s.slice(1).replace(/[-_]/g, ' ');
       choice.querySelector('[data-choice-name]').textContent = modelNamen[model.toLowerCase()] || nice(model);
@@ -224,6 +226,7 @@ const modelNamen = Object.fromEntries(warmtepompen.map((w) => [w.slug, w.name]))
       if (params.get('uitvoering')) meta.push('Uitvoering: ' + nice(params.get('uitvoering')));
       if (params.get('kleur')) meta.push('Kleur: ' + nice(params.get('kleur')));
       if (params.get('boiler')) meta.push('Boiler: ' + nice(params.get('boiler')));
+      if (params.get('ruimtes')) meta.push('Ruimtes: ' + params.get('ruimtes'));
       choice.querySelector('[data-choice-meta]').textContent = meta.join(' · ');
       choice.hidden = false;
     }

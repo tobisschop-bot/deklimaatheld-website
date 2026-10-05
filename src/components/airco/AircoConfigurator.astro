@@ -1,0 +1,219 @@
+---
+// Configurator voor een airco-serie: vermogen → kleur → aantal ruimtes, met sticky offertebalk.
+import Base from '../../layouts/Base.astro';
+import PageHero from '../PageHero.astro';
+import Faq from '../Faq.astro';
+import CtaCard from '../CtaCard.astro';
+import { euro } from '../../data/warmtepompen';
+import type { AircoSerie } from '../../data/aircos';
+
+interface Props { serie: AircoSerie }
+const { serie: s } = Astro.props;
+const start = s.vermogens.find((x) => x.id === '25') ?? s.vermogens[0];
+const startKleur = s.kleuren[0];
+const inbegrepen = [
+  { value: 'Advies aan huis', label: 'We bepalen samen het juiste vermogen en de beste plek' },
+  { value: 'Montage door eigen monteurs', label: 'Binnen- en buitenunit, leidingwerk en afwerking' },
+  { value: 'Inbedrijfstelling en uitleg', label: 'Inclusief koppelen aan de app' },
+  { value: 'Nazorg en onderhoud', label: 'Service in Den Haag en omstreken' },
+];
+const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
+---
+<Base title={`${s.naam} airco | De Klimaatheld`} description={`${s.naam}: ${s.lead} Kies vermogen en kleur en vraag direct een offerte aan.`}>
+  <PageHero
+    crumbs={[{ label: 'Home', href: '/' }, { label: 'Airco', href: '/airco/' }, { label: s.naam }]}
+    label={`${s.merk} · ${s.positionering}`}
+    title={`Stel jouw ${s.naam.replace(s.merk + ' ', '')} samen`}
+    lead={s.lead}
+  />
+
+  <div class="ac" data-ac data-slug={s.slug} data-naam={s.naam}>
+    <section class="container ac__photo-wrap">
+      <figure class="ac__photo card">
+        {s.img ? <img src={s.img} alt={s.naam} /> : <div class="ac__ph"><span>[Productfoto {s.naam}]</span></div>}
+      </figure>
+      <ul class="ac__facts">
+        {s.kenmerken.map((k) => <li><strong>{k.value}</strong><span>{k.label}</span></li>)}
+      </ul>
+    </section>
+
+    <section class="section" aria-label="Configurator">
+      <div class="container ac__steps">
+        <fieldset class="ac__step">
+          <legend><span class="ac__nr">1</span> Kies het vermogen</legend>
+          <p class="ac__hint">De ruimtegrootte is een indicatie. Het juiste vermogen berekenen we bij de opname.</p>
+          <div class="ac__opts">
+            {s.vermogens.map((x) => (
+              <label class="ac__opt">
+                <input class="sr" type="radio" name={`${s.slug}-kw`} value={x.id} data-kw={x.kw.toFixed(1).replace('.', ',')} data-prijs={x.prijs ?? ''} checked={x.id === start.id} />
+                <span class="ac__kw">{x.kw.toFixed(1).replace('.', ',')} kW</span>
+                <span class="ac__m2">{x.m2}</span>
+                <span class="ac__prijs">{x.prijs == null ? 'Prijs op aanvraag' : <><small>v.a.</small> {euro(x.prijs)}</>}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset class="ac__step">
+          <legend><span class="ac__nr">2</span> Kies de kleur</legend>
+          <div class="ac__colors">
+            {s.kleuren.map((k) => (
+              <label class="ac__color">
+                <input class="sr" type="radio" name={`${s.slug}-kleur`} value={k.id} data-naam={k.naam} data-toeslag={k.toeslag ?? ''} checked={k.id === startKleur.id} />
+                <span class="ac__swatch" style={`background:${k.hex}`}></span>
+                <span>{k.naam}</span>
+                {k.toeslag == null && <small>toeslag op aanvraag</small>}
+              </label>
+            ))}
+          </div>
+          {s.kleuren.length === 1 && <p class="ac__hint">De {s.naam} is leverbaar in {s.kleuren[0].naam.toLowerCase()}.</p>}
+        </fieldset>
+
+        <fieldset class="ac__step">
+          <legend><span class="ac__nr">3</span> Hoeveel ruimtes?</legend>
+          <p class="ac__hint">Eén ruimte is een single-split. Meer ruimtes kunnen op één buitenunit (multi-split).</p>
+          <div class="ac__rooms">
+            {[1, 2, 3, 4].map((n) => (
+              <label class="ac__room">
+                <input class="sr" type="radio" name={`${s.slug}-ruimtes`} value={n} checked={n === 1} />
+                <span>{n === 4 ? '4+' : n}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </div>
+    </section>
+
+    <section class="section section--white">
+      <div class="container">
+        <span class="label">Specificaties</span>
+        <h2>{s.naam} in het kort</h2>
+        <dl class="ac__specs">
+          {s.specs.map((x) => <div><dt>{x.value}</dt><dd>{x.label}</dd></div>)}
+        </dl>
+        <p class="ac__bron">Bron: <a href={s.bron} target="_blank" rel="noopener">{s.merk}</a>. Waarden kunnen per vermogen verschillen.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <span class="label">Waarom de {s.naam.replace(s.merk + ' ', '')}?</span>
+        <h2>Daarom kies je deze airco</h2>
+        <div class="grid">
+          {s.waarom.map((w) => <div class="card"><h3>{w.title}</h3><p>{w.text}</p></div>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--white">
+      <div class="container">
+        <span class="label">Volledige ontzorging</span>
+        <h2>Inbegrepen in de prijs</h2>
+        <ul class="ac__incl">
+          {inbegrepen.map((x) => <li><strong>{x.value}</strong><span>{x.label}</span></li>)}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container"><Faq items={s.faq} /></div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <CtaCard title="Andere airco bekijken?" text="Vergelijk onze airco's of reken uit wat je bespaart als je ermee verwarmt." button="Alle airco's" href="/airco/#assortiment" />
+      </div>
+    </section>
+
+    <div class="ac__bar" role="region" aria-label="Jouw keuze">
+      <div class="ac__bar-in">
+        <div class="ac__sum">
+          <span data-sum>{s.naam} · {start.kw.toFixed(1).replace('.', ',')} kW · {startKleur.naam} · 1 ruimte</span>
+          <span class="ac__lbl">Totaal v.a.</span>
+          <strong data-total>{prijsTekst(start.prijs)}</strong>
+          <small>indicatief · incl. montage</small>
+        </div>
+        <a class="ac__cta" data-cta href={`/offerte/?dienst=Airco&model=${s.slug}&uitvoering=${start.kw.toFixed(1).replace(".", ",")}+kW&kleur=${startKleur.id}&ruimtes=1`}>Vraag offerte aan →</a>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-ac]').forEach((root) => {
+    const fmt = (n: number) => '€ ' + Math.round(n).toLocaleString('nl-NL');
+    const val = (n: string) => root.querySelector<HTMLInputElement>(`input[name="${root.dataset.slug}-${n}"]:checked`)!;
+    const update = () => {
+      const kw = val('kw'), kl = val('kleur'), r = val('ruimtes');
+      const n = Number(r.value);
+      const basis = kw.dataset.prijs, toeslag = kl.dataset.toeslag;
+      const total = basis === '' || toeslag === '' || n > 1 ? null : Number(basis) + Number(toeslag);
+      root.querySelector('[data-sum]')!.textContent = [root.dataset.naam, `${kw.dataset.kw} kW`, kl.dataset.naam, n === 1 ? '1 ruimte' : `${n === 4 ? '4+' : n} ruimtes`].join(' · ');
+      root.querySelector('[data-total]')!.textContent = total == null ? 'Op aanvraag' : fmt(total);
+      const q = new URLSearchParams({ dienst: 'Airco', model: root.dataset.slug!, uitvoering: `${kw.dataset.kw} kW`, kleur: kl.value, ruimtes: r.value });
+      root.querySelector<HTMLAnchorElement>('[data-cta]')!.href = `/offerte/?${q}`;
+    };
+    root.querySelectorAll('input[type=radio]').forEach((i) => i.addEventListener('change', update));
+    update();
+  });
+</script>
+
+<style>
+  :global(body) { padding-bottom: 104px; }
+  .sr { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .section--white { background: #fff; }
+
+  .ac__photo-wrap { padding-top: 24px; }
+  .ac__photo { margin: 0; padding: 16px; background: var(--bg); aspect-ratio: 16 / 9; display: grid; place-items: center; }
+  .ac__photo img { width: 88%; height: auto; object-fit: contain; }
+  .ac__ph { color: var(--muted); font-size: .9rem; text-align: center; border: 2px dashed var(--border); border-radius: var(--radius); width: 100%; height: 100%; display: grid; place-items: center; }
+  .ac__facts { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .ac__facts li { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 6px; text-align: center; display: grid; gap: 2px; }
+  .ac__facts strong { font-size: 1rem; color: var(--navy); }
+  .ac__facts span { font-size: .72rem; color: var(--muted); line-height: 1.2; }
+
+  .ac__steps { display: grid; gap: 28px; }
+  .ac__step { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .ac__step legend { font-family: var(--font-display); font-stretch: 75%; font-weight: 800; text-transform: uppercase; font-size: 1.35rem; display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .ac__nr { width: 28px; height: 28px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-size: .95rem; font-stretch: 100%; }
+  .ac__hint { color: var(--muted); font-size: .88rem; margin: 0 0 12px; }
+
+  .ac__opts { display: grid; gap: 8px; }
+  .ac__opt { display: grid; grid-template-columns: 70px 1fr auto; align-items: center; gap: 10px; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px; cursor: pointer; min-height: 52px; }
+  .ac__opt:has(input:checked) { border-color: var(--red); box-shadow: 0 0 0 1px var(--red) inset; background: #FFF6F7; }
+  .ac__opt:has(input:focus-visible) { outline: 2px solid var(--navy); outline-offset: 2px; }
+  .ac__kw { font-weight: 800; font-size: 1.1rem; color: var(--navy); }
+  .ac__m2 { color: var(--muted); font-size: .9rem; }
+  .ac__prijs { font-weight: 700; font-size: .92rem; text-align: right; }
+  .ac__prijs small { color: var(--muted); font-weight: 500; }
+
+  .ac__colors { display: flex; flex-wrap: wrap; gap: 10px; }
+  .ac__color { display: grid; justify-items: center; gap: 6px; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; min-width: 96px; cursor: pointer; font-weight: 600; font-size: .9rem; }
+  .ac__color small { font-weight: 500; font-size: .68rem; color: var(--muted); }
+  .ac__color:has(input:checked) { border-color: var(--red); box-shadow: 0 0 0 1px var(--red) inset; }
+  .ac__swatch { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #CBD2DB; }
+
+  .ac__rooms { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .ac__room { display: grid; place-items: center; aspect-ratio: 1.4; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius); font-weight: 800; font-size: 1.3rem; color: var(--red); cursor: pointer; }
+  .ac__room:has(input:checked) { border-color: var(--red); background: #FFF0F3; box-shadow: 0 0 0 1px var(--red) inset; }
+
+  .ac__specs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0 0; }
+  .ac__specs div { background: var(--bg); border-radius: var(--radius); padding: 12px; }
+  .ac__specs dt { font-weight: 800; color: var(--navy); }
+  .ac__specs dd { margin: 2px 0 0; font-size: .82rem; color: var(--muted); }
+  .ac__bron { font-size: .75rem; color: var(--muted); margin-top: 10px; }
+
+  .ac__incl { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 10px; }
+  .ac__incl li { display: grid; gap: 2px; padding-left: 30px; position: relative; }
+  .ac__incl li::before { content: '✓'; position: absolute; left: 0; top: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--green-soft); color: var(--green); display: grid; place-items: center; font-weight: 800; font-size: .8rem; }
+  .ac__incl span { color: var(--muted); font-size: .88rem; }
+
+  .ac__bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--navy); color: #fff; box-shadow: 0 -8px 24px rgba(11,19,43,.25); }
+  .ac__bar-in { max-width: 480px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ac__sum { display: grid; line-height: 1.15; min-width: 0; }
+  .ac__sum [data-sum] { font-size: .66rem; letter-spacing: .05em; text-transform: uppercase; color: #9AA3B2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ac__lbl { font-size: .75rem; color: #C9CFDA; margin-top: 2px; }
+  .ac__sum strong { font-size: 1.35rem; font-weight: 800; }
+  .ac__sum small { font-size: .66rem; color: #9AA3B2; }
+  .ac__cta { flex: 0 0 auto; background: var(--red); color: #fff; font-weight: 700; text-decoration: none; padding: 13px 16px; border-radius: var(--radius); }
+</style>
