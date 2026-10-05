@@ -118,7 +118,7 @@ const { compact = false } = Astro.props;
     <button type="button" class="bc__back" data-back>‹ Vorige stap</button>
     <details class="bc__how">
       <summary>Hoe rekenen we dit uit?</summary>
-      <p>Indicatieve berekening op basis van je woning en gasverbruik, met een gasprijs van € {AANNAMES.gasprijs.toFixed(2).replace('.', ',')}/m³ en een stroomprijs van € {AANNAMES.stroomprijs.toFixed(2).replace('.', ',')}/kWh (gemiddelden incl. belastingen). Een hybride warmtepomp neemt ongeveer {Math.round(AANNAMES.hybrideAandeel * 100)}% van de ruimteverwarming over; all-electric ook het warme water. De investering per maand is de indicatieve prijs (excl. subsidie) gespreid over {AANNAMES.looptijdJaren} jaar tegen {(AANNAMES.rente * 100).toString().replace('.', ',')}% rente. Je werkelijke besparing hangt af van je woning, gebruik en energiecontract; die berekenen we precies bij de installatiecheck.</p>
+      <p>Indicatieve berekening op basis van je woningtype, oppervlakte, bouwjaar en gasverbruik, met een gasprijs van € {AANNAMES.gasprijs.toFixed(2).replace('.', ',')}/m³ en een stroomprijs van € {AANNAMES.stroomprijs.toFixed(2).replace('.', ',')}/kWh. We rekenen met een gemiddelde COP van {String(AANNAMES.copWarmtepomp).replace('.', ',')} voor een lucht-waterwarmtepomp en {String(AANNAMES.copAirco).replace('.', ',')} voor een airco (lucht-lucht). Een hybride warmtepomp neemt ongeveer {Math.round(AANNAMES.hybrideAandeel * 100)}% van de ruimteverwarming over; all-electric ook het warme water. Een airco verwarmt alleen de ruimtes met een binnenunit. De investering per maand is de indicatieve prijs (excl. subsidie) gespreid over {AANNAMES.looptijdJaren} jaar tegen {(AANNAMES.rente * 100).toString().replace('.', ',')}% rente. Je werkelijke besparing berekenen we precies bij de installatiecheck.</p>
     </details>
   </section>
 </div>
@@ -227,7 +227,7 @@ const { compact = false } = Astro.props;
 
     // Stap 4 → 5
     function render() {
-      const r = bereken({ soort: st.soort!, uitvoering: st.uitvoering, gasM3: st.gas!, personen: st.personen!, ruimtes: st.ruimtes, modellen });
+      const r = bereken({ soort: st.soort!, uitvoering: st.uitvoering, gasM3: st.gas!, personen: st.personen!, type: st.type, ruimtes: st.ruimtes, modellen });
       q('[data-r="gas"]').textContent = `${st.gas!.toLocaleString('nl-NL')} m³`;
       q('[data-r="besparing"]').textContent = eur(r.besparingGasMaand);
       q('[data-r="stroom"]').textContent = eur(r.extraStroomMaand);
@@ -243,6 +243,11 @@ const { compact = false } = Astro.props;
         adv.hidden = false;
         adv.href = `/warmtepompen/${r.advies.slug}/`;
         adv.innerHTML = `<span>Ons advies voor jouw woning</span><strong>${r.advies.name}</strong><em>Bekijk en stel samen →</em>`;
+      } else if (st.soort === 'lucht-lucht') {
+        adv.hidden = false;
+        adv.href = '/airco/';
+        const n = st.ruimtes ?? 1;
+        adv.innerHTML = `<span>Ons advies voor jouw woning</span><strong>${n === 1 ? 'Single-split airco (1 binnenunit)' : `Multi-split airco (${n} binnenunits)`}</strong><em>Bekijk airco →</em>`;
       } else adv.hidden = true;
 
       const p = new URLSearchParams({

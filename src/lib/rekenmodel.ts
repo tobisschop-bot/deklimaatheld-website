@@ -5,35 +5,58 @@
 // =====================================================================
 
 export const AANNAMES = {
-  gasprijs: 1.70,          // € per m³ incl. belastingen (gemiddeld, okt 2026 – keuze.nl)
-  stroomprijs: 0.31,       // € per kWh incl. belastingen (gemiddeld, okt 2026 – keuze.nl)
+  gasprijs: 1.70,          // € per m³ incl. belastingen (gemiddeld, okt 2026)
+  stroomprijs: 0.31,       // € per kWh incl. belastingen (gemiddeld, okt 2026)
   kWhPerM3: 8.8,           // nuttige warmte per m³ gas (9,77 kWh × ketelrendement ±90%)
-  scopRuimte: 4.0,         // seizoensrendement warmtepomp voor ruimteverwarming (lage-temperatuurontwerp)
-  copTapwater: 2.5,        // rendement warmtepomp voor warm tapwater (hogere temperatuur)
-  scopAirco: 4.5,          // seizoensrendement lucht-lucht (airco) bij verwarmen
+
+  // Rendement (gemiddelde COP over het seizoen)
+  copWarmtepomp: 4.5,      // lucht-water warmtepomp, ruimteverwarming
+  copTapwater: 2.5,        // lucht-water bij warm tapwater (hogere temperatuur), alleen all-electric
+  copAirco: 3.8,           // lucht-lucht (airco) bij verwarmen
+
   hybrideAandeel: 0.75,    // deel van de ruimteverwarming dat een hybride warmtepomp overneemt
-  aircoAandeel: { 1: 0.25, 2: 0.40, 3: 0.55, 4: 0.65 } as Record<number, number>, // per aantal ruimtes
+  woonkamerAandeel: 0.40,  // deel van de warmtevraag dat in de woonkamer zit (eerste airco-unit)
+  aircoMaxAandeel: 0.85,   // airco neemt nooit 100% over (badkamer, gangen, tapwater)
+
   tapwaterPerPersoon: 50,  // m³ gas per persoon per jaar voor warm water
   kokenM3: 0,              // m³ gas voor koken (0 = niet meegenomen)
   vollastUren: 2200,       // voor vermogensadvies: jaarlijkse warmte ÷ uren = benodigd vermogen bij -10°C
+
   // Financiering voor 'investering per maand' (annuïteit). Pas aan naar eigen aanbod.
   rente: 0.04,             // 4% per jaar
   looptijdJaren: 15,
-  // Indicatieve investering airco (lucht-lucht) per aantal ruimtes; null = op aanvraag
-  aircoInvestering: { 1: null, 2: null, 3: null, 4: null } as Record<number, number | null>,
+
+  // Indicatieve investering airco (lucht-lucht, incl. montage); null = op aanvraag
+  aircoEersteRuimte: null as number | null,  // single-split, woonkamer
+  aircoExtraRuimte: null as number | null,   // per extra binnenunit (multi-split)
+
   boilerStandaard: 1650,   // 200 L boilervat bij all-electric (gelijk aan configurator)
 };
 
-export type Woningtype = 'appartement' | 'tussenwoning' | 'hoekwoning' | 'twee-onder-een-kap' | 'vrijstaand';
 
-// Ruimteverwarming (m³/jaar) voor een referentiewoning uit 1975–1991 met een typische oppervlakte
-const BASIS: Record<Woningtype, { m3: number; m2: number; label: string }> = {
-  appartement: { m3: 650, m2: 75, label: 'Appartement' },
-  tussenwoning: { m3: 950, m2: 115, label: 'Rijtjeshuis' },
-  hoekwoning: { m3: 1100, m2: 120, label: 'Hoekwoning' },
-  'twee-onder-een-kap': { m3: 1200, m2: 140, label: '2-onder-1-kap' },
-  vrijstaand: { m3: 1450, m2: 170, label: 'Vrijstaand' },
+// WONINGTABEL – referentiewaarden per woningtype (bouwjaar 1975–1991, typische oppervlakte).
+// gasRuimte = m³ gas per jaar voor ruimteverwarming (excl. warm water).
+// kamers   = aantal te verwarmen ruimtes (bepaalt hoeveel een airco per extra unit overneemt).
+export const WONINGTABEL = {
+  appartement:          { label: 'Appartement',   m2: 75,  gasRuimte: 650,  kamers: 3 },
+  tussenwoning:         { label: 'Rijtjeshuis',   m2: 115, gasRuimte: 950,  kamers: 5 },
+  hoekwoning:           { label: 'Hoekwoning',    m2: 120, gasRuimte: 1100, kamers: 5 },
+  'twee-onder-een-kap': { label: '2-onder-1-kap', m2: 140, gasRuimte: 1200, kamers: 6 },
+  vrijstaand:           { label: 'Vrijstaand',    m2: 170, gasRuimte: 1450, kamers: 7 },
 };
+export type Woningtype = keyof typeof WONINGTABEL;
+const BASIS: Record<Woningtype, { m3: number; m2: number; label: string; kamers: number }> = Object.fromEntries(
+  Object.entries(WONINGTABEL).map(([k, v]) => [k, { m3: v.gasRuimte, m2: v.m2, label: v.label, kamers: v.kamers }]),
+) as any;
+
+/** Deel van de ruimteverwarming dat n airco-units overnemen (woonkamer eerst, dan overige kamers). */
+export function aircoAandeel(type: Woningtype, ruimtes: number): number {
+  const A = AANNAMES, k = BASIS[type].kamers;
+  const n = Math.max(1, Math.min(ruimtes, k));
+  const deel = A.woonkamerAandeel + ((n - 1) * (1 - A.woonkamerAandeel)) / Math.max(1, k - 1);
+  return Math.min(A.aircoMaxAandeel, deel);
+}
+
 export const WONINGTYPES = Object.entries(BASIS).map(([id, v]) => ({ id: id as Woningtype, label: v.label }));
 
 function bouwjaarFactor(jaar?: number | null): number {
@@ -81,6 +104,7 @@ export function bereken(i: {
   uitvoering?: 'hybride' | 'all-electric';
   gasM3: number;
   personen: number;
+  type?: Woningtype;
   ruimtes?: number;
   modellen?: Model[];
 }): Uitkomst {
@@ -91,17 +115,17 @@ export function bereken(i: {
   let gasBespaard = 0, stroom = 0, investering: number | null = null, advies: Model | undefined;
 
   if (i.soort === 'lucht-lucht') {
-    const aandeel = A.aircoAandeel[Math.min(4, Math.max(1, i.ruimtes ?? 1))];
-    gasBespaard = ruimteM3 * aandeel;
-    stroom = (gasBespaard * A.kWhPerM3) / A.scopAirco;
-    investering = A.aircoInvestering[Math.min(4, Math.max(1, i.ruimtes ?? 1))] ?? null;
+    const n = Math.max(1, i.ruimtes ?? 1);
+    gasBespaard = ruimteM3 * aircoAandeel(i.type ?? 'tussenwoning', n);
+    stroom = (gasBespaard * A.kWhPerM3) / A.copAirco;
+    investering = A.aircoEersteRuimte == null || A.aircoExtraRuimte == null ? null : A.aircoEersteRuimte + (n - 1) * A.aircoExtraRuimte;
   } else {
     const ae = i.uitvoering === 'all-electric';
     const ruimteDeel = ae ? 1 : A.hybrideAandeel;
     const ruimteBespaard = ruimteM3 * ruimteDeel;
     const tapBespaard = ae ? tapwaterM3 : 0;
     gasBespaard = ruimteBespaard + tapBespaard;
-    stroom = (ruimteBespaard * A.kWhPerM3) / A.scopRuimte + (tapBespaard * A.kWhPerM3) / A.copTapwater;
+    stroom = (ruimteBespaard * A.kWhPerM3) / A.copWarmtepomp + (tapBespaard * A.kWhPerM3) / A.copTapwater;
     // Vermogensadvies: all-electric dekt de volle last, hybride ±60%
     const lastKW = (ruimteM3 * A.kWhPerM3) / A.vollastUren;
     const nodig = ae ? lastKW : lastKW * 0.6;
