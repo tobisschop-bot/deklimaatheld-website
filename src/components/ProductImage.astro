@@ -5,6 +5,10 @@ import { fotoCrop } from '../data/warmtepompen';
 interface Props { src: string; alt: string; loading?: 'lazy' | 'eager'; class?: string }
 const { src, alt, loading = 'lazy', class: cls } = Astro.props;
 const c = fotoCrop[src];
+if (!c && src.startsWith('http')) {
+  // Elke productfoto hoort een bijsnijdkader te hebben, anders staat het product klein in het vak.
+  console.warn(`[ProductImage] Geen fotoCrop voor ${src} – voeg het kader toe in src/data/warmtepompen.ts`);
+}
 const bw = c ? c.box[2] - c.box[0] : 0;
 const bh = c ? c.box[3] - c.box[1] : 0;
 ---
