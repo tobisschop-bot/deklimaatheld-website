@@ -19,6 +19,7 @@ const merken = [...new Set(aircos.map((a) => a.merk))];
                 <div class:list={["aa__img", { "aa__img--ph": !a.img }]}>{a.img ? <img src={a.img} alt={`${a.naam} binnenunit`} width="1200" height="520" loading="lazy" /> : <span>[Productfoto {a.naam}]</span>}</div>
                 <span class="aa__tag">{a.positionering}</span>
                 <h3>{a.naam}</h3>
+                <p class="aa__kleuren"><span class="aa__dots">{a.kleuren.map((k) => <i style={`background:${k.hex}`} title={k.naam}></i>)}</span>{a.kleuren.map((k) => k.naam).join(' · ')}</p>
                 <ul class="aa__facts">{a.kenmerken.map((k) => <li>{k.value} <small>{k.label}</small></li>)}</ul>
                 <p class="aa__prijs">{p == null ? 'Prijs op aanvraag' : <>v.a. <strong>{euro(p)}</strong> <small>incl. montage, indicatief</small></>}</p>
                 <span class="aa__link">Stel samen →</span>
@@ -42,6 +43,9 @@ const merken = [...new Set(aircos.map((a) => a.merk))];
   .aa__facts { list-style: none; padding: 0; margin: 0 0 10px; display: flex; flex-wrap: wrap; gap: 6px; }
   .aa__facts li { background: var(--bg); border-radius: 6px; padding: 4px 8px; font-weight: 700; font-size: .82rem; }
   .aa__facts small { font-weight: 500; color: var(--muted); }
+  .aa__kleuren { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--muted); margin: 0 0 10px; }
+  .aa__dots { display: inline-flex; gap: 4px; }
+  .aa__dots i { width: 16px; height: 16px; border-radius: 50%; border: 1px solid #CBD2DB; display: inline-block; }
   .aa__prijs { margin: 0 0 6px; }
   .aa__prijs small { color: var(--muted); }
   .aa__link { color: var(--red); font-weight: 700; margin-top: auto; }

@@ -226,7 +226,7 @@ const modelNamen = { ...Object.fromEntries(warmtepompen.map((w) => [w.slug, w.na
       if (params.get('uitvoering')) meta.push('Uitvoering: ' + nice(params.get('uitvoering')));
       if (params.get('kleur')) meta.push('Kleur: ' + nice(params.get('kleur')));
       if (params.get('boiler')) meta.push('Boiler: ' + nice(params.get('boiler')));
-      if (params.get('ruimtes')) meta.push('Ruimtes: ' + params.get('ruimtes'));
+      if (params.get('ruimtes')) meta.push('Binnendelen: ' + params.get('ruimtes'));
       choice.querySelector('[data-choice-meta]').textContent = meta.join(' · ');
       choice.hidden = false;
     }

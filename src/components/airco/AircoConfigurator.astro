@@ -41,8 +41,35 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
     <section class="section" aria-label="Configurator">
       <div class="container ac__steps">
         <fieldset class="ac__step">
-          <legend><span class="ac__nr">1</span> Kies het vermogen</legend>
-          <p class="ac__hint">De ruimtegrootte is een indicatie. Het juiste vermogen berekenen we bij de opname.</p>
+          <legend><span class="ac__nr">1</span> Welke kleur?</legend>
+          <p class="ac__hint">De {s.naam} is leverbaar in {s.kleuren.length === 1 ? s.kleuren[0].naam.toLowerCase() : s.kleuren.slice(0, -1).map((k) => k.naam.toLowerCase()).join(', ') + ' en ' + s.kleuren[s.kleuren.length - 1].naam.toLowerCase()}.</p>
+          <div class="ac__colors">
+            {s.kleuren.map((k) => (
+              <label class="ac__color">
+                <input class="sr" type="radio" name={`${s.slug}-kleur`} value={k.id} data-naam={k.naam} data-toeslag={k.toeslag ?? ''} checked={k.id === startKleur.id} />
+                <span class="ac__swatch" style={`background:${k.hex}`}></span>
+                <span>{k.naam}</span>
+                {k.toeslag == null && <small>toeslag op aanvraag</small>}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset class="ac__step">
+          <legend><span class="ac__nr">2</span> Hoeveel binnendelen?</legend>
+          <p class="ac__hint">Eén binnendeel per ruimte. Eén binnendeel is een single-split; meerdere binnendelen komen samen op één buitenunit (multi-split).</p>
+          <div class="ac__rooms">
+            {[1, 2, 3, 4].map((n) => (
+              <label class="ac__room">
+                <input class="sr" type="radio" name={`${s.slug}-ruimtes`} value={n} checked={n === 1} />
+                <span>{n === 4 ? '4+' : n}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset class="ac__step">
+          <legend><span class="ac__nr">3</span> Welk vermogen?</legend>
+          <p class="ac__hint">Kies het vermogen voor de (grootste) ruimte. De ruimtegrootte is een indicatie; het juiste vermogen per binnendeel berekenen we bij de opname.</p>
           <div class="ac__opts">
             {s.vermogens.map((x) => (
               <label class="ac__opt">
@@ -55,33 +82,6 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
           </div>
         </fieldset>
 
-        <fieldset class="ac__step">
-          <legend><span class="ac__nr">2</span> Kies de kleur</legend>
-          <div class="ac__colors">
-            {s.kleuren.map((k) => (
-              <label class="ac__color">
-                <input class="sr" type="radio" name={`${s.slug}-kleur`} value={k.id} data-naam={k.naam} data-toeslag={k.toeslag ?? ''} checked={k.id === startKleur.id} />
-                <span class="ac__swatch" style={`background:${k.hex}`}></span>
-                <span>{k.naam}</span>
-                {k.toeslag == null && <small>toeslag op aanvraag</small>}
-              </label>
-            ))}
-          </div>
-          {s.kleuren.length === 1 && <p class="ac__hint">De {s.naam} is leverbaar in {s.kleuren[0].naam.toLowerCase()}.</p>}
-        </fieldset>
-
-        <fieldset class="ac__step">
-          <legend><span class="ac__nr">3</span> Hoeveel ruimtes?</legend>
-          <p class="ac__hint">Eén ruimte is een single-split. Meer ruimtes kunnen op één buitenunit (multi-split).</p>
-          <div class="ac__rooms">
-            {[1, 2, 3, 4].map((n) => (
-              <label class="ac__room">
-                <input class="sr" type="radio" name={`${s.slug}-ruimtes`} value={n} checked={n === 1} />
-                <span>{n === 4 ? '4+' : n}</span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
       </div>
     </section>
 
@@ -129,7 +129,7 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
     <div class="ac__bar" role="region" aria-label="Jouw keuze">
       <div class="ac__bar-in">
         <div class="ac__sum">
-          <span data-sum>{s.naam} · {start.kw.toFixed(1).replace('.', ',')} kW · {startKleur.naam} · 1 ruimte</span>
+          <span data-sum>{s.naam} · {startKleur.naam} · 1 binnendeel · {start.kw.toFixed(1).replace('.', ',')} kW</span>
           <span class="ac__lbl">Totaal v.a.</span>
           <strong data-total>{prijsTekst(start.prijs)}</strong>
           <small>indicatief · incl. montage</small>
@@ -149,7 +149,7 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
       const n = Number(r.value);
       const basis = kw.dataset.prijs, toeslag = kl.dataset.toeslag;
       const total = basis === '' || toeslag === '' || n > 1 ? null : Number(basis) + Number(toeslag);
-      root.querySelector('[data-sum]')!.textContent = [root.dataset.naam, `${kw.dataset.kw} kW`, kl.dataset.naam, n === 1 ? '1 ruimte' : `${n === 4 ? '4+' : n} ruimtes`].join(' · ');
+      root.querySelector('[data-sum]')!.textContent = [root.dataset.naam, kl.dataset.naam, n === 1 ? '1 binnendeel' : `${n === 4 ? '4+' : n} binnendelen`, `${kw.dataset.kw} kW`].join(' · ');
       root.querySelector('[data-total]')!.textContent = total == null ? 'Op aanvraag' : fmt(total);
       const q = new URLSearchParams({ dienst: 'Airco', model: root.dataset.slug!, uitvoering: `${kw.dataset.kw} kW`, kleur: kl.value, ruimtes: r.value });
       root.querySelector<HTMLAnchorElement>('[data-cta]')!.href = `/offerte/?${q}`;
@@ -190,8 +190,8 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
   .ac__prijs { font-weight: 700; font-size: .92rem; text-align: right; }
   .ac__prijs small { color: var(--muted); font-weight: 500; }
 
-  .ac__colors { display: flex; flex-wrap: wrap; gap: 10px; }
-  .ac__color { display: grid; justify-items: center; gap: 6px; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 14px; min-width: 96px; cursor: pointer; font-weight: 600; font-size: .9rem; }
+  .ac__colors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .ac__color { display: grid; justify-items: center; align-content: start; gap: 6px; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 6px; cursor: pointer; font-weight: 600; font-size: .9rem; text-align: center; }
   .ac__color small { font-weight: 500; font-size: .68rem; color: var(--muted); }
   .ac__color:has(input:checked) { border-color: var(--red); box-shadow: 0 0 0 1px var(--red) inset; }
   .ac__swatch { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #CBD2DB; }
