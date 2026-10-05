@@ -16,7 +16,7 @@ export interface Uitvoering {
   price: number | null; // v.a.-prijs, indicatief (null = op aanvraag)
   needsBoiler: boolean;
 }
-export interface Kleur { id: string; name: string; hex: string; note?: string }
+export interface Kleur { id: string; name: string; hex: string; note?: string; img?: string } // img: foto in deze kleur (zelfde kader als model.img)
 export interface Boiler { id: string; liters: number; persons: string; text: string; price: number; recommended?: boolean }
 export interface Fact { value: string; label: string }
 export interface Waarom { title: string; text: string; check?: string }
@@ -74,7 +74,7 @@ export const configurators: Record<string, ConfigModel> = {
     short: 'Sparrow P60',
     title: 'Stel jouw Sparrow samen',
     lead: 'Stil, stijlvol en krachtig. 9 kW monobloc, ook voor actieve zomerkoeling.',
-    img: img('sparrow'),
+    img: '/img/weheat-sparrow-koper.webp',
     imgAlt: 'Weheat Sparrow P60 warmtepomp met koperkleurige lamellen',
     photoColor: 'koper',
     quickFacts: [
@@ -84,8 +84,8 @@ export const configurators: Record<string, ConfigModel> = {
     ],
     uitvoeringen: [hybride(5722), allElectric(9450)],
     kleuren: [
-      { id: 'grijs', name: 'Grijs', hex: '#6B7280', note: 'Tijdloos modern' },
-      { id: 'koper', name: 'Koper', hex: '#B87333', note: 'Warme uitstraling' },
+      { id: 'grijs', name: 'Grijs', hex: '#6B7280', note: 'Tijdloos modern', img: '/img/weheat-sparrow-grijs.webp' },
+      { id: 'koper', name: 'Koper', hex: '#B87333', note: 'Warme uitstraling', img: '/img/weheat-sparrow-koper.webp' },
     ],
     boilers,
     defaultBoiler: '200',

@@ -28,8 +28,8 @@ const uid = `cfg-${m.slug}`;
 <div class="cfg" data-cfg data-model={m.slug} data-short={m.short}>
   <section class="cfg__photo-wrap container">
     <figure class="cfg__photo card">
-      <ProductImage src={m.img} alt={m.imgAlt} loading="eager" class="cfg__img" />
-      <figcaption class="cfg__shown">Getoonde kleur: {m.photoColor}</figcaption>
+      <ProductImage src={startK.img ?? m.img} alt={m.imgAlt} loading="eager" class="cfg__img" />
+      <figcaption class="cfg__shown" data-shown>Getoonde kleur: {startK.img ? startK.name.toLowerCase() : m.photoColor}</figcaption>
     </figure>
     <ul class="cfg__facts">
       {m.quickFacts.map((f) => <li><strong>{f.value}</strong><span>{f.label}</span></li>)}
@@ -65,7 +65,7 @@ const uid = `cfg-${m.slug}`;
       <div class:list={['swatches card', { 'swatches--single': single }]}>
         {m.kleuren.map((k) => (
           <label class="sw">
-            <input class="sr" type="radio" name={`${uid}-k`} value={k.id} data-name={k.name} checked={k.id === startK.id} />
+            <input class="sr" type="radio" name={`${uid}-k`} value={k.id} data-name={k.name} data-img={k.img ?? ''} checked={k.id === startK.id} />
             <span class="sw__dot" style={`--sw:${k.hex}`} aria-hidden="true"></span>
             <span class="sw__name">{k.name}</span>
             {k.note && <span class="sw__note">{k.note}</span>}
@@ -139,11 +139,19 @@ const uid = `cfg-${m.slug}`;
       const parts = [root.dataset.short, u.dataset.name, k.dataset.name];
       if (needsBoiler && b) parts.push(`${b.value} L`);
 
+      // Foto wisselt mee met de kleur (als er een foto in die kleur is)
+      const photo = q<HTMLImageElement>('.cfg__photo img');
+      if (photo && k.dataset.img) {
+        if (!photo.src.endsWith(k.dataset.img)) photo.src = k.dataset.img;
+        q('[data-shown]')!.textContent = `Getoonde kleur: ${k.dataset.name!.toLowerCase()}`;
+      }
+
       q('[data-sum]')!.textContent = parts.join(' · ');
       q('[data-total]')!.textContent = u.dataset.price === '' ? 'Op aanvraag' : fmt(total);
       q<HTMLAnchorElement>('[data-cta]')!.href = `/offerte/?${params}`;
     };
 
+    root.querySelectorAll<HTMLInputElement>('input[data-img]').forEach((i) => { if (i.dataset.img) new Image().src = i.dataset.img; });
     root.addEventListener('change', update);
     update();
   });
