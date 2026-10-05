@@ -211,7 +211,7 @@ export const configurators: Record<string, ConfigModel> = {
       { value: '38 dB(A)', label: 'Geluid' },
       { value: 'R290', label: 'Natuurlijk koudemiddel' },
     ],
-    uitvoeringen: [hybride(6498), allElectric(null)],
+    uitvoeringen: [hybride(6498), allElectric(10200)],
     kleuren: [{ id: 'standaard', name: 'Zoals afgebeeld', hex: '#1F2937' }],
     kleurNote: 'Andere afwerkingen bespreken we graag bij de opname.',
     boilers,
@@ -251,7 +251,7 @@ export const configurators: Record<string, ConfigModel> = {
       },
       {
         q: 'Wat kost de all-electric uitvoering?',
-        a: 'De prijs van een all-electric installatie hangt sterk af van je woning en het boilervat. Je ontvangt een prijs op maat na de opname.',
+        a: 'All-electric is er vanaf € 10.200 (indicatief), plus het boilervat dat je kiest. De exacte prijs hangt af van je woning; die ontvang je na de opname.',
       },
     ],
   },
