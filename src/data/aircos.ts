@@ -247,6 +247,79 @@ export const aircos: AircoSerie[] = [
     faq: faqAlgemeen,
     bron: 'https://www.vrijzon.nl/producten/airco-hoge-wandmodellen-haier-pearl-premium-airco-36-kw/',
   },
+
+  // ---------------- MITSUBISHI HEAVY INDUSTRIES ----------------
+  // Prijzen v.a. incl. installatie = indicatief (marktprijs NL-installateur, okt 2026)
+  {
+    slug: 'mhi-premium',
+    merk: 'Mitsubishi Heavy Industries',
+    naam: 'Mitsubishi Heavy Premium',
+    type: 'SRK-ZS-W',
+    positionering: 'Betrouwbare allrounder',
+    lead: 'De Premium-serie van Mitsubishi Heavy Industries: stil, zuinig en met ingebouwde wifi. Een degelijke keuze voor elke kamer.',
+    img: null,
+    kenmerken: [
+      { value: 'A+++', label: 'Energielabel koelen (2,0–2,5 kW)' },
+      { value: '19 dB(A)', label: 'Fluisterstil' },
+      { value: 'Wifi', label: 'Ingebouwd' },
+    ],
+    specs: [
+      { value: '2,0 / 2,5 / 3,5 / 5,0 kW', label: 'Koelvermogen' },
+      { value: 'SEER 8,5 / SCOP 4,7', label: 'Rendement (2,5 kW)' },
+      { value: 'A+++ / A++', label: 'Energielabel koelen / verwarmen (2,0–2,5 kW)' },
+      { value: '19 dB(A)', label: 'Laagste geluidsniveau binnenunit (2,0–3,5 kW)' },
+      { value: '3D Auto Airflow', label: 'Luchtverdeling door de hele ruimte' },
+      { value: 'Hot Start', label: 'Direct warme lucht bij verwarmen' },
+    ],
+    waarom: [
+      { title: 'Japanse betrouwbaarheid', text: 'Mitsubishi Heavy Industries staat bekend om degelijke, duurzame airco\'s die jarenlang meegaan.' },
+      { title: 'Stil en zuinig', text: 'Vanaf 19 dB(A) en tot A+++ voor koelen. Geschikt voor woonkamer én slaapkamer.' },
+      { title: 'Prettige luchtverdeling', text: 'Met 3D Auto Airflow verdeelt de airco de lucht automatisch over de hele ruimte.' },
+    ],
+    vermogens: [v('20', 2.0, null, 1725), v('25', 2.5, null, 1770), v('35', 3.5, null, 1885), v('50', 5.0, 5.8, 2295)],
+    kleuren: [
+      { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 },
+      { id: 'titanium', naam: 'Titanium', hex: '#8A8D91', toeslag: null },
+      { id: 'zwart-wit', naam: 'Zwart/wit', hex: '#1F2024', toeslag: null },
+    ],
+    faq: faqAlgemeen,
+    bron: 'https://www.aircoprofs.nl/airconditioning/mitsubishi/premium/',
+  },
+  {
+    slug: 'mhi-diamond',
+    merk: 'Mitsubishi Heavy Industries',
+    naam: 'Mitsubishi Heavy Diamond',
+    type: 'SRK-ZSX-W',
+    positionering: 'Topmodel, dubbel A+++',
+    lead: 'Het topmodel van Mitsubishi Heavy Industries: dubbel A+++ (koelen én verwarmen), een aanwezigheidssensor en ingebouwde wifi. Ideaal als je de airco ook veel gebruikt om te verwarmen.',
+    img: null,
+    kenmerken: [
+      { value: 'A+++ / A+++', label: 'Koelen én verwarmen (2,0–3,5 kW)' },
+      { value: 'SCOP 5,2', label: 'Zeer zuinig verwarmen' },
+      { value: '19 dB(A)', label: 'Fluisterstil' },
+    ],
+    specs: [
+      { value: '2,0 / 2,5 / 3,5 / 5,0 kW', label: 'Koelvermogen' },
+      { value: 'SEER tot 10,3', label: 'Rendement koelen (2,5 kW)' },
+      { value: 'SCOP tot 5,2', label: 'Rendement verwarmen (2,0–2,5 kW)' },
+      { value: 'A+++ / A+++', label: 'Energielabel koelen / verwarmen (2,0–3,5 kW)' },
+      { value: '19 dB(A)', label: 'Laagste geluidsniveau binnenunit' },
+      { value: 'Aanwezigheidssensor', label: 'Bespaart energie als niemand in de ruimte is' },
+    ],
+    waarom: [
+      { title: 'Dubbel A+++', text: 'Een van de weinige airco\'s met A+++ voor zowel koelen als verwarmen (2,0–3,5 kW). Ideaal als je er veel mee verwarmt.' },
+      { title: 'Slimme sensor', text: 'De aanwezigheidssensor schakelt terug als er niemand in de ruimte is, zo verspil je geen energie.' },
+      { title: 'Stil en in kleur', text: 'Vanaf 19 dB(A), en verkrijgbaar in wit, titanium en zwart/wit.' },
+    ],
+    vermogens: [v('20', 2.0, 2.0, 2260), v('25', 2.5, 2.5, 2430), v('35', 3.5, 3.5, 2625), v('50', 5.0, 5.0, 3150)],
+    kleuren: [
+      { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 },
+      { id: 'titanium', naam: 'Titanium', hex: '#8A8D91', toeslag: null },
+      { id: 'zwart-wit', naam: 'Zwart/wit', hex: '#1F2024', toeslag: null },
+    ],
+    faq: faqAlgemeen,
+    bron: 'https://www.aircoprofs.nl/airconditioning/mitsubishi/diamond/',
+  },
 ];
 
 export const aircoNamen = Object.fromEntries(aircos.map((a) => [a.slug, a.naam]));
