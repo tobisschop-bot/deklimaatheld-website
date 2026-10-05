@@ -1,4 +1,5 @@
 ---
+import ProductImage from '../ProductImage.astro';
 // Data-gedreven productconfigurator voor een warmtepompmodel.
 // Alle inhoud komt uit src/data/configurator.ts – een nieuw model heeft alleen data nodig.
 import PageHero from '../PageHero.astro';
@@ -27,7 +28,7 @@ const uid = `cfg-${m.slug}`;
 <div class="cfg" data-cfg data-model={m.slug} data-short={m.short}>
   <section class="cfg__photo-wrap container">
     <figure class="cfg__photo card">
-      <img src={m.img} alt={m.imgAlt} width="800" height="600" />
+      <ProductImage src={m.img} alt={m.imgAlt} loading="eager" class="cfg__img" />
       <figcaption class="cfg__shown">Getoonde kleur: {m.photoColor}</figcaption>
     </figure>
     <ul class="cfg__facts">
@@ -156,8 +157,8 @@ const uid = `cfg-${m.slug}`;
     background: var(--bg); aspect-ratio: 4 / 3;
     display: grid; place-items: center; overflow: hidden;
   }
-  .cfg__photo img {
-    width: 80%; height: auto; max-height: 100%; object-fit: contain;
+  .cfg__photo :global(.cfg__img) {
+    width: 84%;
     filter: drop-shadow(0 14px 14px rgba(20, 26, 46, .22));
   }
   .cfg__shown {

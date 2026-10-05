@@ -1,4 +1,5 @@
 ---
+import ProductImage from '../components/ProductImage.astro';
 import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
 import PostcodeForm from '../components/PostcodeForm.astro';
@@ -81,7 +82,7 @@ const stappen = [
       <div class="grid grid-3">
         {warmtepompen.map((w) => (
           <a class="card pump" href={kaartLink(w).href}>
-            <div class="pump__img"><img src={w.img} alt={w.name} loading="lazy" /></div>
+            <div class="pump__img"><ProductImage src={w.img} alt={w.name} class="pump__pi" /></div>
             <span class="pump__tag">{w.tag}</span>
             <h3>{w.name}</h3>
             <p class="pump__price">v.a. <strong>{euro(w.from)}</strong> <small>indicatief</small></p>
@@ -172,7 +173,8 @@ const stappen = [
   .pump { text-decoration: none; display: flex; flex-direction: column; transition: transform .15s, box-shadow .15s; }
   .pump:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -4px rgba(11,19,43,.08); }
   .pump__img { background: var(--bg); border-radius: 8px; aspect-ratio: 4/3; display: grid; place-items: center; padding: 16px; margin-bottom: 14px; }
-  .pump__img img { max-height: 100%; object-fit: contain; filter: drop-shadow(0 10px 12px rgba(20,26,46,.18)); }
+  .pump__img :global(.pump__pi) { width: 80%; filter: drop-shadow(0 10px 12px rgba(20,26,46,.18)); }
+  .pump__img > img { max-height: 100%; object-fit: contain; }
   .pump__tag { font-size: .75rem; color: var(--muted); font-weight: 600; }
   .pump__price { margin: 0 0 8px; }
   .pump__price small { color: var(--muted); }

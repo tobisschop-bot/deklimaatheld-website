@@ -1,0 +1,23 @@
+---
+// Productfoto die automatisch de transparante rand wegsnijdt (zie fotoCrop),
+// zodat het apparaat het vak vult in de juiste verhouding.
+import { fotoCrop } from '../data/warmtepompen';
+interface Props { src: string; alt: string; loading?: 'lazy' | 'eager'; class?: string }
+const { src, alt, loading = 'lazy', class: cls } = Astro.props;
+const c = fotoCrop[src];
+const bw = c ? c.box[2] - c.box[0] : 0;
+const bh = c ? c.box[3] - c.box[1] : 0;
+---
+{c ? (
+  <span class:list={['pi', cls]} style={`aspect-ratio:${bw}/${bh}`}>
+    <img src={src} alt={alt} loading={loading} width={c.w} height={c.h}
+      style={`width:${(c.w / bw) * 100}%;left:${(-c.box[0] / bw) * 100}%;top:${(-c.box[1] / bh) * 100}%`} />
+  </span>
+) : (
+  <img class={cls} src={src} alt={alt} loading={loading} />
+)}
+
+<style>
+  .pi { position: relative; display: block; width: 100%; overflow: hidden; }
+  .pi img { position: absolute; max-width: none; height: auto; }
+</style>

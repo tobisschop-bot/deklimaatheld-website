@@ -36,3 +36,11 @@ export const kaartLink = (w: Warmtepomp) =>
   w.page ? { href: w.page, label: 'Bekijk product' } : { href: '/offerte/', label: 'Vraag advies' };
 
 export const euro = (n: number) => '€ ' + n.toLocaleString('nl-NL');
+
+// Weheat-foto's zijn 940×788 met veel transparante rand. Bijsnijdkader (x0, y0, x1, y1)
+// van het zichtbare product, gemeten op de originele afbeeldingen.
+export const fotoCrop: Record<string, { w: number; h: number; box: [number, number, number, number] }> = {
+  [CDN + '680a992ae6196a42fa131878_Weheat%20warmtepomp-flint.webp']: { w: 940, h: 788, box: [126, 302, 786, 722] },
+  [CDN + '680a98ecbde35b827bb60c63_Weheat%20warmtepomop-sparrow.webp']: { w: 940, h: 788, box: [138, 206, 794, 730] },
+  [CDN + '68134c373abc353d78e00443_Weheat_Blackbird_Products%20(1).avif']: { w: 940, h: 788, box: [112, 344, 780, 692] },
+};
