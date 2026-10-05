@@ -1,0 +1,23 @@
+---
+interface Props { dark?: boolean; button?: string }
+const { dark = false, button = 'Ga verder naar stap 2 →' } = Astro.props;
+---
+<form class:list={['pcf', { 'pcf--dark': dark }]} action="/offerte/" method="get">
+  <div class="pcf__row">
+    <label><span>Postcode</span><input name="postcode" placeholder="2511 AB" autocomplete="postal-code" required /></label>
+    <label class="pcf__nr"><span>Huisnr.</span><input name="huisnummer" inputmode="numeric" placeholder="12" required /></label>
+    <label class="pcf__nr"><span>Toev.</span><input name="toevoeging" placeholder="A" /></label>
+  </div>
+  <button type="submit">{button}</button>
+</form>
+
+<style>
+  .pcf { display: grid; gap: 12px; }
+  .pcf__row { display: grid; grid-template-columns: 1fr 72px 60px; gap: 8px; }
+  .pcf label { display: grid; gap: 4px; font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+  .pcf input { font: inherit; font-size: 1rem; text-transform: none; letter-spacing: 0; color: var(--text); background: #fff; border: 1px solid #CED4DA; border-radius: 6px; padding: 12px; min-width: 0; width: 100%; }
+  .pcf input:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px rgba(214,40,58,.15); }
+  .pcf button { background: var(--red); color: #fff; border: 0; border-radius: 6px; font: inherit; font-weight: 700; padding: 14px 18px; cursor: pointer; min-height: 48px; }
+  .pcf button:hover { background: var(--red-dark); }
+  .pcf--dark label { color: #C9CFDA; }
+</style>
