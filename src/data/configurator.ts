@@ -13,7 +13,7 @@ export interface Uitvoering {
   name: string;
   badge: string;
   text: string;
-  price: number; // v.a.-prijs, indicatief
+  price: number | null; // v.a.-prijs, indicatief (null = op aanvraag)
   needsBoiler: boolean;
 }
 export interface Kleur { id: string; name: string; hex: string; note?: string }
@@ -57,11 +57,11 @@ export const inbegrepen: Fact[] = [
   { value: 'Nazorg en monitoring', label: 'Service in Den Haag en omstreken' },
 ];
 
-const hybride = (price: number): Uitvoering => ({
+const hybride = (price: number | null): Uitvoering => ({
   id: 'hybride', name: 'Hybride', badge: 'Bestaande ketel', price, needsBoiler: false,
   text: 'Werkt samen met je huidige cv-ketel. De ketel springt bij op de koudste dagen en voor warm water.',
 });
-const allElectric = (price: number): Uitvoering => ({
+const allElectric = (price: number | null): Uitvoering => ({
   id: 'all-electric', name: 'All-electric', badge: 'Gasvrij', price, needsBoiler: true,
   text: 'Verwarmt je woning en tapwater zonder gas. Hiervoor is een boilervat nodig.',
 });
@@ -193,6 +193,122 @@ export const configurators: Record<string, ConfigModel> = {
       {
         q: 'Hoe stil is de Flint P40?',
         a: 'Het geluidsniveau is 37,5 dB(A). Of de plaatsing aan de geluidseisen bij de erfgrens voldoet, controleren we per situatie.',
+      },
+    ],
+  },
+
+  blackbird: {
+    slug: 'blackbird',
+    name: 'Weheat Blackbird P80',
+    short: 'Blackbird P80',
+    title: 'Stel jouw Blackbird samen',
+    lead: 'Het krachtigste model van Weheat: 11 kW voor grotere woningen, en toch stil.',
+    img: img('blackbird'),
+    imgAlt: 'Weheat Blackbird P80 warmtepomp',
+    photoColor: 'zwart',
+    quickFacts: [
+      { value: '11 kW', label: 'A7/W35' },
+      { value: '38 dB(A)', label: 'Geluid' },
+      { value: 'R290', label: 'Natuurlijk koudemiddel' },
+    ],
+    uitvoeringen: [hybride(6498), allElectric(null)],
+    kleuren: [{ id: 'standaard', name: 'Zoals afgebeeld', hex: '#1F2937' }],
+    kleurNote: 'Andere afwerkingen bespreken we graag bij de opname.',
+    boilers,
+    defaultBoiler: '200',
+    specs: [
+      { value: '11 kW', label: 'Vermogen (A7/W35)' },
+      { value: '8 kW', label: 'Vermogen bij -10°C' },
+      { value: '4,7', label: 'SCOP' },
+      { value: '38 dB(A)', label: 'Geluidsniveau' },
+      { value: 'R290', label: 'Natuurlijk koudemiddel' },
+      { value: 'Koelen', label: 'Actieve zomerkoeling' },
+    ],
+    waarom: [
+      {
+        title: 'Veel vermogen',
+        text: 'Met 11 kW (A7/W35) en nog 8 kW bij -10°C is de Blackbird geschikt voor grotere woningen of woningen met een hogere warmtevraag.',
+      },
+      {
+        title: 'Stil voor zijn klasse',
+        text: 'Ondanks het vermogen blijft het geluidsniveau op 38 dB(A). Waar hij het best kan staan, bekijken we samen bij de opname.',
+      },
+      {
+        title: 'Verwarmt én koelt',
+        text: 'De Blackbird kan ook actief koelen, bijvoorbeeld via vloerverwarming of geschikte convectoren.',
+        check: 'Comfort in elk seizoen',
+      },
+    ],
+    inbegrepen,
+    faq: [
+      {
+        q: 'Heb ik de Blackbird nodig, of is een kleiner model genoeg?',
+        a: 'Dat hangt af van de warmtevraag van je woning. Een te groot toestel is niet beter. Bij de opname rekenen we uit welk vermogen past.',
+      },
+      {
+        q: 'Hoeveel ISDE-subsidie ontvang ik op de Weheat Blackbird?',
+        a: 'Het ISDE-bedrag is € [bedrag] (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag na oplevering.',
+      },
+      {
+        q: 'Wat kost de all-electric uitvoering?',
+        a: 'De prijs van een all-electric installatie hangt sterk af van je woning en het boilervat. Je ontvangt een prijs op maat na de opname.',
+      },
+    ],
+  },
+
+  swift: {
+    slug: 'swift',
+    name: 'Weheat Swift',
+    short: 'Swift',
+    title: 'Stel jouw Swift samen',
+    lead: 'De warmtepomp die in je schuine dak verdwijnt. Geen buitenunit in de tuin of op de gevel.',
+    img: img('swift'),
+    imgAlt: 'Weheat Swift dakwarmtepomp',
+    photoColor: 'wit',
+    quickFacts: [
+      { value: '4–6 kW', label: 'Vermogensklasse' },
+      { value: 'In het dak', label: 'Geen buitenunit' },
+      { value: 'R290', label: 'Natuurlijk koudemiddel' },
+    ],
+    uitvoeringen: [hybride(9851), allElectric(null)],
+    kleuren: [{ id: 'standaard', name: 'Wit (binnenzijde)', hex: '#F3F4F6' }],
+    kleurNote: 'Aan de buitenkant zie je alleen een dakelement, vergelijkbaar met een dakraam.',
+    boilers,
+    defaultBoiler: '200',
+    specs: [
+      { value: '4–6 kW', label: 'Vermogensklasse' },
+      { value: 'Schuin dak', label: 'Montage in het dakvlak' },
+      { value: 'Van binnenuit', label: 'Plaatsing zonder kraan' },
+      { value: 'R290', label: 'Natuurlijk koudemiddel' },
+      { value: 'Hybride of all-electric', label: 'Uitvoeringen' },
+    ],
+    waarom: [
+      {
+        title: 'Onzichtbaar',
+        text: 'De Swift zit in het schuine dak. Er staat dus geen buitenunit in je tuin, op je balkon of tegen de gevel.',
+      },
+      {
+        title: 'Ideaal voor rijtjeshuizen',
+        text: 'Geen ruimte voor een buitenunit of strenge eisen van de VvE of gemeente? Dan kan de Swift een uitkomst zijn.',
+      },
+      {
+        title: 'Plaatsing van binnenuit',
+        text: 'De Swift wordt van binnenuit in het dak geplaatst, zonder kraan. Onderhoud gebeurt ook van binnenuit.',
+      },
+    ],
+    inbegrepen,
+    faq: [
+      {
+        q: 'Is mijn dak geschikt voor de Swift?',
+        a: 'De Swift is bedoeld voor woningen met een schuin dak. Of jouw dak geschikt is (helling, constructie, ruimte op zolder), bekijken we bij de opname.',
+      },
+      {
+        q: 'Wanneer is de Swift leverbaar?',
+        a: 'De Swift is nieuw van Weheat. Vraag ons naar de actuele levertijd, dan plannen we de opname daarop in.',
+      },
+      {
+        q: 'Hoeveel ISDE-subsidie ontvang ik op de Weheat Swift?',
+        a: 'Het ISDE-bedrag is € [bedrag] (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag na oplevering.',
       },
     ],
   },

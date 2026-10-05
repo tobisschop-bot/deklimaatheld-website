@@ -1,7 +1,7 @@
 ---
 // Sticky navy offertebalk met samenvatting en live (indicatief) totaal.
 import { euro } from '../../data/warmtepompen';
-interface Props { short: string; uitvoering: string; kleur: string; boiler: string; total: number; href: string }
+interface Props { short: string; uitvoering: string; kleur: string; boiler: string; total: number | null; href: string }
 const { short, uitvoering, kleur, boiler, total, href } = Astro.props;
 ---
 <div class="bar" role="region" aria-label="Jouw samenstelling">
@@ -9,7 +9,7 @@ const { short, uitvoering, kleur, boiler, total, href } = Astro.props;
   <div class="bar__row">
     <p class="bar__total">
       <span class="bar__lbl">Totaal v.a.</span>
-      <strong data-total aria-live="polite">{euro(total)}</strong>
+      <strong data-total aria-live="polite">{total == null ? 'Op aanvraag' : euro(total)}</strong>
       <small>indicatief · incl. boilervat indien gekozen</small>
     </p>
     <a class="bar__btn" href={href} data-cta>Vraag offerte aan →</a>

@@ -44,12 +44,14 @@ const uid = `cfg-${m.slug}`;
       <div class="opts opts--2">
         {m.uitvoeringen.map((u) => (
           <label class="opt">
-            <input class="sr" type="radio" name={`${uid}-u`} value={u.id} data-price={u.price} data-boiler={u.needsBoiler ? '1' : '0'} data-name={u.name} checked={u.id === startU.id} />
+            <input class="sr" type="radio" name={`${uid}-u`} value={u.id} data-price={u.price ?? ''} data-boiler={u.needsBoiler ? '1' : '0'} data-name={u.name} checked={u.id === startU.id} />
             <span class="opt__body">
               <span class="opt__badge">{u.badge}</span>
               <span class="opt__name">{u.name}</span>
               <span class="opt__text">{u.text}</span>
-              <span class="opt__price"><small>v.a.</small> {euro(u.price)}<small>* indicatief</small></span>
+              {u.price != null
+                ? <span class="opt__price"><small>v.a.</small> {euro(u.price)}<small>* indicatief</small></span>
+                : <span class="opt__price">Prijs op aanvraag</span>}
               <span class="opt__check" aria-hidden="true">✓ Gekozen</span>
             </span>
           </label>
@@ -106,7 +108,7 @@ const uid = `cfg-${m.slug}`;
     short={m.short}
     uitvoering={startU.name}
     kleur={startK.name}
-    total={startU.price + (startU.needsBoiler ? startB.price : 0)}
+    total={startU.price == null ? null : startU.price + (startU.needsBoiler ? startB.price : 0)}
     boiler={startU.needsBoiler ? `${startB.liters} L` : ''}
     href={`/offerte/?${new URLSearchParams({ model: m.slug, uitvoering: startU.id, kleur: startK.id, ...(startU.needsBoiler ? { boiler: startB.id } : {}) })}`}
   />
@@ -138,7 +140,7 @@ const uid = `cfg-${m.slug}`;
       if (needsBoiler && b) parts.push(`${b.value} L`);
 
       q('[data-sum]')!.textContent = parts.join(' · ');
-      q('[data-total]')!.textContent = fmt(total);
+      q('[data-total]')!.textContent = u.dataset.price === '' ? 'Op aanvraag' : fmt(total);
       q<HTMLAnchorElement>('[data-cta]')!.href = `/offerte/?${params}`;
     };
 
