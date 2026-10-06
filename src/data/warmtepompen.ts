@@ -1,4 +1,4 @@
-// Warmtepompen (Weheat, Vaillant, Daikin), in deze volgorde getoond. Prijzen zijn INDICATIEF (bron: De Warmteman) – vervangen door eigen prijzen.
+// Warmtepompen (Weheat, Vaillant, Daikin, Haier), in deze volgorde getoond. Prijzen zijn INDICATIEF (bron: De Warmteman) – vervangen door eigen prijzen.
 const CDN = 'https://cdn.prod.website-files.com/67ed5695314f69c537693240/';
 
 // Neutrale placeholder-afbeelding voor modellen zonder bruikbare productfoto
@@ -14,7 +14,7 @@ export type Warmtepomp = {
   tag: string;
   /** v.a.-prijs; null = prijs op aanvraag */
   from: number | null;
-  merk: 'Daikin' | 'Weheat' | 'Vaillant';
+  merk: 'Daikin' | 'Weheat' | 'Vaillant' | 'Haier';
   img: string;
   /** false = geen echte productfoto beschikbaar, toon een .placeholder-vak */
   photo: boolean;
@@ -35,6 +35,8 @@ export const warmtepompen: Warmtepomp[] = [
   { slug: 'arotherm-plus', merk: 'Vaillant', name: 'Vaillant aroTHERM plus', tag: 'Stil, R290, in antraciet', from: null, img: '/img/vaillant-arotherm-plus.webp', photo: true, page: '/warmtepompen/arotherm-plus/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric', includes: 'Inclusief installatie & inbedrijfstelling' },
   { slug: 'altherma-4h', merk: 'Daikin', name: 'Daikin Altherma 4 H', tag: 'Krachtig, tot 75 °C, in antraciet', from: null, img: '/img/daikin-altherma-4h.webp', photo: true, page: '/warmtepompen/altherma-4h/', types: ['all-electric'], badge: 'All-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
   { slug: 'altherma-hybride', merk: 'Daikin', name: 'Daikin Altherma H Hybride', tag: 'Hybride met cv-ketel, in wit', from: null, img: '/img/daikin-altherma-hybride.webp', photo: true, page: '/warmtepompen/altherma-hybride/', types: ['hybride'], badge: 'Hybride', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'haier-super-aqua', merk: 'Haier', name: 'Haier Super Aqua', tag: 'Voordelige monoblock, in wit', from: null, img: '/img/haier-super-aqua.webp', photo: true, page: '/warmtepompen/haier-super-aqua/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'haier-gt-r290', merk: 'Haier', name: 'Haier GT R290', tag: 'R290, tot 80 °C, in grijs', from: null, img: '/img/haier-gt-r290.webp', photo: true, page: '/warmtepompen/haier-gt-r290/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
 ];
 
 /** Link + knoptekst voor een warmtepompkaart */

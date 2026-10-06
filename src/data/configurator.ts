@@ -56,6 +56,9 @@ export const boilers: Boiler[] = [
   { id: '300', liters: 300, persons: '5+ personen', text: 'Grote gezinnen of een royaal ligbad', price: 2150 },
 ];
 
+// Zelfde boilervaten, prijs nog op aanvraag (voor merken zonder eigen prijzen)
+export const boilersOpAanvraag: Boiler[] = boilers.map((b) => ({ ...b, price: null }));
+
 export const inbegrepen: Fact[] = [
   { value: 'Installatie door eigen monteurs', label: 'Vakkundig geplaatst en aangesloten' },
   { value: 'Waterzijdig inregelen (Heat Geek-methode)', label: 'Ontworpen op lage temperatuur voor meer rendement' },
@@ -439,6 +442,112 @@ export const configurators: Record<string, ConfigModel> = {
       { q: 'Is de Altherma Hybride in zwart leverbaar?', a: 'Nee, de buitenunit is wit. Zoek je een donkere unit, kijk dan naar de Daikin Altherma 4 H (antraciet).' },
       { q: 'Kan ik later volledig gasvrij?', a: 'Deze hybride is gemaakt om samen met een ketel te werken. Wil je nu of later helemaal van het gas af, dan is de Altherma 4 H de logische keuze.' },
       { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag is € [bedrag] (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag.' },
+    ],
+  },
+
+  // ---- Haier ----
+  // Bron specs: Haier (haiercac.eu, haierhvac.eu, productbladen). PRIJZEN VOLGEN (Tycho).
+  'haier-super-aqua': {
+    slug: 'haier-super-aqua',
+    name: 'Haier Super Aqua',
+    short: 'Super Aqua',
+    title: 'Stel jouw Haier Super Aqua samen',
+    lead: 'Betaalbare monoblock lucht-waterwarmtepomp van Haier, in wit. Verwarmt, koelt en maakt warm water.',
+    img: '/img/haier-super-aqua.webp',
+    imgAlt: 'Haier Super Aqua warmtepomp in wit',
+    photoColor: 'wit',
+    quickFacts: [
+      { value: '5–16 kW', label: 'Vermogensklasse' },
+      { value: 'Monoblock', label: 'Alles in het buitendeel' },
+      { value: 'Tot 60 °C', label: 'Aanvoertemperatuur' },
+    ],
+    uitvoeringen: [hybride(null), allElectric(null)],
+    vermogens: [
+      { id: '5', label: '5 kW', sub: 'AU052FYCRA · COP 5,05 · 760 × 920 × 372 mm' },
+      { id: '8', label: '7,8 kW', sub: 'AU082FYCRA · COP 4,40 · 965 × 950 × 370 mm' },
+      { id: '11', label: '11 kW', sub: 'AU112FYCRA · COP 4,22 · 1.490 × 950 × 370 mm' },
+      { id: '16', label: '16 kW', sub: 'AU162FYCRA · COP 4,15 · 1.490 × 950 × 370 mm' },
+    ],
+    defaultVermogen: '8',
+    kleuren: [{ id: 'wit', name: 'Wit', hex: '#F4F5F3', img: '/img/haier-super-aqua.webp' }],
+    kleurNote: 'De Super Aqua is alleen leverbaar in wit.',
+    boilers: boilersOpAanvraag,
+    defaultBoiler: '200',
+    specs: [
+      { value: '5 · 7,8 · 11 · 16 kW', label: 'Vermogens' },
+      { value: '4,15–5,05 (A7/W35)', label: 'COP' },
+      { value: 'A+++ / A++ (35 °C)', label: 'Energielabel verwarmen' },
+      { value: 'Tot 60 °C', label: 'Aanvoertemperatuur' },
+      { value: 'Tot -25 °C', label: 'Werkt bij buitentemperatuur' },
+      { value: 'R32', label: 'Koudemiddel' },
+      { value: 'Ja', label: 'Koelen' },
+      { value: '59–68 dB(A)', label: 'Geluidsvermogen' },
+      { value: '1-fase (230 V)', label: 'Aansluiting' },
+    ],
+    waarom: [
+      { title: 'Scherp geprijsd', text: 'Een degelijke monoblock-warmtepomp voor een lagere investering.' },
+      { title: 'Verwarmen én koelen', text: 'In de winter verwarmen en warm water maken, in de zomer koelen via vloerverwarming of convectoren.' },
+      { title: 'Monoblock', text: 'Het koudemiddelcircuit zit volledig in het buitendeel. Binnen lopen alleen waterleidingen.' },
+    ],
+    inbegrepen,
+    faq: [
+      { q: 'Wat is het verschil met de Haier GT R290?', a: 'De Super Aqua werkt met R32 en gaat tot 60 °C. De GT R290 gebruikt natuurlijk koudemiddel, gaat tot 80 °C en is zuiniger, maar is grijs in plaats van wit.' },
+      { q: 'Is de Super Aqua in andere kleuren leverbaar?', a: 'Nee, alleen in wit. Zoek je een donkere unit, kijk dan naar de Haier GT R290.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag (€ [bedrag]) hangt af van het vermogen. Indicatief, zie de actuele RVO-lijst. We helpen je met de aanvraag.' },
+    ],
+  },
+
+  'haier-gt-r290': {
+    slug: 'haier-gt-r290',
+    name: 'Haier GT R290',
+    short: 'GT R290',
+    title: 'Stel jouw Haier GT R290 samen',
+    lead: 'De nieuwe monoblock van Haier op natuurlijk koudemiddel R290. Tot 80 °C aanvoer en A+++ bij zowel 35 als 55 °C.',
+    img: '/img/haier-gt-r290.webp',
+    imgAlt: 'Haier GT R290 Super Aqua warmtepomp in grijs',
+    photoColor: 'grijs',
+    quickFacts: [
+      { value: '4–16 kW', label: 'Vermogensklasse' },
+      { value: '80 °C', label: 'Max. aanvoertemperatuur' },
+      { value: 'R290', label: 'Natuurlijk koudemiddel' },
+    ],
+    uitvoeringen: [hybride(null), allElectric(null)],
+    vermogens: [
+      { id: '4', label: '4 kW', sub: 'AW042MUGHA · 1-fase' },
+      { id: '6', label: '6 kW', sub: 'AW062MUGHA · 1-fase' },
+      { id: '8', label: '8 kW', sub: 'AW082MUGHA · 1-fase' },
+      { id: '10', label: '10 kW', sub: 'AW102MUGHA · 1- of 3-fase' },
+      { id: '12', label: '12 kW', sub: 'AW122MXGHA · 1- of 3-fase' },
+      { id: '14', label: '14 kW', sub: 'AW142MXGHA · 1- of 3-fase' },
+      { id: '16', label: '16 kW', sub: 'AW162MXGHA · 1- of 3-fase' },
+    ],
+    defaultVermogen: '8',
+    kleuren: [{ id: 'grijs', name: 'Grijs', hex: '#5E6266', img: '/img/haier-gt-r290.webp' }],
+    kleurNote: 'De GT R290 is alleen leverbaar in grijs.',
+    boilers: boilersOpAanvraag,
+    defaultBoiler: '200',
+    specs: [
+      { value: '4 t/m 16 kW', label: 'Vermogens' },
+      { value: 'Tot 80 °C (zonder bijverwarming boven -15 °C)', label: 'Aanvoertemperatuur' },
+      { value: 'A+++ bij 35 °C én 55 °C', label: 'Energielabel verwarmen' },
+      { value: '4,80–5,20 (35 °C) · 3,83–3,85 (55 °C)', label: 'SCOP' },
+      { value: '44–55 dB(A) geluidsdruk', label: 'Geluid' },
+      { value: 'Tot -28 °C', label: 'Werkt bij buitentemperatuur' },
+      { value: 'R290 (propaan)', label: 'Koudemiddel' },
+      { value: 'Ja', label: 'Koelen' },
+      { value: '790 × 1.250 × 380 mm (4–10 kW) · 880 × 1.380 × 460 mm (12–16 kW)', label: 'Afmetingen (h × b × d)' },
+    ],
+    waarom: [
+      { title: 'Tot 80 °C', text: 'Hoge aanvoertemperatuur zonder elektrische bijverwarming, dus geschikt voor bestaande radiatoren.' },
+      { title: 'A+++ ook bij 55 °C', text: 'Topklasse rendement, ook bij de hogere temperaturen die oudere woningen nodig hebben.' },
+      { title: 'Natuurlijk koudemiddel', text: 'R290 heeft een zeer lage GWP en is klaar voor de toekomst.' },
+      { title: 'Slim', text: 'Twee temperatuurzones, Smart Grid Ready en bediening via de hOn-app.' },
+    ],
+    inbegrepen,
+    faq: [
+      { q: 'Wat is het verschil met de Haier Super Aqua?', a: 'De GT R290 gebruikt natuurlijk koudemiddel, gaat tot 80 °C en haalt A+++ bij 55 °C. De Super Aqua (R32) is een voordeligere witte variant tot 60 °C.' },
+      { q: 'Is de GT R290 in wit leverbaar?', a: 'Nee, alleen in grijs. Wil je een witte unit, kijk dan naar de Haier Super Aqua.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag (€ [bedrag]) hangt af van het vermogen. Indicatief, zie de actuele RVO-lijst. We helpen je met de aanvraag.' },
     ],
   },
 
