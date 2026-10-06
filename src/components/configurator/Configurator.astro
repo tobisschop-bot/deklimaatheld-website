@@ -16,6 +16,13 @@ const startU = m.uitvoeringen[0];
 const startK = m.kleuren.find((k) => k.id === m.photoColor) ?? m.kleuren[0];
 const startB = m.boilers.find((b) => b.id === m.defaultBoiler) ?? m.boilers[0];
 const single = m.kleuren.length === 1;
+const startV = m.vermogens?.find((v) => v.id === m.defaultVermogen) ?? m.vermogens?.[0];
+// Prijs: bij modellen met vermogens komt de prijs uit het gekozen vermogen, anders uit de uitvoering
+const prijsVan = (uId: string, v = startV) => (v ? (v.prijs?.[uId as 'hybride'] ?? null) : (m.uitvoeringen.find((u) => u.id === uId)?.price ?? null));
+const startPrijs = prijsVan(startU.id);
+const startTotal = startPrijs == null || (startU.needsBoiler && startB.price == null) ? null : startPrijs + (startU.needsBoiler ? startB.price ?? 0 : 0);
+const bNaam = (b: { id: string; liters: number }) => (b.id === 'unitower' ? 'uniTOWER 190 L' : `${b.liters} L`);
+let n = 0; const nr = () => ++n; // stapnummers (vermogen-stap is optioneel)
 const uid = `cfg-${m.slug}`;
 ---
 <PageHero
@@ -40,7 +47,7 @@ const uid = `cfg-${m.slug}`;
   <div class="cfg__steps container">
     <!-- Stap 1: uitvoering -->
     <fieldset class="step">
-      <legend class="step__head"><span class="step__n">1</span><span><span class="step__title">Kies je uitvoering</span><span class="step__sub">Bepaalt of je cv-ketel blijft of helemaal verdwijnt.</span></span></legend>
+      <legend class="step__head"><span class="step__n">{nr()}</span><span><span class="step__title">Kies je uitvoering</span><span class="step__sub">Bepaalt of je cv-ketel blijft of helemaal verdwijnt.</span></span></legend>
       <div class="opts opts--2">
         {m.uitvoeringen.map((u) => (
           <label class="opt">
@@ -49,7 +56,7 @@ const uid = `cfg-${m.slug}`;
               <span class="opt__badge">{u.badge}</span>
               <span class="opt__name">{u.name}</span>
               <span class="opt__text">{u.text}</span>
-              {u.price != null
+              {m.vermogens ? null : u.price != null
                 ? <span class="opt__price"><small>v.a.</small> {euro(u.price)}<small>* indicatief</small></span>
                 : <span class="opt__price">Prijs op aanvraag</span>}
               <span class="opt__check" aria-hidden="true">✓ Gekozen</span>
@@ -59,9 +66,29 @@ const uid = `cfg-${m.slug}`;
       </div>
     </fieldset>
 
-    <!-- Stap 2: afwerking -->
+    {m.vermogens && startV && (
+      <fieldset class="step">
+        <legend class="step__head"><span class="step__n">{nr()}</span><span><span class="step__title">Kies het vermogen</span><span class="step__sub">Twijfel je? Het juiste vermogen berekenen we bij de installatiecheck.</span></span></legend>
+        <div class="opts">
+          {m.vermogens.map((v) => (
+            <label class="opt opt--row">
+              <input class="sr" type="radio" name={`${uid}-v`} value={v.id} data-name={v.label} data-prijs={JSON.stringify(v.prijs ?? {})} checked={v.id === startV.id} />
+              <span class="opt__body">
+                <span class="opt__main">
+                  <span class="opt__name">{v.label}</span>
+                  <span class="opt__text">{v.sub}</span>
+                </span>
+                <span class="opt__plus" data-vprijs></span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    )}
+
+    <!-- Stap: afwerking -->
     <fieldset class="step">
-      <legend class="step__head"><span class="step__n">2</span><span><span class="step__title">Kies de afwerking</span><span class="step__sub">Kleur van de lamelbehuizing.</span></span></legend>
+      <legend class="step__head"><span class="step__n">{nr()}</span><span><span class="step__title">Kies de afwerking</span><span class="step__sub">{single ? 'Kleur van de buitenunit.' : 'Kleur van de lamelbehuizing.'}</span></span></legend>
       <div class:list={['swatches card', { 'swatches--single': single }]}>
         {m.kleuren.map((k) => (
           <label class="sw">
@@ -77,18 +104,18 @@ const uid = `cfg-${m.slug}`;
 
     <!-- Stap 3: boilervat (alleen bij all-electric) -->
     <fieldset class="step cfg__boiler" data-boiler-step>
-      <legend class="step__head"><span class="step__n">3</span><span><span class="step__title">Boilervat</span><span class="step__sub">Alleen nodig bij all-electric, voor warm douche- en tapwater.</span></span></legend>
+      <legend class="step__head"><span class="step__n">{nr()}</span><span><span class="step__title">Boilervat</span><span class="step__sub">Alleen nodig bij all-electric, voor warm douche- en tapwater.</span></span></legend>
       <p class="boiler-off" data-boiler-off hidden>Bij <strong>hybride</strong> levert je cv-ketel het warme tapwater, dus een boilervat is niet nodig. Kies all-electric om een boilervat te selecteren.</p>
       <div class="opts">
         {m.boilers.map((b) => (
           <label class="opt opt--row">
-            <input class="sr" type="radio" name={`${uid}-b`} value={b.id} data-price={b.price} checked={b.id === startB.id} />
+            <input class="sr" type="radio" name={`${uid}-b`} value={b.id} data-price={b.price ?? ''} data-name={bNaam(b)} checked={b.id === startB.id} />
             <span class="opt__body">
               <span class="opt__main">
-                <span class="opt__name">{b.liters} liter {b.recommended && <span class="tag">Aanbevolen</span>}</span>
+                <span class="opt__name">{b.id === 'unitower' ? 'uniTOWER (190 liter)' : `${b.liters} liter`} {b.recommended && <span class="tag">Aanbevolen</span>}</span>
                 <span class="opt__text">{b.persons} · {b.text}</span>
               </span>
-              <span class="opt__plus">+ {euro(b.price)}</span>
+              <span class="opt__plus">{b.price == null ? 'Op aanvraag' : `+ ${euro(b.price)}`}</span>
             </span>
           </label>
         ))}
@@ -108,9 +135,9 @@ const uid = `cfg-${m.slug}`;
     short={m.short}
     uitvoering={startU.name}
     kleur={startK.name}
-    total={startU.price == null ? null : startU.price + (startU.needsBoiler ? startB.price : 0)}
-    boiler={startU.needsBoiler ? `${startB.liters} L` : ''}
-    href={`/offerte/?${new URLSearchParams({ model: m.slug, uitvoering: startU.id, kleur: startK.id, ...(startU.needsBoiler ? { boiler: startB.id } : {}) })}`}
+    total={startTotal}
+    boiler={[startV?.label, startU.needsBoiler ? bNaam(startB) : ''].filter(Boolean).join(' · ')}
+    href={`/offerte/?${new URLSearchParams({ model: m.slug, uitvoering: startU.id, ...(startV ? { vermogen: startV.label } : {}), kleur: startK.id, ...(startU.needsBoiler ? { boiler: startB.id } : {}) })}`}
   />
 </div>
 
@@ -126,18 +153,32 @@ const uid = `cfg-${m.slug}`;
       const u = checked('u')!;
       const k = checked('k')!;
       const b = checked('b');
+      const v = checked('v');
       const needsBoiler = u.dataset.boiler === '1';
+      // Basisprijs: uit het vermogen (per uitvoering) of uit de uitvoering
+      let base: number | null = u.dataset.price === '' ? null : Number(u.dataset.price);
+      if (v) {
+        const vp = JSON.parse(v.dataset.prijs || '{}');
+        base = vp[u.value] ?? null;
+        root.querySelectorAll<HTMLInputElement>('input[name$="-v"]').forEach((i) => {
+          const p = JSON.parse(i.dataset.prijs || '{}')[u.value];
+          i.closest('label')!.querySelector('[data-vprijs]')!.textContent = p == null ? 'Op aanvraag' : fmt(p);
+        });
+      }
+      const bPrice = needsBoiler && b ? (b.dataset.price === '' ? null : Number(b.dataset.price)) : 0;
 
       boilerStep.disabled = !needsBoiler;
       boilerStep.classList.toggle('is-off', !needsBoiler);
       boilerOff.hidden = needsBoiler;
 
-      const total = Number(u.dataset.price) + (needsBoiler && b ? Number(b.dataset.price) : 0);
-      const params = new URLSearchParams({ model: root.dataset.model!, uitvoering: u.value, kleur: k.value });
+      const total = base == null || bPrice == null ? null : base + bPrice;
+      const params = new URLSearchParams({ model: root.dataset.model!, uitvoering: u.value });
+      if (v) params.set('vermogen', v.dataset.name!);
+      params.set('kleur', k.value);
       if (needsBoiler && b) params.set('boiler', b.value);
 
-      const parts = [root.dataset.short, u.dataset.name, k.dataset.name];
-      if (needsBoiler && b) parts.push(`${b.value} L`);
+      const parts = [root.dataset.short, u.dataset.name, v?.dataset.name, k.dataset.name];
+      if (needsBoiler && b) parts.push(b.dataset.name!);
 
       // Foto wisselt mee met de kleur (als er een foto in die kleur is)
       const photo = q<HTMLImageElement>('.cfg__photo img');
@@ -146,8 +187,8 @@ const uid = `cfg-${m.slug}`;
         q('[data-shown]')!.textContent = `Getoonde kleur: ${k.dataset.name!.toLowerCase()}`;
       }
 
-      q('[data-sum]')!.textContent = parts.join(' · ');
-      q('[data-total]')!.textContent = u.dataset.price === '' ? 'Op aanvraag' : fmt(total);
+      q('[data-sum]')!.textContent = parts.filter(Boolean).join(' · ');
+      q('[data-total]')!.textContent = total == null ? 'Op aanvraag' : fmt(total);
       q<HTMLAnchorElement>('[data-cta]')!.href = `/offerte/?${params}`;
     };
 

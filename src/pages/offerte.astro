@@ -67,6 +67,7 @@ const modelNamen = { ...Object.fromEntries(warmtepompen.map((w) => [w.slug, w.na
         <input type="hidden" name="model" data-prefill="model" />
         <input type="hidden" name="besparingscheck" data-prefill-check />
         <input type="hidden" name="uitvoering" data-prefill="uitvoering" />
+        <input type="hidden" name="vermogen" data-prefill="vermogen" />
         <input type="hidden" name="kleur" data-prefill="kleur" />
         <input type="hidden" name="boiler" data-prefill="boiler" />
         <input type="hidden" name="ruimtes" data-prefill="ruimtes" />
@@ -212,7 +213,7 @@ const modelNamen = { ...Object.fromEntries(warmtepompen.map((w) => [w.slug, w.na
     if (check) form.querySelector('[data-prefill-check]').value = check;
     const model = params.get('model');
     if (model) {
-      ['model', 'uitvoering', 'kleur', 'boiler', 'ruimtes'].forEach((k) => {
+      ['model', 'uitvoering', 'vermogen', 'kleur', 'boiler', 'ruimtes'].forEach((k) => {
         const v = params.get(k);
         const el = form.querySelector('[data-prefill="' + k + '"]');
         if (v && el) el.value = v;
@@ -224,6 +225,7 @@ const modelNamen = { ...Object.fromEntries(warmtepompen.map((w) => [w.slug, w.na
       choice.querySelector('[data-choice-name]').textContent = modelNamen[model.toLowerCase()] || nice(model);
       const meta = [];
       if (params.get('uitvoering')) meta.push('Uitvoering: ' + nice(params.get('uitvoering')));
+      if (params.get('vermogen')) meta.push('Vermogen: ' + params.get('vermogen'));
       if (params.get('kleur')) meta.push('Kleur: ' + nice(params.get('kleur')));
       if (params.get('boiler')) meta.push('Boiler: ' + nice(params.get('boiler')));
       if (params.get('ruimtes')) meta.push('Binnendelen: ' + params.get('ruimtes'));

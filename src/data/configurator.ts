@@ -17,7 +17,9 @@ export interface Uitvoering {
   needsBoiler: boolean;
 }
 export interface Kleur { id: string; name: string; hex: string; note?: string; img?: string } // img: foto in deze kleur (zelfde kader als model.img)
-export interface Boiler { id: string; liters: number; persons: string; text: string; price: number; recommended?: boolean }
+export interface Boiler { id: string; liters: number; persons: string; text: string; price: number | null; recommended?: boolean } // null = op aanvraag
+/** Vermogensvariant (alleen bij modellen met meerdere vermogens, bijv. Vaillant). prijs per uitvoering; null/ontbrekend = op aanvraag */
+export interface Vermogen { id: string; label: string; sub: string; prijs?: Partial<Record<UitvoeringId, number | null>> }
 export interface Fact { value: string; label: string }
 export interface Waarom { title: string; text: string; check?: string }
 export interface FaqItem { q: string; a: string }
@@ -33,6 +35,8 @@ export interface ConfigModel {
   photoColor: string; // kleur die op de productfoto staat
   quickFacts: Fact[]; // 3 kerncijfers onder de foto
   uitvoeringen: Uitvoering[];
+  vermogens?: Vermogen[]; // optioneel: extra stap 'Kies het vermogen'
+  defaultVermogen?: string;
   kleuren: Kleur[];
   kleurNote?: string; // bijv. "alleen leverbaar in antraciet"
   boilers: Boiler[];
@@ -310,6 +314,120 @@ export const configurators: Record<string, ConfigModel> = {
         q: 'Hoeveel ISDE-subsidie ontvang ik op de Weheat Swift?',
         a: 'Het ISDE-bedrag is € [bedrag] (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag na oplevering.',
       },
+    ],
+  },
+
+  // ---- Vaillant ----
+  // Bron specs: vaillant.nl (aroTHERM plus, VWL ../8.1 A) en groothandel-/fabrieksgegevens (aroTHERM pure, VWL ../7.2 AS).
+  // PRIJZEN VOLGEN (Tycho) – tot die tijd 'op aanvraag'.
+  'arotherm-plus': {
+    slug: 'arotherm-plus',
+    name: 'Vaillant aroTHERM plus',
+    short: 'aroTHERM plus',
+    title: 'Stel jouw aroTHERM plus samen',
+    lead: 'De stilste en zuinigste lucht-waterwarmtepomp van Vaillant. Met natuurlijk koudemiddel R290 en tot 75 °C aanvoertemperatuur, dus ook geschikt voor radiatoren.',
+    img: '/img/vaillant-arotherm-plus.webp',
+    imgAlt: 'Vaillant aroTHERM plus warmtepomp in antraciet',
+    photoColor: 'antraciet',
+    quickFacts: [
+      { value: '3–12 kW', label: 'Vermogensklasse' },
+      { value: '75 °C', label: 'Max. aanvoertemperatuur' },
+      { value: 'R290', label: 'Natuurlijk koudemiddel' },
+    ],
+    uitvoeringen: [hybride(null), allElectric(null)],
+    vermogens: [
+      { id: '35', label: 'VWL 35/8.1', sub: '4,2 kW bij -7 °C · 230 V · 765 mm hoog' },
+      { id: '55', label: 'VWL 55/8.1', sub: '5,0 kW bij -7 °C · 230 V · 765 mm hoog' },
+      { id: '75', label: 'VWL 75/8.1', sub: '5,9 kW bij -7 °C · 230 V · 965 mm hoog' },
+      { id: '105', label: 'VWL 105/8.1', sub: '9,6 kW bij -7 °C · 400 V · 1.480 mm hoog' },
+      { id: '125', label: 'VWL 125/8.1', sub: '10,1 kW bij -7 °C · 400 V · 1.480 mm hoog' },
+    ],
+    defaultVermogen: '55',
+    kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3A3F44', img: '/img/vaillant-arotherm-plus.webp' }],
+    kleurNote: 'De aroTHERM plus is alleen leverbaar in antraciet. Optioneel met designplint.',
+    boilers: [
+      { id: 'unitower', liters: 190, persons: '3–5 personen', text: 'uniTOWER: binnendeel met ingebouwde 190 L boiler, tot 376 L douchewater van 40 °C', price: null, recommended: true },
+      { id: '200', liters: 200, persons: '3–4 personen', text: 'Losse warmtepompboiler', price: null },
+      { id: '300', liters: 300, persons: '5+ personen', text: 'Losse warmtepompboiler', price: null },
+    ],
+    defaultBoiler: 'unitower',
+    specs: [
+      { value: 'VWL 35 t/m 125 (3–12 kW)', label: 'Vermogens' },
+      { value: '4,83–5,13', label: 'SCOP bij 35 °C' },
+      { value: 'A+++', label: 'Energielabel verwarmen (35 °C)' },
+      { value: 'Tot 75 °C', label: 'Aanvoertemperatuur' },
+      { value: 'Vanaf 27,5 dB(A) op 3 m', label: 'Geluid (stilste stand)' },
+      { value: 'R290 (GWP 0,02)', label: 'Koudemiddel' },
+      { value: 'Ja, EER tot 5,0', label: 'Koelen' },
+      { value: '765–1.480 × 1.100 × 450 mm', label: 'Afmetingen (h × b × d)' },
+      { value: '2 jaar + 3 jaar extra bij registratie', label: 'Garantie' },
+    ],
+    waarom: [
+      { title: 'Fluisterstil', text: 'De stilste lucht-waterwarmtepomp van Vaillant: vanaf 27,5 dB(A) op 3 meter. Prettig voor jou én de buren.' },
+      { title: 'Ook voor radiatoren', text: 'Met aanvoertemperaturen tot 75 °C werkt hij ook in bestaande woningen met gewone radiatoren.' },
+      { title: 'Plaatsen dicht bij huis', text: 'Dankzij de Flexible Space Function mag hij vlak naast deuren, ramen en stopcontacten staan, ondanks het R290-koudemiddel.' },
+      { title: 'Koelt in de zomer', text: 'Via vloerverwarming of ventilo-convectoren kan de aroTHERM plus je woning ook koelen.' },
+    ],
+    inbegrepen,
+    faq: [
+      { q: 'Welk vermogen heb ik nodig?', a: 'Dat hangt af van je woning, isolatie en gasverbruik. Doe de besparingscheck voor een eerste indicatie; het exacte vermogen berekenen we tijdens de installatiecheck.' },
+      { q: 'Kan de aroTHERM plus hybride met mijn cv-ketel?', a: 'Ja. Hij kan samenwerken met je bestaande cv-ketel, of volledig gasvrij met een uniTOWER of losse boiler.' },
+      { q: 'Is de aroTHERM plus in andere kleuren leverbaar?', a: 'Nee, Vaillant levert de aroTHERM plus in antraciet. Wil je een witte buitenunit, kijk dan naar de aroTHERM pure.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag (€ [bedrag]) hangt af van het vermogen. Indicatief, zie de actuele RVO-lijst. We helpen je met de aanvraag.' },
+    ],
+  },
+
+  'arotherm-pure': {
+    slug: 'arotherm-pure',
+    name: 'Vaillant aroTHERM pure',
+    short: 'aroTHERM pure',
+    title: 'Stel jouw aroTHERM pure samen',
+    lead: 'Compacte, lichte split-warmtepomp van Vaillant. Een betaalbare instap: hybride met je cv-ketel, of later all-electric.',
+    img: '/img/vaillant-arotherm-pure.webp',
+    imgAlt: 'Vaillant aroTHERM pure buitenunit in wit',
+    photoColor: 'wit',
+    quickFacts: [
+      { value: '4–10 kW', label: 'Vermogensklasse' },
+      { value: 'Split', label: 'Binnen- en buitendeel' },
+      { value: '55 kg', label: 'Licht buitendeel (6 kW)' },
+    ],
+    uitvoeringen: [hybride(null), allElectric(null)],
+    vermogens: [
+      { id: '45', label: 'VWL 45/7.2', sub: 'ca. 4 kW · 230 V' },
+      { id: '65', label: 'VWL 65/7.2', sub: 'ca. 6 kW · 230 V' },
+      { id: '85', label: 'VWL 85/7.2', sub: 'ca. 8 kW' },
+      { id: '105', label: 'VWL 105/7.2', sub: 'ca. 10 kW' },
+    ],
+    defaultVermogen: '65',
+    kleuren: [{ id: 'wit', name: 'Wit', hex: '#F1EFEA', img: '/img/vaillant-arotherm-pure.webp' }],
+    kleurNote: 'De aroTHERM pure is alleen leverbaar in wit.',
+    boilers: [
+      { id: 'unitower', liters: 190, persons: '3–5 personen', text: 'uniTOWER pure: binnendeel met ingebouwde 190 L boiler', price: null, recommended: true },
+      { id: '200', liters: 200, persons: '3–4 personen', text: 'Losse boiler met hydraulische module', price: null },
+    ],
+    defaultBoiler: 'unitower',
+    specs: [
+      { value: 'VWL 45 t/m 105 (4–10 kW)', label: 'Vermogens' },
+      { value: 'Split (buitendeel + binnendeel)', label: 'Type' },
+      { value: 'Tot 5,3 (A7/W35)', label: 'COP' },
+      { value: 'A+++ (35 °C) · A++ (55 °C)', label: 'Energielabel verwarmen' },
+      { value: 'Tot 60 °C', label: 'Aanvoertemperatuur' },
+      { value: 'Tot -25 °C', label: 'Werkt bij buitentemperatuur' },
+      { value: 'R32', label: 'Koudemiddel' },
+      { value: 'Ja', label: 'Koelen' },
+      { value: '702 × 975 × 396 mm, 55 kg (6 kW)', label: 'Afmetingen (h × b × d)' },
+    ],
+    waarom: [
+      { title: 'Compact en licht', text: 'Het buitendeel is klein en weegt rond de 55 kg. Makkelijk te plaatsen op een plat dak, balkon of aan de gevel.' },
+      { title: 'Slimme hybride', text: 'Met de triVAI-regeling kiest het systeem zelf de goedkoopste warmtebron: warmtepomp of cv-ketel, op basis van gas- en stroomprijs.' },
+      { title: 'Klaar voor gasvrij', text: 'Start hybride en stap later over op all-electric met de uniTOWER pure met ingebouwde boiler.' },
+    ],
+    inbegrepen,
+    faq: [
+      { q: 'Wat is het verschil met de aroTHERM plus?', a: 'De pure is een compacte split-warmtepomp (R32, tot 60 °C) en een voordelige instap. De plus is een monoblock met R290, stiller en tot 75 °C, en is alleen in antraciet leverbaar.' },
+      { q: 'Is de aroTHERM pure in zwart leverbaar?', a: 'Nee, Vaillant levert de aroTHERM pure in wit. Zoek je een donkere buitenunit, kijk dan naar de aroTHERM plus (antraciet).' },
+      { q: 'Welk vermogen heb ik nodig?', a: 'Doe de besparingscheck voor een eerste indicatie. Het exacte vermogen berekenen we tijdens de installatiecheck.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag (€ [bedrag]) hangt af van het vermogen. Indicatief, zie de actuele RVO-lijst. We helpen je met de aanvraag.' },
     ],
   },
 };

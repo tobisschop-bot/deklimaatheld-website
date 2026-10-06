@@ -1,0 +1,9 @@
+---
+import Base from '../../layouts/Base.astro';
+import Configurator from '../../components/configurator/Configurator.astro';
+import { configurators } from '../../data/configurator';
+const model = configurators['arotherm-plus'];
+---
+<Base title={`${model.name} samenstellen | De Klimaatheld`} description={`Stel je ${model.name} samen: kies hybride of all-electric, afwerking en boilervat. Indicatieve prijs direct zichtbaar.`}>
+  <Configurator model={model} />
+</Base>

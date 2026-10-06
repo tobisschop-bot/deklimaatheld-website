@@ -73,14 +73,14 @@ const stappen = [
   <section class="section">
     <div class="container">
       <span class="label">Onze warmtepompen</span>
-      <h2>Weheat warmtepompen</h2>
+      <h2>Weheat en Vaillant</h2>
       <div class="grid grid-3">
         {warmtepompen.map((w) => (
           <a class="card pump" href={kaartLink(w).href}>
             <div class="pump__img"><ProductImage src={w.img} alt={w.name} class="pump__pi" /></div>
             <span class="pump__tag">{w.tag}</span>
             <h3>{w.name}</h3>
-            <p class="pump__price">v.a. <strong>{euro(w.from)}</strong> <small>indicatief</small></p>
+            <p class="pump__price">{w.from == null ? <strong>Prijs op aanvraag</strong> : <>v.a. <strong>{euro(w.from)}</strong> <small>indicatief</small></>}</p>
             <span class="pump__link">{w.page ? 'Stel samen' : kaartLink(w).label} →</span>
           </a>
         ))}
