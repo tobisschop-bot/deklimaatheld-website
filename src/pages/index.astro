@@ -24,7 +24,30 @@ const stappen = [
       </div>
       <div id="besparingscheck"><Besparingscheck /></div>
     </div>
-    <img class="hero__mascotte" src="/img/mascotte.webp" alt="" width="640" height="619" loading="eager" decoding="async" />
+    <div class="hero__flight" aria-hidden="true">
+      <!-- Zoeflijnen: lopen schuin naar linksonder weg, alsof hij omhoog uit beeld schiet -->
+      <svg class="hero__zoef" viewBox="0 0 260 220" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="zoefWit" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity=".55" />
+            <stop offset="1" stop-color="#fff" stop-opacity="0" />
+          </linearGradient>
+          <linearGradient id="zoefRood" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#D6283A" stop-opacity=".85" />
+            <stop offset="1" stop-color="#D6283A" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        <g stroke-linecap="round" fill="none">
+          <path d="M150 70 L20 170" stroke="url(#zoefWit)" stroke-width="3" />
+          <path d="M175 95 L70 178" stroke="url(#zoefRood)" stroke-width="4" />
+          <path d="M128 52 L44 118" stroke="url(#zoefWit)" stroke-width="2" />
+          <path d="M196 128 L118 190" stroke="url(#zoefRood)" stroke-width="3" />
+          <path d="M160 140 L96 192" stroke="url(#zoefWit)" stroke-width="2" />
+        </g>
+      </svg>
+      <span class="hero__gloed"></span>
+      <img class="hero__mascotte" src="/img/mascotte.webp" alt="" width="640" height="620" loading="eager" decoding="async" />
+    </div>
   </section>
 
   <!-- COP -->
@@ -145,7 +168,13 @@ const stappen = [
   .hero h1 { color: #fff; }
   /* Mascotte: vliegt vanaf de overgang naar wit omhoog, rechtsonder in de hero */
   .hero { position: relative; padding-bottom: 116px; }
-  .hero__mascotte { position: absolute; right: 6px; bottom: -64px; width: 168px; height: auto; z-index: 2; pointer-events: none; filter: drop-shadow(0 14px 18px rgba(11,19,43,.35)); transform: rotate(-4deg); }
+  .hero__flight { position: absolute; right: 0; bottom: -70px; width: 250px; height: 220px; z-index: 2; pointer-events: none; }
+  .hero__zoef { position: absolute; left: -18px; bottom: 6px; width: 200px; height: 170px; animation: zoef 2.4s ease-in-out infinite; }
+  .hero__gloed { position: absolute; right: 30px; top: 30px; width: 170px; height: 150px; border-radius: 50%; background: radial-gradient(closest-side, rgba(214,40,58,.45), rgba(214,40,58,0)); filter: blur(6px); }
+  .hero__mascotte { position: absolute; right: 6px; bottom: 0; width: 178px; height: auto; transform: rotate(-4deg); filter: drop-shadow(0 6px 6px rgba(11,19,43,.28)); animation: zweef 3.2s ease-in-out infinite; }
+  @keyframes zweef { 0%, 100% { transform: translate(0, 0) rotate(-4deg); } 50% { transform: translate(4px, -6px) rotate(-3deg); } }
+  @keyframes zoef { 0%, 100% { opacity: .8; transform: translate(0, 0); } 50% { opacity: 1; transform: translate(-6px, 5px); } }
+  @media (prefers-reduced-motion: reduce) { .hero__mascotte, .hero__zoef { animation: none; } }
   .hero__chip { display: inline-block; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); padding: 6px 12px; border-radius: 999px; font-size: .85rem; font-weight: 600; margin-bottom: 16px; }
   .hero__lead { color: #C9CFDA; font-size: 1.1rem; max-width: 560px; }
   .hero__grid { display: grid; gap: 28px; align-items: center; }
