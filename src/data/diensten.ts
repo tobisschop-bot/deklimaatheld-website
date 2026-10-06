@@ -8,11 +8,11 @@ export interface DienstData {
   slug: string;
   meta: { title: string; description: string };
   hero: { label: string; title: string; lead: string; cta: { label: string; href: string } };
-  product: { icon: IconNaam; placeholder: string; caption?: string };
+  product: { icon: IconNaam; placeholder: string; caption?: string; img?: string; imgAlt?: string };
   keuze: {
     title: string;
     lead?: string;
-    kaarten: { tag: string; title: string; prijs: string; prijsNoot: string; tekst: string; cta: string; href: string }[];
+    kaarten: { tag: string; title: string; prijs: string; prijsNoot: string; tekst: string; cta: string; href: string; img?: string; imgAlt?: string; punten?: string[] }[];
   };
   voordelen: { title: string; items: { icon: IconNaam; title: string; tekst: string }[] };
   prijs: { title: string; items: { title: string; tekst: string }[] };
@@ -143,7 +143,7 @@ export const vloerverwarming: DienstData = {
   product: { icon: 'vloer', placeholder: '[Foto vloerverwarming]', caption: 'Leidingen in de vloer, verdeler in de meterkast of trapkast' },
   keuze: {
     title: 'Welke vloerverwarming past bij jou?',
-    lead: 'Bestaande woning of verbouwing: er is bijna altijd een oplossing.',
+    lead: 'We werken met twee methodes: infrezen in je bestaande dekvloer, of opbouw op je huidige vloer.',
     kaarten: [
       {
         tag: 'Bestaande woning',
@@ -155,11 +155,11 @@ export const vloerverwarming: DienstData = {
         href: '/offerte/?dienst=Vloerverwarming',
       },
       {
-        tag: 'Verbouwing of nieuwbouw',
-        title: 'In een nieuwe dekvloer',
+        tag: 'Als infrezen niet kan',
+        title: 'Opbouw',
         prijs: 'v.a. € [prijs] per m²',
         prijsNoot: 'incl. aanleg · indicatief',
-        tekst: 'De leidingen worden op de ondervloer gelegd en daarna afgestort met een nieuwe dekvloer.',
+        tekst: 'Een dun vloerverwarmingssysteem dat bovenop je bestaande vloer wordt gelegd en wordt afgewerkt met een dunne egalisatielaag. Handig bij bijvoorbeeld een houten of te dunne ondervloer.',
         cta: 'Vraag advies',
         href: '/offerte/?dienst=Vloerverwarming',
       },
@@ -196,6 +196,7 @@ export const vloerverwarming: DienstData = {
   faq: [
     { q: 'Is mijn vloer geschikt om in te frezen?', a: 'Dat hangt af van de dikte en het type dekvloer. Bij de opname meten en controleren we dit, zodat je vooraf weet of infrezen kan.' },
     { q: 'Welke vloerafwerking kan erop?', a: 'Tegels en natuursteen geven warmte het best door. PVC, laminaat en parket kunnen vaak ook, mits geschikt voor vloerverwarming. Check dit bij je leverancier; wij denken graag mee.' },
+    { q: 'Infrezen of opbouw?', a: 'Infrezen kan als je dekvloer dik en stevig genoeg is; je vloer wordt dan niet hoger. Opbouw is de oplossing als infrezen niet kan, bijvoorbeeld bij een houten vloer. Je vloer wordt dan iets hoger. Bij de opname adviseren we welke methode bij jouw woning past.' },
     { q: 'Hoe lang duurt de aanleg?', a: 'Dat hangt af van het aantal m² en de methode. Na de opname krijg je een planning op maat.' },
     { q: 'Kan vloerverwarming mijn radiatoren vervangen?', a: 'Vaak wel, mits de woning goed geïsoleerd is. Met een warmteverliesberekening per ruimte bepalen we of vloerverwarming genoeg is, of dat je beter kunt combineren met LT-radiatoren.' },
   ],
@@ -211,7 +212,7 @@ export const ltVerwarming: DienstData = {
   slug: 'lt-verwarming',
   meta: {
     title: 'Lage temperatuur verwarming (LT) in Den Haag – De Klimaatheld',
-    description: 'Maak je woning klaar voor een warmtepomp met lage temperatuur verwarming: LT-radiatoren, convectoren of wandverwarming, berekend per ruimte.',
+    description: 'Maak je woning klaar voor een warmtepomp met lage temperatuur verwarming: Jaga Strada en Strada Hybrid LT-radiatoren, berekend per ruimte.',
   },
   hero: {
     label: 'LT-verwarming',
@@ -219,26 +220,32 @@ export const ltVerwarming: DienstData = {
     lead: 'Lage temperatuur verwarming geeft dezelfde warmte met lager water. Zo haalt je warmtepomp het meeste rendement, zonder dat je hele vloer eruit hoeft.',
     cta: { label: 'Gratis advies aanvragen', href: '/offerte/?dienst=LT-verwarming' },
   },
-  product: { icon: 'radiator', placeholder: '[Foto LT-radiator]', caption: 'Lage temperatuur radiator of convector' },
+  product: { icon: 'radiator', placeholder: '[Foto LT-radiator]', img: '/img/jaga-strada-interieur.webp', imgAlt: 'Jaga Strada radiator in een woonkamer' },
   keuze: {
     title: 'Welke oplossing past bij jou?',
-    lead: 'We berekenen per ruimte wat nodig is. Vaak hoeven niet alle radiatoren te worden vervangen.',
+    lead: 'Wij werken met de LT-radiatoren van Jaga. We berekenen per ruimte wat nodig is; vaak hoeven niet alle radiatoren te worden vervangen.',
     kaarten: [
       {
-        tag: 'Meest gekozen',
-        title: 'LT-radiatoren',
+        tag: 'Jaga',
+        title: 'Strada',
         prijs: 'v.a. € [prijs] per radiator',
         prijsNoot: 'incl. montage · indicatief',
-        tekst: 'Grotere of ventilator-ondersteunde radiatoren (convectoren) die al bij 35–45 °C genoeg warmte geven.',
+        tekst: 'De bekende Low-H2O-radiator van Jaga: weinig water, warmt snel op en reageert direct. Werkt op je huidige cv-ketel en straks op een warmtepomp.',
+        punten: ['Volgens Jaga tot 16% zuiniger dan paneelradiatoren', '30 jaar garantie op de warmtewisselaar', 'Wit, zandstraalgrijs of off-black'],
+        img: '/img/jaga-strada.webp',
+        imgAlt: 'Jaga Strada radiator',
         cta: 'Vraag advies',
         href: '/offerte/?dienst=LT-verwarming',
       },
       {
-        tag: 'Onzichtbaar',
-        title: 'Wandverwarming',
-        prijs: 'v.a. € [prijs] per m²',
-        prijsNoot: 'incl. aanleg · indicatief',
-        tekst: 'Leidingen in de muur, weggewerkt achter stucwerk. Stralingswarmte zonder radiator aan de wand.',
+        tag: 'Jaga · met ventilator',
+        title: 'Strada Hybrid',
+        prijs: 'v.a. € [prijs] per radiator',
+        prijsNoot: 'incl. montage · indicatief',
+        tekst: 'De Strada met ingebouwde stille ventilatoren (Dynamic Boost). Haalt meer warmte uit laag water: ideaal bij een warmtepomp, en kan in de zomer ook koelen.',
+        punten: ['Volgens Jaga tot 3x meer warmteafgifte', 'Stil: onder de 30 dB(A)', 'Verwarmen én koelen'],
+        img: '/img/jaga-strada-hybrid.webp',
+        imgAlt: 'Jaga Strada Hybrid radiator met ventilatoren',
         cta: 'Vraag advies',
         href: '/offerte/?dienst=LT-verwarming',
       },
@@ -275,6 +282,7 @@ export const ltVerwarming: DienstData = {
     { q: 'Wat is lage temperatuur verwarming?', a: 'Een verwarmingssysteem dat je woning warm krijgt met water van ongeveer 35 tot 45 °C, in plaats van de 60 tot 80 °C van een traditionele cv-ketel. Dat is precies waar een warmtepomp het zuinigst werkt.' },
     { q: 'Moet ik al mijn radiatoren vervangen?', a: 'Meestal niet. Met een warmteverliesberekening per ruimte zien we welke radiatoren groot genoeg zijn en welke vervangen moeten worden.' },
     { q: 'Is LT-verwarming nodig voor een hybride warmtepomp?', a: 'Niet altijd, maar het verhoogt het rendement. Bij een all-electric warmtepomp is een goed afgestemd LT-systeem extra belangrijk.' },
+    { q: 'Strada of Strada Hybrid?', a: 'De Strada is een zuinige LT-radiator die prima werkt bij een goed geïsoleerde woning. De Strada Hybrid heeft ventilatoren en geeft daardoor meer warmte bij lage watertemperatuur; hij kan ook koelen. In ruimtes met veel warmtevraag of bij een all-electric warmtepomp is de Hybrid vaak de beste keuze.' },
     { q: 'Kan ik LT combineren met vloerverwarming?', a: 'Ja. Veel woningen hebben vloerverwarming beneden en LT-radiatoren boven. We stemmen alles op elkaar af.' },
   ],
   cta: {
