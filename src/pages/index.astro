@@ -85,9 +85,9 @@ const stappen = [
   <section class="section">
     <div class="container">
       <span class="label">Onze warmtepompen</span>
-      <h2>Weheat, Vaillant, Daikin en Haier</h2>
+      <h2>Weheat warmtepompen</h2>
       <div class="grid grid-3">
-        {warmtepompen.map((w) => (
+        {warmtepompen.filter((w) => w.merk === 'Weheat').map((w) => (
           <a class="card pump" href={kaartLink(w).href}>
             <div class="pump__img"><ProductImage src={w.img} alt={w.name} class="pump__pi" /></div>
             <span class="pump__tag">{w.tag}</span>
@@ -97,7 +97,7 @@ const stappen = [
           </a>
         ))}
       </div>
-      <p style="margin-top:24px"><Button href="/warmtepompen/" variant="outline">Alle warmtepompen</Button></p>
+      <div class="pump__meer"><p>Ook Vaillant, Daikin en Haier in ons assortiment.</p><Button href="/warmtepompen/" full>Alle warmtepompen →</Button></div>
     </div>
   </section>
 
@@ -192,6 +192,8 @@ const stappen = [
   .pump__img { background: var(--bg); border-radius: 8px; aspect-ratio: 4/3; display: grid; place-items: center; padding: 16px; margin-bottom: 14px; }
   .pump__img :global(.pump__pi) { width: 80%; filter: drop-shadow(0 10px 12px rgba(20,26,46,.18)); }
   .pump__img > img { max-height: 100%; object-fit: contain; }
+  .pump__meer { margin-top: 24px; display: grid; gap: 10px; text-align: center; }
+  .pump__meer p { margin: 0; color: var(--muted); font-size: .95rem; }
   .pump__tag { font-size: .75rem; color: var(--muted); font-weight: 600; }
   .pump__price { margin: 0 0 8px; }
   .pump__price small { color: var(--muted); }
