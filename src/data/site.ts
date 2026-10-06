@@ -15,6 +15,8 @@ export const site = {
 export const nav = [
   { label: 'Warmtepompen', href: '/warmtepompen/' },
   { label: 'Airco', href: '/airco/' },
+  { label: 'Vloerverwarming', href: '/vloerverwarming/' },
+  { label: 'LT-verwarming', href: '/lt-verwarming/' },
   { label: 'Subsidie', href: '/subsidie/' },
   { label: 'Over ons', href: '/over-ons/' },
 ];
