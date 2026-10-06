@@ -103,6 +103,23 @@ const uid = `cfg-${m.slug}`;
       </div>
     </fieldset>
 
+    {m.bediening && (
+      <fieldset class="step">
+        <legend class="step__head"><span class="step__n">{nr()}</span><span><span class="step__title">{m.bediening.titel}</span><span class="step__sub">{m.bediening.sub}</span></span></legend>
+        <div class="tiles">
+          {m.bediening.opties.map((o, i) => (
+            <label class="tile">
+              <input class="sr" type="radio" name={`${uid}-c`} value={o.id} data-name={`Madoka ${o.naam.toLowerCase()}`} checked={i === 0} />
+              <span class="tile__body">
+                <img src={o.img} alt={`Daikin Madoka ${o.naam.toLowerCase()}`} width="300" height="300" loading="lazy" />
+                <span class="tile__name">{o.naam}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    )}
+
     <!-- Stap: boilervat (alleen bij all-electric) -->
     {toonBoiler && <fieldset class="step cfg__boiler" data-boiler-step>
       <legend class="step__head"><span class="step__n">{nr()}</span><span><span class="step__title">Boilervat</span><span class="step__sub">Alleen nodig bij all-electric, voor warm douche- en tapwater.</span></span></legend>
@@ -137,7 +154,7 @@ const uid = `cfg-${m.slug}`;
     uitvoering={startU.name}
     kleur={startK.name}
     total={startTotal}
-    boiler={[startV?.label, startU.needsBoiler ? bNaam(startB) : ''].filter(Boolean).join(' · ')}
+    boiler={[startV?.label, m.bediening ? `Madoka ${m.bediening.opties[0].naam.toLowerCase()}` : '', startU.needsBoiler ? bNaam(startB) : ''].filter(Boolean).join(' · ')}
     href={`/offerte/?${new URLSearchParams({ model: m.slug, uitvoering: startU.id, ...(startV ? { vermogen: startV.label } : {}), kleur: startK.id, ...(startU.needsBoiler ? { boiler: startB.id } : {}) })}`}
   />
 </div>
@@ -155,6 +172,7 @@ const uid = `cfg-${m.slug}`;
       const k = checked('k')!;
       const b = checked('b');
       const v = checked('v');
+      const c = checked('c');
       const needsBoiler = u.dataset.boiler === '1';
       // Basisprijs: uit het vermogen (per uitvoering) of uit de uitvoering
       let base: number | null = u.dataset.price === '' ? null : Number(u.dataset.price);
@@ -178,9 +196,10 @@ const uid = `cfg-${m.slug}`;
       const params = new URLSearchParams({ model: root.dataset.model!, uitvoering: u.value });
       if (v) params.set('vermogen', v.dataset.name!);
       params.set('kleur', k.value);
+      if (c) params.set('bediening', c.dataset.name!);
       if (needsBoiler && b) params.set('boiler', b.value);
 
-      const parts = [root.dataset.short, u.dataset.name, v?.dataset.name, k.dataset.name];
+      const parts = [root.dataset.short, u.dataset.name, v?.dataset.name, k.dataset.name, c?.dataset.name];
       if (needsBoiler && b) parts.push(b.dataset.name!);
 
       // Foto wisselt mee met de kleur (als er een foto in die kleur is)
@@ -202,6 +221,13 @@ const uid = `cfg-${m.slug}`;
 </script>
 
 <style>
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .tile { cursor: pointer; }
+  .tile__body { display: grid; gap: 6px; justify-items: center; background: var(--card, #fff); border: 2px solid var(--border); border-radius: var(--radius); padding: 10px 8px; text-align: center; transition: border-color .15s, box-shadow .15s; }
+  .tile__body img { width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; filter: drop-shadow(0 6px 8px rgba(20,26,46,.18)); }
+  .tile__name { font-weight: 700; font-size: .9rem; }
+  .tile input:checked + .tile__body { border-color: var(--red); box-shadow: 0 0 0 3px rgba(214,40,58,.12); }
+  .tile input:focus-visible + .tile__body { outline: 2px solid var(--navy); outline-offset: 2px; }
   .sr { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
 
   /* Foto */

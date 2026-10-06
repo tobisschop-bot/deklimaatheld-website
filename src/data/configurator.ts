@@ -37,6 +37,8 @@ export interface ConfigModel {
   uitvoeringen: Uitvoering[];
   vermogens?: Vermogen[]; // optioneel: extra stap 'Kies het vermogen'
   defaultVermogen?: string;
+  /** optionele keuzestap met plaatjes, bijv. Daikin Madoka-thermostaat in 3 kleuren */
+  bediening?: { titel: string; sub: string; opties: { id: string; naam: string; img: string; note?: string }[] };
   kleuren: Kleur[];
   kleurNote?: string; // bijv. "alleen leverbaar in antraciet"
   boilers: Boiler[];
@@ -69,6 +71,17 @@ const allElectric = (price: number | null): Uitvoering => ({
   id: 'all-electric', name: 'All-electric', badge: 'Gasvrij', price, needsBoiler: true,
   text: 'Verwarmt je woning en tapwater zonder gas. Hiervoor is een boilervat nodig.',
 });
+
+// Daikin Madoka-bediening (BRC1HHD) in drie kleuren
+const madoka: NonNullable<ConfigModel['bediening']> = {
+  titel: 'Kies je Madoka-bediening',
+  sub: 'De Daikin Madoka-thermostaat in de kleur die bij je interieur past.',
+  opties: [
+    { id: 'madoka-wit', naam: 'Wit', img: '/img/daikin-madoka-wit.webp' },
+    { id: 'madoka-zilver', naam: 'Zilver', img: '/img/daikin-madoka-zilver.webp' },
+    { id: 'madoka-zwart', naam: 'Zwart', img: '/img/daikin-madoka-zwart.webp' },
+  ],
+};
 
 // ---- Modellen ----
 export const configurators: Record<string, ConfigModel> = {
@@ -343,6 +356,7 @@ export const configurators: Record<string, ConfigModel> = {
       { id: '14', label: '14 kW', sub: '1- of 3-fase' },
     ],
     defaultVermogen: '8',
+    bediening: madoka,
     kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3B3D40', img: '/img/daikin-altherma-4h.webp' }],
     kleurNote: 'De Altherma 4 H buitenunit is alleen leverbaar in antraciet.',
     boilers: [
@@ -398,6 +412,7 @@ export const configurators: Record<string, ConfigModel> = {
       { id: 'hybride', name: 'Op je huidige ketel', badge: 'Bestaande ketel', price: null, needsBoiler: false, text: 'De warmtepomp wordt gekoppeld aan je bestaande cv-ketel. Wij checken of jouw ketel geschikt is.' },
       { id: 'hybride-ketel', name: 'Met nieuwe Daikin-ketel', badge: 'Ketel vervangen', price: null, needsBoiler: false, text: 'Compleet systeem met een nieuwe Daikin cv-ketel (28 of 32 kW) als binnendeel, voor verwarming en warm water.' },
     ],
+    bediening: madoka,
     kleuren: [{ id: 'wit', name: 'Wit', hex: '#F4F5F3', img: '/img/daikin-altherma-hybride.webp' }],
     kleurNote: 'De buitenunit van de Altherma H Hybride is alleen leverbaar in wit.',
     boilers,
