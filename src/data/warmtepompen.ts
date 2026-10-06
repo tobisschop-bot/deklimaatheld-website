@@ -1,4 +1,4 @@
-// Warmtepompen (Daikin + Weheat + Vaillant), in deze volgorde getoond. Prijzen zijn INDICATIEF (bron: De Warmteman) – vervangen door eigen prijzen.
+// Warmtepompen (Weheat, Vaillant, Daikin), in deze volgorde getoond. Prijzen zijn INDICATIEF (bron: De Warmteman) – vervangen door eigen prijzen.
 const CDN = 'https://cdn.prod.website-files.com/67ed5695314f69c537693240/';
 
 // Neutrale placeholder-afbeelding voor modellen zonder bruikbare productfoto
@@ -27,14 +27,14 @@ export type Warmtepomp = {
 };
 
 export const warmtepompen: Warmtepomp[] = [
-  { slug: 'altherma-4h', merk: 'Daikin', name: 'Daikin Altherma 4 H', tag: 'Krachtig, tot 75 °C, in antraciet', from: null, img: '/img/daikin-altherma-4h.webp', photo: true, page: '/warmtepompen/altherma-4h/', types: ['all-electric'], badge: 'All-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
-  { slug: 'altherma-hybride', merk: 'Daikin', name: 'Daikin Altherma H Hybride', tag: 'Hybride met cv-ketel, in wit', from: null, img: '/img/daikin-altherma-hybride.webp', photo: true, page: '/warmtepompen/altherma-hybride/', types: ['hybride'], badge: 'Hybride', includes: 'Inclusief installatie & inbedrijfstelling' },
   { slug: 'flint', merk: 'Weheat', name: 'Weheat Flint P40', tag: 'Compact & scherp geprijsd', from: 4248, img: CDN + '680a992ae6196a42fa131878_Weheat%20warmtepomp-flint.webp', photo: true, page: '/warmtepompen/flint/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
   { slug: 'sparrow', merk: 'Weheat', name: 'Weheat Sparrow P60', tag: 'Populaire allrounder', from: 5722, img: CDN + '680a98ecbde35b827bb60c63_Weheat%20warmtepomop-sparrow.webp', photo: true, page: '/warmtepompen/sparrow/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
   { slug: 'blackbird', merk: 'Weheat', name: 'Weheat Blackbird P80', tag: 'Voor grotere woningen', from: 6498, img: CDN + '68134c373abc353d78e00443_Weheat_Blackbird_Products%20(1).avif', photo: true, page: '/warmtepompen/blackbird/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
   { slug: 'swift', merk: 'Weheat', name: 'Weheat Swift', tag: 'Onzichtbaar in het schuine dak', from: 9851, img: '/img/weheat-swift.webp', photo: true, page: '/warmtepompen/swift/', types: ['dakmontage'], badge: 'Dakintegratie', includes: 'Inclusief dakmontage' },
   { slug: 'arotherm-pure', merk: 'Vaillant', name: 'Vaillant aroTHERM pure', tag: 'Compacte split, in wit', from: null, img: '/img/vaillant-arotherm-pure.webp', photo: true, page: '/warmtepompen/arotherm-pure/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric', includes: 'Inclusief installatie & inbedrijfstelling' },
   { slug: 'arotherm-plus', merk: 'Vaillant', name: 'Vaillant aroTHERM plus', tag: 'Stil, R290, in antraciet', from: null, img: '/img/vaillant-arotherm-plus.webp', photo: true, page: '/warmtepompen/arotherm-plus/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'altherma-4h', merk: 'Daikin', name: 'Daikin Altherma 4 H', tag: 'Krachtig, tot 75 °C, in antraciet', from: null, img: '/img/daikin-altherma-4h.webp', photo: true, page: '/warmtepompen/altherma-4h/', types: ['all-electric'], badge: 'All-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'altherma-hybride', merk: 'Daikin', name: 'Daikin Altherma H Hybride', tag: 'Hybride met cv-ketel, in wit', from: null, img: '/img/daikin-altherma-hybride.webp', photo: true, page: '/warmtepompen/altherma-hybride/', types: ['hybride'], badge: 'Hybride', includes: 'Inclusief installatie & inbedrijfstelling' },
 ];
 
 /** Link + knoptekst voor een warmtepompkaart */
