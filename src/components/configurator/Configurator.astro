@@ -21,7 +21,8 @@ const startV = m.vermogens?.find((v) => v.id === m.defaultVermogen) ?? m.vermoge
 const prijsVan = (uId: string, v = startV) => (v ? (v.prijs?.[uId as 'hybride'] ?? null) : (m.uitvoeringen.find((u) => u.id === uId)?.price ?? null));
 const startPrijs = prijsVan(startU.id);
 const startTotal = startPrijs == null || (startU.needsBoiler && startB.price == null) ? null : startPrijs + (startU.needsBoiler ? startB.price ?? 0 : 0);
-const bNaam = (b: { id: string; liters: number }) => (b.id === 'unitower' ? 'uniTOWER 190 L' : `${b.liters} L`);
+const bNaam = (b: { naam?: string; liters: number }) => (b.naam ? `${b.naam} ${b.liters} L` : `${b.liters} L`);
+const toonBoiler = m.uitvoeringen.some((u) => u.needsBoiler);
 let n = 0; const nr = () => ++n; // stapnummers (vermogen-stap is optioneel)
 const uid = `cfg-${m.slug}`;
 ---
@@ -48,7 +49,7 @@ const uid = `cfg-${m.slug}`;
     <!-- Stap 1: uitvoering -->
     <fieldset class="step">
       <legend class="step__head"><span class="step__n">{nr()}</span><span><span class="step__title">Kies je uitvoering</span><span class="step__sub">Bepaalt of je cv-ketel blijft of helemaal verdwijnt.</span></span></legend>
-      <div class="opts opts--2">
+      <div class:list={["opts", { "opts--2": m.uitvoeringen.length > 1 }]}>
         {m.uitvoeringen.map((u) => (
           <label class="opt">
             <input class="sr" type="radio" name={`${uid}-u`} value={u.id} data-price={u.price ?? ''} data-boiler={u.needsBoiler ? '1' : '0'} data-name={u.name} checked={u.id === startU.id} />
@@ -102,8 +103,8 @@ const uid = `cfg-${m.slug}`;
       </div>
     </fieldset>
 
-    <!-- Stap 3: boilervat (alleen bij all-electric) -->
-    <fieldset class="step cfg__boiler" data-boiler-step>
+    <!-- Stap: boilervat (alleen bij all-electric) -->
+    {toonBoiler && <fieldset class="step cfg__boiler" data-boiler-step>
       <legend class="step__head"><span class="step__n">{nr()}</span><span><span class="step__title">Boilervat</span><span class="step__sub">Alleen nodig bij all-electric, voor warm douche- en tapwater.</span></span></legend>
       <p class="boiler-off" data-boiler-off hidden>Bij <strong>hybride</strong> levert je cv-ketel het warme tapwater, dus een boilervat is niet nodig. Kies all-electric om een boilervat te selecteren.</p>
       <div class="opts">
@@ -112,7 +113,7 @@ const uid = `cfg-${m.slug}`;
             <input class="sr" type="radio" name={`${uid}-b`} value={b.id} data-price={b.price ?? ''} data-name={bNaam(b)} checked={b.id === startB.id} />
             <span class="opt__body">
               <span class="opt__main">
-                <span class="opt__name">{b.id === 'unitower' ? 'uniTOWER (190 liter)' : `${b.liters} liter`} {b.recommended && <span class="tag">Aanbevolen</span>}</span>
+                <span class="opt__name">{b.naam ? `${b.naam} (${b.liters} liter)` : `${b.liters} liter`} {b.recommended && <span class="tag">Aanbevolen</span>}</span>
                 <span class="opt__text">{b.persons} · {b.text}</span>
               </span>
               <span class="opt__plus">{b.price == null ? 'Op aanvraag' : `+ ${euro(b.price)}`}</span>
@@ -120,7 +121,7 @@ const uid = `cfg-${m.slug}`;
           </label>
         ))}
       </div>
-    </fieldset>
+    </fieldset>}
 
     <aside class="isde">
       <strong>ISDE-subsidie: € [bedrag]</strong>
@@ -146,8 +147,8 @@ const uid = `cfg-${m.slug}`;
   document.querySelectorAll<HTMLElement>('[data-cfg]').forEach((root) => {
     const q = <T extends Element>(s: string) => root.querySelector<T>(s);
     const checked = (suffix: string) => q<HTMLInputElement>(`input[name$="-${suffix}"]:checked`);
-    const boilerStep = q<HTMLFieldSetElement>('[data-boiler-step]')!;
-    const boilerOff = q<HTMLElement>('[data-boiler-off]')!;
+    const boilerStep = q<HTMLFieldSetElement>('[data-boiler-step]');
+    const boilerOff = q<HTMLElement>('[data-boiler-off]');
 
     const update = () => {
       const u = checked('u')!;
@@ -167,9 +168,11 @@ const uid = `cfg-${m.slug}`;
       }
       const bPrice = needsBoiler && b ? (b.dataset.price === '' ? null : Number(b.dataset.price)) : 0;
 
-      boilerStep.disabled = !needsBoiler;
-      boilerStep.classList.toggle('is-off', !needsBoiler);
-      boilerOff.hidden = needsBoiler;
+      if (boilerStep && boilerOff) {
+        boilerStep.disabled = !needsBoiler;
+        boilerStep.classList.toggle('is-off', !needsBoiler);
+        boilerOff.hidden = needsBoiler;
+      }
 
       const total = base == null || bPrice == null ? null : base + bPrice;
       const params = new URLSearchParams({ model: root.dataset.model!, uitvoering: u.value });

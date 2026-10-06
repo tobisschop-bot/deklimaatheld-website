@@ -6,7 +6,7 @@ import { warmtepompen } from './warmtepompen';
 
 const img = (slug: string) => warmtepompen.find((w) => w.slug === slug)?.img ?? '';
 
-export type UitvoeringId = 'hybride' | 'all-electric';
+export type UitvoeringId = 'hybride' | 'hybride-ketel' | 'all-electric';
 
 export interface Uitvoering {
   id: UitvoeringId;
@@ -17,7 +17,7 @@ export interface Uitvoering {
   needsBoiler: boolean;
 }
 export interface Kleur { id: string; name: string; hex: string; note?: string; img?: string } // img: foto in deze kleur (zelfde kader als model.img)
-export interface Boiler { id: string; liters: number; persons: string; text: string; price: number | null; recommended?: boolean } // null = op aanvraag
+export interface Boiler { id: string; naam?: string; liters: number; persons: string; text: string; price: number | null; recommended?: boolean } // null = op aanvraag
 /** Vermogensvariant (alleen bij modellen met meerdere vermogens, bijv. Vaillant). prijs per uitvoering; null/ontbrekend = op aanvraag */
 export interface Vermogen { id: string; label: string; sub: string; prijs?: Partial<Record<UitvoeringId, number | null>> }
 export interface Fact { value: string; label: string }
@@ -317,6 +317,116 @@ export const configurators: Record<string, ConfigModel> = {
     ],
   },
 
+  // ---- Daikin ----
+  // Bron specs: daikin.nl (consumenten- en installateurspagina's, persbericht Altherma 4 H april 2025).
+  // PRIJZEN VOLGEN (Tycho) – tot die tijd 'op aanvraag'.
+  'altherma-4h': {
+    slug: 'altherma-4h',
+    name: 'Daikin Altherma 4 H',
+    short: 'Altherma 4 H',
+    title: 'Stel jouw Altherma 4 H samen',
+    lead: 'De krachtige hogetemperatuurwarmtepomp van Daikin op natuurlijk R290. Tot 75 °C aanvoer, dus ideaal om je cv-ketel volledig te vervangen, ook met gewone radiatoren.',
+    img: '/img/daikin-altherma-4h.webp',
+    imgAlt: 'Daikin Altherma 4 H buitenunit in antraciet',
+    photoColor: 'antraciet',
+    quickFacts: [
+      { value: '6–14 kW', label: 'Vermogensklasse' },
+      { value: '70–75 °C', label: 'Aanvoer, ook bij -15 °C' },
+      { value: '28 dB(A)', label: 'Op 3 m (6 kW)' },
+    ],
+    uitvoeringen: [allElectric(null)],
+    vermogens: [
+      { id: '6', label: '6 kW', sub: '1-fase' },
+      { id: '8', label: '8 kW', sub: '1- of 3-fase' },
+      { id: '10', label: '10 kW', sub: '1- of 3-fase' },
+      { id: '12', label: '12 kW', sub: '1- of 3-fase' },
+      { id: '14', label: '14 kW', sub: '1- of 3-fase' },
+    ],
+    defaultVermogen: '8',
+    kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3B3D40', img: '/img/daikin-altherma-4h.webp' }],
+    kleurNote: 'De Altherma 4 H buitenunit is alleen leverbaar in antraciet.',
+    boilers: [
+      { id: 'f180', naam: 'Vloermodel', liters: 180, persons: '2–4 personen', text: 'Binnenunit met ingebouwde warmtapwatertank', price: null, recommended: true },
+      { id: 'f230', naam: 'Vloermodel', liters: 230, persons: '4+ personen', text: 'Binnenunit met ingebouwde warmtapwatertank', price: null },
+      { id: 'w150', naam: 'Wandmodel + tank', liters: 150, persons: '1–2 personen', text: 'Compacte wandunit met losse tank', price: null },
+      { id: 'w200', naam: 'Wandmodel + tank', liters: 200, persons: '3–4 personen', text: 'Compacte wandunit met losse tank', price: null },
+      { id: 'w300', naam: 'Wandmodel + tank', liters: 300, persons: '5+ personen', text: 'Compacte wandunit met losse tank', price: null },
+    ],
+    defaultBoiler: 'f180',
+    specs: [
+      { value: '6, 8, 10, 12 en 14 kW', label: 'Vermogens' },
+      { value: 'Tot 70–75 °C (ook bij -15 °C)', label: 'Aanvoertemperatuur' },
+      { value: 'A+++ bij 35 °C én 55 °C', label: 'Energielabel verwarmen' },
+      { value: 'Tot A+', label: 'Energielabel warm tapwater' },
+      { value: '28 dB(A) op 3 m (6 kW)', label: 'Geluidsdruk buitendeel' },
+      { value: 'Tot -28 °C', label: 'Werkt bij buitentemperatuur' },
+      { value: 'R290 (propaan)', label: 'Koudemiddel' },
+      { value: 'Ja', label: 'Koelen' },
+      { value: 'Vloermodel (180/230 L) of wandmodel', label: 'Binnenunit' },
+      { value: '1.122 × 1.330 × 600 mm', label: 'Buitenunit (h × b × d)' },
+    ],
+    waarom: [
+      { title: 'Vervangt je cv-ketel volledig', text: 'Tot 70–75 °C aanvoertemperatuur met alleen de warmtepomp, zelfs bij -15 °C buiten. Je bestaande radiatoren kunnen vaak blijven.' },
+      { title: 'Stilste in zijn klasse', text: 'Volgens Daikin slechts 28 dB(A) op 3 meter afstand (6 kW-model).' },
+      { title: 'Natuurlijk koudemiddel', text: 'R290 (propaan) heeft een GWP van bijna nul en is klaar voor de toekomst.' },
+      { title: 'Slim te bedienen', text: 'Regelen via de Onecta-app, Google Assistant of Amazon Alexa. Smart Grid Ready.' },
+    ],
+    inbegrepen,
+    faq: [
+      { q: 'Vloermodel of wandmodel?', a: 'Het vloermodel heeft een ingebouwde warmtapwatertank van 180 of 230 liter. Het wandmodel is compacter en combineer je met een losse tank van 150 tot 300 liter. We adviseren je bij de installatiecheck.' },
+      { q: 'Kan de Altherma 4 H hybride met mijn cv-ketel?', a: 'De Altherma 4 H is bedoeld om je cv-ketel volledig te vervangen. Wil je je ketel houden, kijk dan naar de Daikin Altherma H Hybride.' },
+      { q: 'Is de Altherma 4 H in wit leverbaar?', a: 'Nee, de buitenunit is antraciet. De Daikin Altherma H Hybride heeft een witte buitenunit.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag (€ [bedrag]) hangt af van het vermogen. Indicatief, zie de actuele RVO-lijst. We helpen je met de aanvraag.' },
+    ],
+  },
+
+  'altherma-hybride': {
+    slug: 'altherma-hybride',
+    name: 'Daikin Altherma H Hybride',
+    short: 'Altherma H Hybride',
+    title: 'Stel jouw Altherma Hybride samen',
+    lead: 'Een compacte 4 kW-warmtepomp die samenwerkt met een cv-ketel. Het systeem kiest zelf de zuinigste warmtebron, zodat je flink minder gas verbruikt.',
+    img: '/img/daikin-altherma-hybride.webp',
+    imgAlt: 'Daikin Altherma H Hybride buitenunit in wit',
+    photoColor: 'wit',
+    quickFacts: [
+      { value: '4 kW', label: 'Warmtepomp (monobloc)' },
+      { value: '37 dB(A)', label: 'Geluidsdruk buitendeel' },
+      { value: '45 kg', label: 'Licht buitendeel' },
+    ],
+    uitvoeringen: [
+      { id: 'hybride', name: 'Op je huidige ketel', badge: 'Bestaande ketel', price: null, needsBoiler: false, text: 'De warmtepomp wordt gekoppeld aan je bestaande cv-ketel. Wij checken of jouw ketel geschikt is.' },
+      { id: 'hybride-ketel', name: 'Met nieuwe Daikin-ketel', badge: 'Ketel vervangen', price: null, needsBoiler: false, text: 'Compleet systeem met een nieuwe Daikin cv-ketel (28 of 32 kW) als binnendeel, voor verwarming en warm water.' },
+    ],
+    kleuren: [{ id: 'wit', name: 'Wit', hex: '#F4F5F3', img: '/img/daikin-altherma-hybride.webp' }],
+    kleurNote: 'De buitenunit van de Altherma H Hybride is alleen leverbaar in wit.',
+    boilers,
+    defaultBoiler: '200',
+    specs: [
+      { value: '4 kW (nominaal 3,8 kW)', label: 'Vermogen warmtepomp' },
+      { value: '4,49', label: 'COP' },
+      { value: '3,26–3,28', label: 'SCOP (systeem)' },
+      { value: 'A++ (35 °C)', label: 'Energielabel verwarmen' },
+      { value: '37 dB(A) · geluidsvermogen 57,8 dB(A)', label: 'Geluid buitendeel' },
+      { value: 'R32', label: 'Koudemiddel' },
+      { value: 'Tot 65 °C', label: 'Warm tapwater (via ketel)' },
+      { value: '745 × 845 × 329 mm, 45 kg', label: 'Buitenunit (h × b × d)' },
+      { value: 'Daikin cv-ketel 28 of 32 kW (optioneel)', label: 'Binnendeel' },
+    ],
+    waarom: [
+      { title: 'Direct minder gas', text: 'De warmtepomp neemt het grootste deel van de verwarming over. Daikin spreekt van tot 80% minder gasverbruik.' },
+      { title: 'Kiest zelf de zuinigste bron', text: 'Het systeem schakelt slim tussen warmtepomp en ketel op basis van warmtevraag, energieprijzen en buitentemperatuur.' },
+      { title: 'Compact en licht', text: 'Het buitendeel weegt 45 kg en past vaak op een schuurtje, plat dak of aan de gevel.' },
+    ],
+    inbegrepen,
+    faq: [
+      { q: 'Kan ik mijn huidige cv-ketel houden?', a: 'Vaak wel. Bij de installatiecheck kijken we of jouw ketel geschikt is. Is hij oud, dan is de combinatie met een nieuwe Daikin-ketel vaak slimmer.' },
+      { q: 'Is de Altherma Hybride in zwart leverbaar?', a: 'Nee, de buitenunit is wit. Zoek je een donkere unit, kijk dan naar de Daikin Altherma 4 H (antraciet).' },
+      { q: 'Kan ik later volledig gasvrij?', a: 'Deze hybride is gemaakt om samen met een ketel te werken. Wil je nu of later helemaal van het gas af, dan is de Altherma 4 H de logische keuze.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag is € [bedrag] (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag.' },
+    ],
+  },
+
   // ---- Vaillant ----
   // Bron specs: vaillant.nl (aroTHERM plus, VWL ../8.1 A) en groothandel-/fabrieksgegevens (aroTHERM pure, VWL ../7.2 AS).
   // PRIJZEN VOLGEN (Tycho) – tot die tijd 'op aanvraag'.
@@ -346,7 +456,7 @@ export const configurators: Record<string, ConfigModel> = {
     kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3A3F44', img: '/img/vaillant-arotherm-plus.webp' }],
     kleurNote: 'De aroTHERM plus is alleen leverbaar in antraciet. Optioneel met designplint.',
     boilers: [
-      { id: 'unitower', liters: 190, persons: '3–5 personen', text: 'uniTOWER: binnendeel met ingebouwde 190 L boiler, tot 376 L douchewater van 40 °C', price: null, recommended: true },
+      { id: 'unitower', naam: 'uniTOWER', liters: 190, persons: '3–5 personen', text: 'uniTOWER: binnendeel met ingebouwde 190 L boiler, tot 376 L douchewater van 40 °C', price: null, recommended: true },
       { id: '200', liters: 200, persons: '3–4 personen', text: 'Losse warmtepompboiler', price: null },
       { id: '300', liters: 300, persons: '5+ personen', text: 'Losse warmtepompboiler', price: null },
     ],
@@ -402,7 +512,7 @@ export const configurators: Record<string, ConfigModel> = {
     kleuren: [{ id: 'wit', name: 'Wit', hex: '#F1EFEA', img: '/img/vaillant-arotherm-pure.webp' }],
     kleurNote: 'De aroTHERM pure is alleen leverbaar in wit.',
     boilers: [
-      { id: 'unitower', liters: 190, persons: '3–5 personen', text: 'uniTOWER pure: binnendeel met ingebouwde 190 L boiler', price: null, recommended: true },
+      { id: 'unitower', naam: 'uniTOWER pure', liters: 190, persons: '3–5 personen', text: 'uniTOWER pure: binnendeel met ingebouwde 190 L boiler', price: null, recommended: true },
       { id: '200', liters: 200, persons: '3–4 personen', text: 'Losse boiler met hydraulische module', price: null },
     ],
     defaultBoiler: 'unitower',
