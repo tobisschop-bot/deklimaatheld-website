@@ -57,8 +57,8 @@ export const installaties: { id: InstallatieId; naam: string; sub: string }[] = 
 // Hybride is duurder: ook de cv-ketel wordt nagekeken.
 // Airco: prijs per buitendeel incl. 1 binnendeel; reinigen kost ± 2 uur + reistijd.
 export const prijzen: Record<InstallatieId, Partial<Record<PakketId, number>>> = {
-  'lucht-water': { basis: 12.5, zorgeloos: 27.5, compleet: 39.5 },
-  hybride: { basis: 17.5, zorgeloos: 32.5, compleet: 44.5 },
+  'lucht-water': { basis: 16.5, zorgeloos: 27.5, compleet: 39.5 },
+  hybride: { basis: 21.5, zorgeloos: 32.5, compleet: 44.5 },
   airco: { airco: 19.5 },
   'cv-ketel': { ketel: 11.5 },
 };
