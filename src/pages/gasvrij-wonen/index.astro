@@ -1,0 +1,74 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+const redenen = [
+  { t: 'Meer comfort', p: 'Een warmtepomp verwarmt rustig en gelijkmatig op lage temperatuur. Geen koude hoeken en geen pieken: het hele huis blijft constant op temperatuur. Dat merken onze klanten na de overstap het meest.' },
+  { t: 'Lagere energierekening', p: 'Een goed ontworpen warmtepomp haalt het grootste deel van zijn warmte gratis uit de buitenlucht. Je betaalt alleen de stroom om die warmte binnen te brengen, en je bent minder afhankelijk van de gasprijs.' },
+  { t: 'Beter voor het milieu', p: 'Je verbrandt thuis geen gas meer en stoot dus geen CO₂ uit bij het verwarmen. Met stroom van zonnepanelen of groene stroom wordt de winst nog groter.' },
+];
+---
+<Base title="Gasvrij of hybride wonen – De Klimaatheld" description="Advies over gasvrij of hybride wonen: meer comfort, lagere kosten en beter voor het milieu.">
+  <PageHero label="Advies" title="Gasvrij of hybride wonen" lead="Wij staan achter onze warmtepompen en helpen je stap voor stap van het gas af. Met een systeem dat écht bij je huis past." />
+
+  <section class="section">
+    <div class="container narrow">
+      <h2>Waarom van het gas af?</h2>
+      <div class="gw__kaarten">
+        {redenen.map(r => (<div class="gw__kaart"><h3>{r.t}</h3><p>{r.p}</p></div>))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section gw__alt">
+    <div class="container narrow">
+      <h2>Hybride of all-electric?</h2>
+      <div class="gw__keuze">
+        <div class="gw__kaart">
+          <span class="gw__pill">Hybride</span>
+          <h3>De eerste stap</h3>
+          <p>De warmtepomp doet het grootste deel van het werk; je cv-ketel springt alleen bij op de koudste dagen en voor warm tapwater. Ideaal als je huis nog niet volledig geïsoleerd is of als je het geleidelijk wilt doen.</p>
+        </div>
+        <div class="gw__kaart">
+          <span class="gw__pill">All-electric</span>
+          <h3>Helemaal gasvrij</h3>
+          <p>De warmtepomp verzorgt alle verwarming én warm tapwater via een boiler. Geen gasaansluiting meer nodig, dus ook geen vastrecht voor gas. Past het best bij een redelijk geïsoleerd huis.</p>
+        </div>
+      </div>
+      <p>Twijfel je? We kijken samen naar je woning, isolatie en afgiftesysteem en adviseren eerlijk wat het beste werkt. Soms is hybride nu slim en stap je later over.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container narrow">
+      <h2>Toekomstbestendig met R290</h2>
+      <p>We werken met warmtepompen op <strong>R290 (propaan)</strong>, een natuurlijk koudemiddel. Het broeikaseffect daarvan (GWP) is ongeveer <strong>3</strong>, tegenover zo'n 675 voor R32 en ruim 2000 voor het oudere R410A. Bovendien worden synthetische koudemiddelen in Europa steeds verder beperkt, dus met R290 zit je ook op de lange termijn goed.</p>
+      <p>R290 haalt daarnaast hoge aanvoertemperaturen, wat handig is als je bestaande radiatoren wilt blijven gebruiken.</p>
+    </div>
+  </section>
+
+  <section class="section gw__belofte">
+    <div class="container narrow">
+      <h2>Onze belofte</h2>
+      <p>We ontwerpen je systeem op lage temperatuur en regelen het waterzijdig in. Zo zorgen we ervoor dat je huis comfortabel warm wordt én dat de warmtepomp zo zuinig mogelijk draait. Daar staan we voor.</p>
+      <div class="gw__knoppen">
+        <Button href="/offerte/">Vraag gratis advies aan</Button>
+        <a class="gw__link" href="/warmtepompen/">Bekijk warmtepompen →</a>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .gw__kaarten, .gw__keuze { display: grid; gap: 12px; margin: 20px 0; }
+  .gw__kaart { background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 6px 20px -12px rgba(20,25,45,.3); }
+  .gw__kaart h3 { margin: 0 0 6px; }
+  .gw__kaart p { margin: 0; }
+  .gw__alt { background: #EEF0F5; }
+  .gw__pill { display: inline-block; font-size: .72rem; font-weight: 700; color: #fff; background: var(--red); padding: 3px 10px; border-radius: 999px; margin-bottom: 8px; }
+  .gw__belofte { background: var(--navy); color: #fff; }
+  .gw__belofte h2 { color: #fff; }
+  .gw__belofte p { color: #C9CFDA; }
+  .gw__knoppen { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 24px; }
+  .gw__link { color: #fff; font-weight: 700; text-decoration: none; }
+  @media (min-width: 760px) { .gw__kaarten { grid-template-columns: repeat(3,1fr); } .gw__keuze { grid-template-columns: 1fr 1fr; } }
+</style>
