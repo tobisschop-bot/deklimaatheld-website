@@ -4,7 +4,7 @@ import PageHero from '../../components/PageHero.astro';
 import Button from '../../components/Button.astro';
 import Faq from '../../components/Faq.astro';
 import { site } from '../../data/site';
-import { pakketten, kenmerken, prijzen, eur } from '../../data/service';
+import { pakketten, kenmerken, prijzen, aircoKenmerken, aircoExtraBinnendeel, eur } from '../../data/service';
 
 const beloftes = [
   { t: 'Eigen monteurs', d: 'Geen onderaannemers. De monteur die installeert, kent ook je onderhoud.' },
@@ -24,7 +24,8 @@ const faq = [
   { q: 'Kan ik tussentijds opzeggen?', a: 'Na het eerste jaar is het abonnement maandelijks opzegbaar.' },
   { q: 'Wat valt er niet onder Compleet?', a: 'Het bijvullen van koudemiddel en schade door externe oorzaken (zoals vorst door een uitgeschakelde installatie of waterkwaliteit) vallen niet onder het pakket. We bespreken altijd vooraf wat er gedekt is.' },
 ];
-const vanaf = (id: 'basis' | 'zorgeloos' | 'compleet') => Math.min(...Object.values(prijzen).map((p) => p[id] ?? Infinity));
+const vanaf = (id: 'basis' | 'zorgeloos' | 'compleet') => prijzen['lucht-water'][id]!;
+const wpPakketten = pakketten.filter((p) => p.id !== 'airco') as { id: 'basis' | 'zorgeloos' | 'compleet'; naam: string; tag?: string; kort: string }[];
 const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' : v);
 ---
 <Base title="Service & onderhoud – De Klimaatheld" description="Onderhoud en service voor je warmtepomp of airco in Den Haag en omstreken: monitoring op afstand, vaste monteurs en heldere servicepakketten.">
@@ -50,10 +51,10 @@ const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' :
   <section class="section">
     <div class="container">
       <span class="label">Servicepakketten</span>
-      <h2>Kies je pakket</h2>
+      <h2>Warmtepomp</h2>
       <p class="lead">Monitoring op afstand en een rendementscontrole zitten in elk pakket.</p>
       <div class="sv-pakketten">
-        {pakketten.map((p) => (
+        {wpPakketten.map((p) => (
           <article class:list={['card sv-pk', { 'sv-pk--top': p.tag }]}>
             {p.tag && <span class="sv-pk__tag">{p.tag}</span>}
             <h3>{p.naam}</h3>
@@ -69,7 +70,16 @@ const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' :
           </article>
         ))}
       </div>
-      <p class="note">Prijzen per maand incl. btw, voor een lucht-water warmtepomp. Hybride en airco hebben een eigen tarief; dat zie je bij het afsluiten. Na het eerste jaar maandelijks opzegbaar.</p>
+      <p class="note">Prijzen per maand incl. btw voor een all-electric warmtepomp. Hybride: + {eur(prijzen.hybride.basis! - prijzen['lucht-water'].basis!)} per maand, omdat we ook je cv-ketel nakijken. Na het eerste jaar maandelijks opzegbaar.</p>
+
+      <h2 style="margin-top:40px">Airco</h2>
+      <article class="card sv-pk sv-airco">
+        <h3>Airco Onderhoud</h3>
+        <p class="sv-pk__prijs"><strong>{eur(prijzen.airco.airco!)}</strong> <small>per maand, per buitendeel incl. 1 binnendeel</small></p>
+        <p class="sv-pk__kort">+ {eur(aircoExtraBinnendeel)} per maand voor elk extra binnendeel.</p>
+        <ul class="sv-pk__lijst">{aircoKenmerken.map((k) => <li><span>✓</span>{k}</li>)}</ul>
+        <Button href="/service/afsluiten/?installatie=airco" full>Kies Airco Onderhoud</Button>
+      </article>
     </div>
   </section>
 

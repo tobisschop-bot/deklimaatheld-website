@@ -2,9 +2,10 @@
 // Afsluitscherm servicepakket – ook bruikbaar op een tablet bij oplevering.
 // Prijzen komen uit src/data/service.ts. Inzending via Netlify Forms ('service').
 import Base from '../../../layouts/Base.astro';
-import { pakketten, installaties, prijzen, aircoExtraBinnendeel, jaarKorting, kenmerken, eur } from '../../../data/service';
+import { pakketten, installaties, prijzen, aircoExtraBinnendeel, jaarKorting, kenmerken, aircoKenmerken } from '../../../data/service';
 const data = JSON.stringify({ prijzen, aircoExtraBinnendeel, jaarKorting });
 const stappen = ['Installatie', 'Pakket', 'Gegevens', 'Akkoord'];
+const wp = pakketten.filter((p) => p.id !== 'airco') as { id: 'basis' | 'zorgeloos' | 'compleet'; naam: string }[];
 ---
 <Base title="Servicepakket afsluiten – De Klimaatheld" description="Sluit direct een servicepakket af voor je warmtepomp of airco.">
   <section class="sa">
@@ -27,7 +28,7 @@ const stappen = ['Installatie', 'Pakket', 'Gegevens', 'Akkoord'];
               <label class="sa__k"><input type="radio" name="installatie" value={i.id} required checked={n === 0} /><span><strong>{i.naam}</strong><small>{i.sub}</small></span></label>
             ))}
           </div>
-          <label class="sa__veld" data-binnen hidden>Aantal binnendelen
+          <label class="sa__veld" data-binnen hidden>Aantal binnendelen (op dit buitendeel)
             <select name="binnendelen">{[1, 2, 3, 4, 5].map((n) => <option>{n}</option>)}</select>
           </label>
           <label class="sa__veld">Merk en type (optioneel)
@@ -43,7 +44,7 @@ const stappen = ['Installatie', 'Pakket', 'Gegevens', 'Akkoord'];
           <legend>Kies je pakket</legend>
           <div class="sa__keuzes">
             {pakketten.map((p) => (
-              <label class="sa__k sa__pk" data-pk={p.id}>
+              <label class="sa__k sa__pk" data-pk={p.id} data-voor={p.voor.join(' ')}>
                 <input type="radio" name="pakket" value={p.id} required checked={p.id === 'zorgeloos'} />
                 <span>
                   <strong>{p.naam} {p.tag && <em>{p.tag}</em>}</strong>
@@ -53,10 +54,11 @@ const stappen = ['Installatie', 'Pakket', 'Gegevens', 'Akkoord'];
               </label>
             ))}
           </div>
-          <details class="sa__wat"><summary>Wat zit er in elk pakket?</summary>
+          <ul class="sa__airco" data-airco-lijst hidden>{aircoKenmerken.map((k) => <li>✓ {k}</li>)}</ul>
+          <details class="sa__wat" data-wp-tabel><summary>Wat zit er in elk pakket?</summary>
             <table>
-              <tr><th></th>{pakketten.map((p) => <th>{p.naam}</th>)}</tr>
-              {kenmerken.map((k) => <tr><td>{k.label}</td>{pakketten.map((p) => { const v = k[p.id]; return <td>{v === true ? '✓' : v === false ? '–' : v}</td>; })}</tr>)}
+              <tr><th></th>{wp.map((p) => <th>{p.naam}</th>)}</tr>
+              {kenmerken.map((k) => <tr><td>{k.label}</td>{wp.map((p) => { const v = k[p.id]; return <td>{v === true ? '✓' : v === false ? '–' : v}</td>; })}</tr>)}
             </table>
           </details>
           <fieldset class="sa__sub"><legend>Betalen per</legend>
@@ -114,8 +116,9 @@ const stappen = ['Installatie', 'Pakket', 'Gegevens', 'Akkoord'];
   let cur = 0;
 
   // Voorselectie pakket uit URL (?pakket=basis)
-  const qp = new URLSearchParams(location.search).get('pakket');
-  if (qp) form.querySelector<HTMLInputElement>(`[name="pakket"][value="${qp}"]`)?.click();
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('installatie')) form.querySelector<HTMLInputElement>(`[name="installatie"][value="${qs.get('installatie')}"]`)?.click();
+  if (qs.get('pakket')) form.querySelector<HTMLInputElement>(`[name="pakket"][value="${qs.get('pakket')}"]`)?.click();
 
   const prijs = (inst: string, pk: string) => {
     const b = D.prijzen[inst]?.[pk];
@@ -126,14 +129,18 @@ const stappen = ['Installatie', 'Pakket', 'Gegevens', 'Akkoord'];
   const update = () => {
     const inst = val('installatie');
     form.querySelector<HTMLElement>('[data-binnen]')!.hidden = inst !== 'airco';
+    let gekozenOk = false;
     form.querySelectorAll<HTMLElement>('[data-pk]').forEach((el) => {
+      const hoort = el.dataset.voor!.split(' ').includes(inst);
       const p = prijs(inst, el.dataset.pk!);
       const inp = el.querySelector('input')!;
-      inp.disabled = p == null;
-      el.classList.toggle('is-uit', p == null);
-      el.querySelector('[data-pk-prijs]')!.textContent = p == null ? 'Niet beschikbaar voor airco' : `${eur(p)} per maand`;
-      if (p == null && inp.checked) form.querySelector<HTMLInputElement>('[name="pakket"][value="zorgeloos"]')!.checked = true;
+      el.hidden = !hoort; inp.disabled = !hoort;
+      el.querySelector('[data-pk-prijs]')!.textContent = p == null ? '' : `${eur(p)} per maand`;
+      if (hoort && inp.checked) gekozenOk = true;
     });
+    if (!gekozenOk) form.querySelector<HTMLInputElement>(`[name="pakket"][value="${inst === 'airco' ? 'airco' : 'zorgeloos'}"]`)!.checked = true;
+    form.querySelector<HTMLElement>('[data-airco-lijst]')!.hidden = inst !== 'airco';
+    form.querySelector<HTMLElement>('[data-wp-tabel]')!.hidden = inst === 'airco';
     const m = prijs(inst, val('pakket'));
     const jaar = val('betaling') === 'jaar';
     const tekst = m == null ? '–' : jaar ? `${eur(m * 12 * (1 - D.jaarKorting))} per jaar` : `${eur(m)} per maand`;
@@ -206,7 +213,9 @@ const stappen = ['Installatie', 'Pakket', 'Gegevens', 'Akkoord'];
   .sa__k small { color: var(--muted); }
   .sa__k em { font-style: normal; font-size: .7rem; background: var(--red); color: #fff; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
   .sa__k b { color: var(--navy); margin-top: 4px; }
-  .sa__k.is-uit { opacity: .45; pointer-events: none; }
+  .sa__k[hidden] { display: none; }
+  .sa__airco { list-style: none; padding: 0; margin: 0 0 14px; display: grid; gap: 6px; font-size: .9rem; color: var(--green); }
+  .sa__airco[hidden], .sa__wat[hidden] { display: none; }
   .sa__veld { display: grid; gap: 6px; font-weight: 600; font-size: .92rem; margin-bottom: 12px; }
   .sa__veld input, .sa__veld select { font: inherit; font-weight: 400; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: #fff; min-height: 50px; }
   .sa__2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
