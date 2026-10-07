@@ -92,7 +92,7 @@ const stappen = [
             <div class="pump__img"><ProductImage src={w.img} alt={w.name} class="pump__pi" /></div>
             <span class="pump__tag">{w.tag}</span>
             <h3>{w.name}</h3>
-            <p class="pump__price">{w.from == null ? <strong>Prijs op aanvraag</strong> : <>v.a. <strong>{euro(w.from)}</strong> <small>indicatief</small></>}</p>
+            <p class="pump__price">{w.from == null ? <strong>Prijs op aanvraag</strong> : <>v.a. <strong>{euro(w.from)}</strong> <small>incl. montage</small></>}</p>
             <span class="pump__link">{w.page ? 'Stel samen' : kaartLink(w).label} →</span>
           </a>
         ))}

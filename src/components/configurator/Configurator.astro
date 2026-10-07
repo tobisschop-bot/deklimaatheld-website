@@ -58,7 +58,7 @@ const uid = `cfg-${m.slug}`;
               <span class="opt__name">{u.name}</span>
               <span class="opt__text">{u.text}</span>
               {m.vermogens ? null : u.price != null
-                ? <span class="opt__price"><small>v.a.</small> {euro(u.price)}<small>* indicatief</small></span>
+                ? <span class="opt__price"><small>v.a.</small> {euro(u.price)}<small> incl. montage</small></span>
                 : <span class="opt__price">Prijs op aanvraag</span>}
               <span class="opt__check" aria-hidden="true">✓ Gekozen</span>
             </span>

@@ -28,7 +28,7 @@ const merken = [...new Set(aircos.map((a) => a.merk))];
                   <span data-kleurnaam>{a.kleuren.length === 1 ? `Alleen ${a.kleuren[0].naam.toLowerCase()}` : a.kleuren[0].naam}</span>
                 </div>
                 <ul class="aa__facts">{a.kenmerken.map((k) => <li>{k.value} <small>{k.label}</small></li>)}</ul>
-                <p class="aa__prijs">{p == null ? 'Prijs op aanvraag' : <>v.a. <strong>{euro(p)}</strong> <small>incl. montage, indicatief</small></>}</p>
+                <p class="aa__prijs">{p == null ? 'Prijs op aanvraag' : <>v.a. <strong>{euro(p)}</strong> <small>incl. montage</small></>}</p>
                 <a class="aa__link" href={`/airco/${a.slug}/`} data-link>Stel samen →</a>
               </div>
             );
