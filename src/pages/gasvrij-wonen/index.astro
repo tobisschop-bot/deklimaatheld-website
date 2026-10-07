@@ -58,7 +58,7 @@ const redenen = [
             <span class:list={['pill', 'pill--' + c.soort]}>{soortLabel[c.soort]}</span>
             <div class="sl__klein"><img src={c.klein.src} alt={c.klein.alt} draggable="false" loading="lazy" /></div>
           </div>
-          <div class="sl__kop"><div><b>{c.titel}</b><small>📍 {c.plaats} · {c.jaar}</small></div></div>
+          <div class="sl__kop"><div><b>{c.titel}</b><small>📍 {c.plaats}{c.jaar && ` · ${c.jaar}`}</small></div></div>
           <span class="sl__pijl" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <div class="sl__info"><div class="sl__in">
             <p>{c.info}</p>
