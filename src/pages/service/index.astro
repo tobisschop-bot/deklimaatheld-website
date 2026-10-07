@@ -4,7 +4,7 @@ import PageHero from '../../components/PageHero.astro';
 import Button from '../../components/Button.astro';
 import Faq from '../../components/Faq.astro';
 import { site } from '../../data/site';
-import { pakketten, kenmerken, prijzen, aircoKenmerken, aircoExtraBinnendeel, eur } from '../../data/service';
+import { pakketten, kenmerken, prijzen, aircoKenmerken, aircoExtraBinnendeel, ketelKenmerken, opnameKosten, eur } from '../../data/service';
 
 const beloftes = [
   { t: 'Eigen monteurs', d: 'Geen onderaannemers. De monteur die installeert, kent ook je onderhoud.' },
@@ -20,12 +20,12 @@ const storing = [
 ];
 const faq = [
   { q: 'Wat moet ik eerst zelf checken bij een storing?', a: 'Kijk of de thermostaat goed staat, of de groep in de meterkast niet is uitgeschakeld en of de waterdruk tussen 1 en 2 bar staat. Staat er een foutcode in de app of op het display, stuur ons dan een foto.' },
-  { q: 'Doen jullie ook onderhoud aan installaties die niet door jullie zijn geplaatst?', a: 'Ja, in veel gevallen wel. Bij de eerste beurt checken we de installatie en zetten we de monitoring op.' },
+  { q: 'Doen jullie ook onderhoud aan installaties die niet door jullie zijn geplaatst?', a: 'Ja. We beginnen met een eenmalige opname van € 189: we bekijken je installatie, stellen hem waar nodig opnieuw in, zetten de monitoring op en adviseren je. Daarna loopt je servicepakket gewoon door.' },
   { q: 'Kan ik tussentijds opzeggen?', a: 'Na het eerste jaar is het abonnement maandelijks opzegbaar.' },
   { q: 'Wat valt er niet onder Compleet?', a: 'Het bijvullen van koudemiddel en schade door externe oorzaken (zoals vorst door een uitgeschakelde installatie of waterkwaliteit) vallen niet onder het pakket. We bespreken altijd vooraf wat er gedekt is.' },
 ];
 const vanaf = (id: 'basis' | 'zorgeloos' | 'compleet') => prijzen['lucht-water'][id]!;
-const wpPakketten = pakketten.filter((p) => p.id !== 'airco') as { id: 'basis' | 'zorgeloos' | 'compleet'; naam: string; tag?: string; kort: string }[];
+const wpPakketten = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'basis' | 'zorgeloos' | 'compleet'; naam: string; tag?: string; kort: string }[];
 const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' : v);
 ---
 <Base title="Service & onderhoud – De Klimaatheld" description="Onderhoud en service voor je warmtepomp of airco in Den Haag en omstreken: monitoring op afstand, vaste monteurs en heldere servicepakketten.">
@@ -80,6 +80,19 @@ const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' :
         <ul class="sv-pk__lijst">{aircoKenmerken.map((k) => <li><span>✓</span>{k}</li>)}</ul>
         <Button href="/service/afsluiten/?installatie=airco" full>Kies Airco Onderhoud</Button>
       </article>
+
+      <h2 style="margin-top:40px">CV-ketel</h2>
+      <article class="card sv-pk">
+        <h3>CV-ketel Onderhoud</h3>
+        <p class="sv-pk__prijs"><strong>{eur(prijzen['cv-ketel'].ketel!)}</strong> <small>per maand</small></p>
+        <ul class="sv-pk__lijst">{ketelKenmerken.map((k) => <li><span>✓</span>{k}</li>)}</ul>
+        <Button href="/service/afsluiten/?installatie=cv-ketel" full>Kies CV-ketel Onderhoud</Button>
+      </article>
+
+      <div class="card sv-opname">
+        <strong>Installatie niet door ons geplaatst?</strong>
+        <p>Geen probleem, ook dan kun je een servicepakket afsluiten. We starten met een eenmalige opname van <b>{eur(opnameKosten)}</b>: we komen langs, bekijken je installatie, stellen hem waar nodig opnieuw in en adviseren je. Daarna loopt je pakket zoals bij onze eigen klanten.</p>
+      </div>
     </div>
   </section>
 
@@ -129,6 +142,8 @@ const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' :
   .sv-pk__lijst li.is-nee > span { color: #A0A7B4; }
   .sv-pk__lijst small { color: var(--muted); }
   .sv-pk :global(.btn) { margin-top: auto; }
+  .sv-opname { margin-top: 24px; border-left: 4px solid var(--red); }
+  .sv-opname p { margin: 6px 0 0; color: var(--muted); font-size: .92rem; }
   .sv-stappen { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 14px; }
   .sv-stappen li { display: flex; gap: 12px; }
   .sv-stappen p { margin: 2px 0 0; color: var(--muted); font-size: .92rem; }

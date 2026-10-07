@@ -2,10 +2,10 @@
 // Afsluitscherm servicepakket – ook bruikbaar op een tablet bij oplevering.
 // Prijzen komen uit src/data/service.ts. Inzending via Netlify Forms ('service').
 import Base from '../../../layouts/Base.astro';
-import { pakketten, installaties, prijzen, aircoExtraBinnendeel, jaarKorting, kenmerken, aircoKenmerken } from '../../../data/service';
-const data = JSON.stringify({ prijzen, aircoExtraBinnendeel, jaarKorting });
+import { pakketten, installaties, prijzen, aircoExtraBinnendeel, jaarKorting, kenmerken, aircoKenmerken, ketelKenmerken, opnameKosten } from '../../../data/service';
+const data = JSON.stringify({ prijzen, aircoExtraBinnendeel, jaarKorting, opnameKosten });
 const stappen = ['Installatie', 'Pakket', 'Gegevens', 'Akkoord'];
-const wp = pakketten.filter((p) => p.id !== 'airco') as { id: 'basis' | 'zorgeloos' | 'compleet'; naam: string }[];
+const wp = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'basis' | 'zorgeloos' | 'compleet'; naam: string }[];
 ---
 <Base title="Servicepakket afsluiten – De Klimaatheld" description="Sluit direct een servicepakket af voor je warmtepomp of airco.">
   <section class="sa">
@@ -55,6 +55,7 @@ const wp = pakketten.filter((p) => p.id !== 'airco') as { id: 'basis' | 'zorgelo
             ))}
           </div>
           <ul class="sa__airco" data-airco-lijst hidden>{aircoKenmerken.map((k) => <li>✓ {k}</li>)}</ul>
+          <ul class="sa__airco" data-ketel-lijst hidden>{ketelKenmerken.map((k) => <li>✓ {k}</li>)}</ul>
           <details class="sa__wat" data-wp-tabel><summary>Wat zit er in elk pakket?</summary>
             <table>
               <tr><th></th>{wp.map((p) => <th>{p.naam}</th>)}</tr>
@@ -66,6 +67,7 @@ const wp = pakketten.filter((p) => p.id !== 'airco') as { id: 'basis' | 'zorgelo
             <label class="sa__r"><input type="radio" name="betaling" value="jaar" /> Jaar <small>(5% korting)</small></label>
           </fieldset>
           <p class="sa__totaal">Jouw prijs: <strong data-totaal>–</strong></p>
+          <p class="sa__opname" data-opname hidden>Omdat je installatie niet door ons is geplaatst, starten we met een eenmalige opname van <b>€ {opnameKosten}</b>: we komen langs, bekijken en stellen alles goed in, en adviseren je.</p>
         </fieldset>
 
         <!-- 3 -->
@@ -138,12 +140,16 @@ const wp = pakketten.filter((p) => p.id !== 'airco') as { id: 'basis' | 'zorgelo
       el.querySelector('[data-pk-prijs]')!.textContent = p == null ? '' : `${eur(p)} per maand`;
       if (hoort && inp.checked) gekozenOk = true;
     });
-    if (!gekozenOk) form.querySelector<HTMLInputElement>(`[name="pakket"][value="${inst === 'airco' ? 'airco' : 'zorgeloos'}"]`)!.checked = true;
+    const enkel = inst === 'airco' ? 'airco' : inst === 'cv-ketel' ? 'ketel' : 'zorgeloos';
+    if (!gekozenOk) form.querySelector<HTMLInputElement>(`[name="pakket"][value="${enkel}"]`)!.checked = true;
     form.querySelector<HTMLElement>('[data-airco-lijst]')!.hidden = inst !== 'airco';
-    form.querySelector<HTMLElement>('[data-wp-tabel]')!.hidden = inst === 'airco';
+    form.querySelector<HTMLElement>('[data-ketel-lijst]')!.hidden = inst !== 'cv-ketel';
+    form.querySelector<HTMLElement>('[data-wp-tabel]')!.hidden = inst === 'airco' || inst === 'cv-ketel';
+    const opname = val('door_ons') !== 'Ja';
+    form.querySelector<HTMLElement>('[data-opname]')!.hidden = !opname;
     const m = prijs(inst, val('pakket'));
     const jaar = val('betaling') === 'jaar';
-    const tekst = m == null ? '–' : jaar ? `${eur(m * 12 * (1 - D.jaarKorting))} per jaar` : `${eur(m)} per maand`;
+    const tekst = (m == null ? '–' : jaar ? `${eur(m * 12 * (1 - D.jaarKorting))} per jaar` : `${eur(m)} per maand`) + (val('door_ons') !== 'Ja' ? ` + eenmalig ${eur(D.opnameKosten)} opname` : '');
     form.querySelector('[data-totaal]')!.textContent = tekst;
     form.querySelector<HTMLInputElement>('[data-out-prijs]')!.value = tekst;
     const naam = (s: string) => form.querySelector(`[name="${s}"]:checked`)?.closest('label')?.querySelector('strong')?.childNodes[0]?.textContent?.trim() ?? '';
@@ -240,6 +246,8 @@ const wp = pakketten.filter((p) => p.id !== 'airco') as { id: 'basis' | 'zorgelo
   .sa__nav button[hidden] { display: none; }
   .sa__nav .btn--primary { background: var(--red); color: #fff; }
   .sa__nav .btn--outline { background: transparent; border-color: var(--navy); color: var(--navy); }
+  .sa__opname { font-size: .9rem; background: #FFF4F5; border-left: 4px solid var(--red); padding: 10px 12px; border-radius: 6px; }
+  .sa__opname[hidden] { display: none; }
   .sa__fout { color: var(--red); font-weight: 600; }
   .hp { position: absolute; left: -9999px; }
 </style>

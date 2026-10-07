@@ -1,7 +1,7 @@
 // Servicepakketten – ÉÉN bron voor de service-pagina én het afsluitscherm (/service/afsluiten/).
 // Prijzen per maand, incl. btw. VOORSTEL – Tycho past deze aan.
-export type PakketId = 'basis' | 'zorgeloos' | 'compleet' | 'airco';
-export type InstallatieId = 'lucht-water' | 'hybride' | 'airco';
+export type PakketId = 'basis' | 'zorgeloos' | 'compleet' | 'airco' | 'ketel';
+export type InstallatieId = 'lucht-water' | 'hybride' | 'airco' | 'cv-ketel';
 
 export interface Pakket { id: PakketId; naam: string; tag?: string; kort: string; voor: InstallatieId[] }
 export const pakketten: Pakket[] = [
@@ -9,6 +9,7 @@ export const pakketten: Pakket[] = [
   { id: 'zorgeloos', naam: 'Zorgeloos', tag: 'Aanbevolen', kort: 'Elk jaar onderhoud, winterklaar en voorrang.', voor: ['lucht-water', 'hybride'] },
   { id: 'compleet', naam: 'Compleet', kort: 'Alles inbegrepen, ook arbeid en onderdelen bij storing.', voor: ['lucht-water', 'hybride'] },
   { id: 'airco', naam: 'Airco Onderhoud', kort: 'Elk voorjaar een complete reiniging, klaar voor de zomer.', voor: ['airco'] },
+  { id: 'ketel', naam: 'CV-ketel Onderhoud', kort: 'Elk jaar een onderhoudsbeurt, veilig en zuinig de winter door.', voor: ['cv-ketel'] },
 ];
 
 // Wat er in elk pakket zit (true = ja, string = toelichting, false = nee)
@@ -34,10 +35,22 @@ export const aircoKenmerken = [
   'Voorrang bij storing',
 ];
 
+// Wat zit er in CV-ketel Onderhoud
+export const ketelKenmerken = [
+  'Jaarlijkse onderhoudsbeurt en reiniging',
+  'Controle op veiligheid, verbranding en CO',
+  'Waterdruk, expansievat en instellingen gecontroleerd',
+  'Voorrang bij storing',
+];
+
+// Eenmalige opname voor installaties die niet door De Klimaatheld zijn geplaatst
+export const opnameKosten = 189;
+
 export const installaties: { id: InstallatieId; naam: string; sub: string }[] = [
   { id: 'lucht-water', naam: 'Warmtepomp (all-electric)', sub: 'Lucht-water, zonder cv-ketel' },
   { id: 'hybride', naam: 'Hybride warmtepomp', sub: 'Warmtepomp + cv-ketel' },
   { id: 'airco', naam: 'Airco', sub: 'Lucht-lucht, per buitendeel' },
+  { id: 'cv-ketel', naam: 'CV-ketel', sub: 'Alleen een cv-ketel, zonder warmtepomp' },
 ];
 
 // Maandprijzen per installatie en pakket. null = niet beschikbaar.
@@ -47,6 +60,7 @@ export const prijzen: Record<InstallatieId, Partial<Record<PakketId, number>>> =
   'lucht-water': { basis: 12.5, zorgeloos: 27.5, compleet: 39.5 },
   hybride: { basis: 17.5, zorgeloos: 32.5, compleet: 44.5 },
   airco: { airco: 19.5 },
+  'cv-ketel': { ketel: 11.5 },
 };
 export const aircoExtraBinnendeel = 5; // per extra binnendeel per maand
 export const jaarKorting = 0.05; // korting bij jaarbetaling
