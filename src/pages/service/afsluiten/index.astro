@@ -36,6 +36,7 @@ const wp = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'bas
           </label>
           <label class="sa__veld">Geplaatst door De Klimaatheld?
             <select name="door_ons"><option>Ja</option><option>Nee, door een ander bedrijf</option><option>Weet ik niet</option></select>
+            <small style="font-weight:400;color:var(--muted)">Niet door ons geplaatst? Dan komt er een eenmalige opname van € {opnameKosten} bij.</small>
           </label>
         </fieldset>
 
@@ -67,7 +68,8 @@ const wp = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'bas
             <label class="sa__r"><input type="radio" name="betaling" value="jaar" /> Jaar <small>(5% korting)</small></label>
           </fieldset>
           <p class="sa__totaal">Jouw prijs: <strong data-totaal>–</strong></p>
-          <p class="sa__opname" data-opname hidden>Omdat je installatie niet door ons is geplaatst, starten we met een eenmalige opname van <b>€ {opnameKosten}</b>: we komen langs, bekijken en stellen alles goed in, en adviseren je.</p>
+          <p class="sa__opname" data-opname hidden>Omdat je installatie niet door ons is geplaatst, komt er een eenmalige opname van <b>€ {opnameKosten}</b> bij. Na je aanmelding bellen we je om je situatie door te nemen en plannen we de opname: we komen langs, bekijken en stellen alles goed in, en adviseren je.</p>
+          <p class="sa__opname" data-twijfel hidden>Weet je niet wie je installatie heeft geplaatst? Geen probleem: we bellen je na je aanmelding om dit samen na te gaan. Valt je installatie buiten onze klanten, dan komt er een eenmalige opname van <b>€ {opnameKosten}</b> bij.</p>
         </fieldset>
 
         <!-- 3 -->
@@ -145,11 +147,12 @@ const wp = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'bas
     form.querySelector<HTMLElement>('[data-airco-lijst]')!.hidden = inst !== 'airco';
     form.querySelector<HTMLElement>('[data-ketel-lijst]')!.hidden = inst !== 'cv-ketel';
     form.querySelector<HTMLElement>('[data-wp-tabel]')!.hidden = inst === 'airco' || inst === 'cv-ketel';
-    const opname = val('door_ons') !== 'Ja';
-    form.querySelector<HTMLElement>('[data-opname]')!.hidden = !opname;
+    const door = val('door_ons');
+    form.querySelector<HTMLElement>('[data-opname]')!.hidden = !door.startsWith('Nee');
+    form.querySelector<HTMLElement>('[data-twijfel]')!.hidden = door !== 'Weet ik niet';
     const m = prijs(inst, val('pakket'));
     const jaar = val('betaling') === 'jaar';
-    const tekst = (m == null ? '–' : jaar ? `${eur(m * 12 * (1 - D.jaarKorting))} per jaar` : `${eur(m)} per maand`) + (val('door_ons') !== 'Ja' ? ` + eenmalig ${eur(D.opnameKosten)} opname` : '');
+    const tekst = (m == null ? '–' : jaar ? `${eur(m * 12 * (1 - D.jaarKorting))} per jaar` : `${eur(m)} per maand`) + (val('door_ons').startsWith('Nee') ? ` + eenmalig ${eur(D.opnameKosten)} opname` : '');
     form.querySelector('[data-totaal]')!.textContent = tekst;
     form.querySelector<HTMLInputElement>('[data-out-prijs]')!.value = tekst;
     const naam = (s: string) => form.querySelector(`[name="${s}"]:checked`)?.closest('label')?.querySelector('strong')?.childNodes[0]?.textContent?.trim() ?? '';

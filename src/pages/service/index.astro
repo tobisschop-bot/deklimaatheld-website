@@ -20,7 +20,7 @@ const storing = [
 ];
 const faq = [
   { q: 'Wat moet ik eerst zelf checken bij een storing?', a: 'Kijk of de thermostaat goed staat, of de groep in de meterkast niet is uitgeschakeld en of de waterdruk tussen 1 en 2 bar staat. Staat er een foutcode in de app of op het display, stuur ons dan een foto.' },
-  { q: 'Doen jullie ook onderhoud aan installaties die niet door jullie zijn geplaatst?', a: 'Ja. We beginnen met een eenmalige opname van € 189: we bekijken je installatie, stellen hem waar nodig opnieuw in, zetten de monitoring op en adviseren je. Daarna loopt je servicepakket gewoon door.' },
+  { q: 'Doen jullie ook onderhoud aan installaties die niet door jullie zijn geplaatst?', a: 'Ja, voor elk systeem. Voor installaties die niet door ons zijn geplaatst rekenen we eenmalig € 189 voor een opname. Na je aanmelding bellen we je om je situatie door te nemen; daarna bekijken we de installatie, stellen hem waar nodig opnieuw in, zetten de monitoring op en adviseren je.' },
   { q: 'Kan ik tussentijds opzeggen?', a: 'Na het eerste jaar is het abonnement maandelijks opzegbaar.' },
   { q: 'Wat valt er niet onder Compleet?', a: 'Het bijvullen van koudemiddel en schade door externe oorzaken (zoals vorst door een uitgeschakelde installatie of waterkwaliteit) vallen niet onder het pakket. We bespreken altijd vooraf wat er gedekt is.' },
 ];
@@ -91,7 +91,7 @@ const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' :
 
       <div class="card sv-opname">
         <strong>Installatie niet door ons geplaatst?</strong>
-        <p>Geen probleem, ook dan kun je een servicepakket afsluiten. We starten met een eenmalige opname van <b>{eur(opnameKosten)}</b>: we komen langs, bekijken je installatie, stellen hem waar nodig opnieuw in en adviseren je. Daarna loopt je pakket zoals bij onze eigen klanten.</p>
+        <p>Geen probleem, ook dan kun je een servicepakket afsluiten, voor elk systeem: warmtepomp, airco of cv-ketel. Alleen voor installaties die niet door ons zijn geplaatst, komt er een eenmalige opname van <b>{eur(opnameKosten)}</b> bij. Na je aanmelding bellen we je om je situatie door te nemen. Daarna komen we langs, bekijken je installatie, stellen hem waar nodig opnieuw in en adviseren je. Vanaf dan loopt je pakket zoals bij onze eigen klanten.</p>
       </div>
     </div>
   </section>
