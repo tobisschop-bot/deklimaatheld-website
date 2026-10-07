@@ -102,13 +102,21 @@ const stappen = [
   </section>
 
   <!-- GASVRIJ / HYBRIDE -->
-  <section class="section section--white">
-    <div class="container narrow">
+  <section class="gv">
+    <div class="container narrow gv__txt">
       <span class="label">Comfortabel wonen</span>
       <h2>Gasvrij of hybride wonen</h2>
       <p>Met de hoge en wisselende gasprijzen is overstappen financieel slim. Je verlaagt direct je maandelijkse energiekosten, waardoor je de installatie sneller terugverdient.</p>
       <p>Een warmtepomp haalt warmte uit de buitenlucht en geeft hetzelfde comfort als een cv-ketel: een warm huis en warm tapwater, zonder gas te verbranden.</p>
     </div>
+    <figure class="gv__beeld">
+      <img class="gv__groot" src="/img/werk-installatie-binnen.webp" alt="Door De Klimaatheld geplaatste Weheat-installatie met boiler- en buffervat" width="941" height="1672" loading="lazy" />
+      <span class="gv__tag gv__tag--binnen">Binnen</span>
+      <div class="gv__klein">
+        <img src="/img/werk-installatie-buiten.webp" alt="Weheat-buitenunit tegen de gevel" width="900" height="782" loading="lazy" />
+        <span class="gv__tag">Buiten</span>
+      </div>
+    </figure>
   </section>
 
   <!-- ISDE + LENING -->
@@ -155,7 +163,7 @@ const stappen = [
   .hero { background: radial-gradient(120% 80% at 100% 0%, rgba(214,40,58,.35) 0%, transparent 55%), linear-gradient(165deg, #0B132B 0%, var(--navy) 55%, #1A1A1A 100%); color: #fff; padding: 48px 0 64px; }
   .hero h1 { color: #fff; }
   /* Mascotte: vliegt vanaf de overgang naar wit omhoog, rechtsonder in de hero */
-  .hero { position: relative; padding-bottom: 84px; }
+  .hero { position: relative; padding-bottom: 84px; overflow-x: clip; }
   .hero + .section { padding-top: 70px; } /* ruimte voor de benen van de mascotte */
   .hero__flight { position: absolute; right: 0; bottom: -92px; width: 250px; height: 220px; z-index: 2; pointer-events: none; }
   .hero__zoef { position: absolute; left: -10px; bottom: 0; width: 260px; height: 220px; animation: zoef 3.2s ease-in-out infinite; }
@@ -193,6 +201,18 @@ const stappen = [
   .pump__img { background: var(--bg); border-radius: 8px; aspect-ratio: 4/3; display: grid; place-items: center; padding: 16px; margin-bottom: 14px; }
   .pump__img :global(.pump__pi) { width: 80%; filter: drop-shadow(0 10px 12px rgba(20,26,46,.18)); }
   .pump__img > img { max-height: 100%; object-fit: contain; }
+  /* Gasvrij: eigen werk, schuine foto + buitenunit-kaartje */
+  .gv { background: var(--navy); color: #fff; overflow: hidden; }
+  .gv__txt { padding-top: 56px; padding-bottom: 80px; }
+  .gv h2 { color: #fff; }
+  .gv p { color: #C9CFDA; }
+  .gv .label { color: #FF8A95; }
+  .gv__beeld { position: relative; margin: -64px 0 0; }
+  .gv__groot { display: block; width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 35% 45%; clip-path: polygon(0 12%, 100% 0, 100% 100%, 0 100%); }
+  .gv__klein { position: absolute; left: 16px; bottom: 20px; width: 44%; background: #fff; padding: 5px; border-radius: 10px; box-shadow: 0 18px 36px -10px rgba(0,0,0,.55); transform: rotate(-3deg); }
+  .gv__klein img { display: block; width: 100%; height: auto; aspect-ratio: 1.15; object-fit: cover; border-radius: 7px; }
+  .gv__tag { position: absolute; left: 12px; bottom: 12px; font-family: inherit; font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--navy); background: rgba(255,255,255,.92); padding: 3px 9px; border-radius: 999px; }
+  .gv__tag--binnen { left: auto; right: 16px; bottom: 20px; }
   .pump__tag { font-size: .75rem; color: var(--muted); font-weight: 600; }
   .pump__price { margin: 0 0 8px; }
   .pump__price small { color: var(--muted); }
