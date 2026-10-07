@@ -1,0 +1,88 @@
+---
+import Base from '../../layouts/Base.astro';
+const K = [
+  { img: '/img/werk-installatie-binnen.webp', type: 'All-electric', titel: 'Weheat all-electric', plaats: 'Den Haag', info: 'Gasvrij gemaakt met een Weheat warmtepomp, boiler en buffervat. Waterzijdig ingeregeld op lage temperatuur.', punten: ['Weheat Blackbird', 'Boiler 200 L', 'Radiatoren'] },
+  { img: '/img/werk-installatie-buiten.webp', type: 'Warmtepomp', titel: 'Buitenunit aan de gevel', plaats: 'Rijswijk', info: 'Stille buitenunit netjes tegen de gevel, leidingwerk weggewerkt.', punten: ['R290', 'Gevelmontage'] },
+  { img: '/img/jaga-strada-interieur.webp', type: 'LT-verwarming', titel: 'Jaga Strada radiatoren', plaats: 'Delft', info: 'Lage-temperatuurradiatoren zodat de warmtepomp extra zuinig draait.', punten: ['Jaga Strada', '3 ruimtes'] },
+];
+---
+<Base title="Carrousel-voorbeelden" description="voorbeeld">
+<main class="vb">
+<!-- A: STAPEL -->
+<section id="A" class="blok"><span class="tag">A · Stapel</span><h2>Ons werk</h2><p class="hint">← Swipe de kaart weg · tik om te draaien</p>
+  <div class="stack">
+    {K.map((k,i)=>(<div class="sc" style={`--i:${i}`}><div class="sc__in">
+      <div class="sc__voor"><img src={k.img} alt=""/><span class="pill">{k.type}</span><b>{k.titel}<small>{k.plaats}</small></b><span class="flip">↻ Tik voor info</span></div>
+      <div class="sc__achter"><span class="pill pill--s">{k.type}</span><h3>{k.titel}</h3><p class="pl">📍 {k.plaats}</p><p>{k.info}</p><ul>{k.punten.map(p=><li>{p}</li>)}</ul><span class="flip flip--d">↻ Terug naar foto</span></div>
+    </div></div>))}
+  </div><div class="teller"><span>1</span> / {K.length}</div>
+</section>
+<!-- B: COVERFLOW -->
+<section id="B" class="blok blok--d"><span class="tag">B · Coverflow</span><h2>Ons werk</h2><p class="hint">Swipe ↔ · tik op de middelste</p>
+  <div class="cf">{K.map((k,i)=>(<button class="cf__k" data-i={i}><img src={k.img} alt=""/><span class="pill">{k.type}</span><b>{k.titel}</b></button>))}</div>
+  <div class="cf__sheet"><div class="cf__grip"></div><span class="pill pill--s"></span><h3></h3><p class="pl"></p><p class="tx"></p><ul></ul></div>
+</section>
+<!-- C: SPOTLIGHT -->
+<section id="C" class="blok"><span class="tag">C · Spotlight</span><h2>Ons werk</h2><p class="hint">Swipe de foto · tik voor details</p>
+  <div class="sp"><div class="sp__rail">{K.map(k=>(<figure class="sp__f"><img src={k.img} alt=""/><span class="pill">{k.type}</span>
+    <figcaption><b>{k.titel}</b><small>📍 {k.plaats}</small><div class="sp__meer"><p>{k.info}</p><div class="chips">{k.punten.map(p=><span>{p}</span>)}</div></div><span class="sp__pijl">⌃</span></figcaption></figure>))}</div>
+    <div class="sp__bar"><i></i></div></div>
+  <div class="sp__thumbs">{K.map((k,i)=>(<button data-i={i}><img src={k.img} alt=""/></button>))}</div>
+</section>
+</main>
+<script type="application/json" id="kd" set:html={JSON.stringify(K)}/>
+<script>
+const K=JSON.parse(document.getElementById('kd')!.textContent!);
+// A
+const cards=[...document.querySelectorAll<HTMLElement>('.sc')];let top=0;
+function lay(){cards.forEach((c,i)=>{const p=(i-top+cards.length)%cards.length;c.style.setProperty('--p',String(p));c.style.zIndex=String(10-p);c.classList.remove('om');c.style.transform='';});document.querySelector('.teller span')!.textContent=String(top+1);}
+cards.forEach(c=>{let x0=0,dx=0,drag=false;
+ c.addEventListener('pointerdown',e=>{x0=e.clientX;dx=0;drag=true;c.setPointerCapture(e.pointerId);c.style.transition='none';});
+ c.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-x0;c.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;});
+ c.addEventListener('pointerup',()=>{drag=false;c.style.transition='';if(Math.abs(dx)>80){c.style.transform=`translateX(${dx>0?500:-500}px) rotate(${dx/6}deg)`;setTimeout(()=>{top=(top+1)%cards.length;lay();},250);}else if(Math.abs(dx)<6){c.classList.toggle('om');c.style.transform='';}else c.style.transform='';});});
+lay();
+// B
+const cf=document.querySelector<HTMLElement>('.cf')!,ks=[...cf.children] as HTMLElement[],sh=document.querySelector<HTMLElement>('.cf__sheet')!;let cur=0;
+function cfl(){ks.forEach((k,i)=>{const d=i-cur;k.style.transform=`translateX(${d*62}%) scale(${d?0.78:1}) rotateY(${d*-28}deg)`;k.style.zIndex=String(5-Math.abs(d));k.style.opacity=Math.abs(d)>1?'0':d?'.6':'1';});}
+let bx=0;cf.addEventListener('pointerdown',e=>bx=e.clientX);cf.addEventListener('pointerup',e=>{const d=e.clientX-bx;if(d<-40&&cur<ks.length-1)cur++;else if(d>40&&cur>0)cur--;else{const t=(e.target as HTMLElement).closest('.cf__k') as HTMLElement;if(t&&+t.dataset.i!==cur){cur=+t.dataset.i;}else{const k=K[cur];sh.querySelector('.pill')!.textContent=k.type;sh.querySelector('h3')!.textContent=k.titel;sh.querySelector('.pl')!.textContent='📍 '+k.plaats;sh.querySelector('.tx')!.textContent=k.info;sh.querySelector('ul')!.innerHTML=k.punten.map((p:string)=>`<li>${p}</li>`).join('');sh.classList.toggle('open');return;}}sh.classList.remove('open');cfl();});
+sh.addEventListener('click',()=>sh.classList.remove('open'));cfl();
+// C
+const rail=document.querySelector<HTMLElement>('.sp__rail')!,bar=document.querySelector<HTMLElement>('.sp__bar i')!,th=[...document.querySelectorAll<HTMLElement>('.sp__thumbs button')];
+function spu(){const i=Math.round(rail.scrollLeft/rail.clientWidth);bar.style.width=((i+1)/K.length*100)+'%';th.forEach((t,j)=>t.classList.toggle('on',j===i));}
+rail.addEventListener('scroll',spu,{passive:true});th.forEach(t=>t.addEventListener('click',()=>rail.scrollTo({left:+t.dataset.i!*rail.clientWidth,behavior:'smooth'})));
+rail.querySelectorAll('.sp__f').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));spu();
+</script>
+</Base>
+<style>
+.vb{background:#F3F4F8}
+.blok{padding:40px 16px 48px;overflow:hidden}.blok--d{background:var(--navy);color:#fff}.blok--d h2{color:#fff}
+.tag{font-size:.75rem;font-weight:700;background:#111;color:#fff;padding:3px 10px;border-radius:6px}.blok--d .tag{background:#fff;color:#111}
+h2{margin:10px 0 2px}.hint{font-size:.85rem;color:#778;margin:0 0 18px}.blok--d .hint{color:#9AA3B5}
+.pill{position:absolute;left:12px;top:12px;font-size:.72rem;font-weight:700;color:#fff;background:var(--red);padding:3px 10px;border-radius:999px;z-index:2}.pill--s{position:static;display:inline-block}
+/* A */
+.stack{position:relative;height:430px;touch-action:pan-y}
+.sc{position:absolute;inset:0 18px 0;transition:transform .3s,opacity .3s;transform-origin:50% 100%;translate:0 calc(var(--p)*14px);scale:calc(1 - var(--p)*.05);touch-action:pan-y;cursor:grab}
+.sc__in{position:relative;height:100%;transition:transform .5s;transform-style:preserve-3d}.sc.om .sc__in{transform:rotateY(180deg)}
+.sc__voor,.sc__achter{position:absolute;inset:0;border-radius:18px;overflow:hidden;backface-visibility:hidden;box-shadow:0 18px 40px -18px rgba(10,14,30,.5)}
+.sc__voor img{width:100%;height:100%;object-fit:cover;pointer-events:none}.sc__voor::after{content:'';position:absolute;inset:55% 0 0;background:linear-gradient(transparent,rgba(10,14,30,.9))}
+.sc__voor b{position:absolute;left:16px;bottom:44px;color:#fff;font-size:1.2rem;z-index:2}.sc__voor small{display:block;font-weight:500;font-size:.85rem;color:#C9CFDA}
+.flip{position:absolute;left:16px;bottom:16px;font-size:.78rem;font-weight:700;color:#fff;z-index:2;opacity:.85}.flip--d{color:var(--red)}
+.sc__achter{transform:rotateY(180deg);background:#fff;padding:22px 20px}.sc__achter h3{margin:10px 0 0}.pl{color:#778;margin:2px 0 12px}
+.teller{text-align:center;margin-top:30px;font-weight:700;color:#778}
+/* B */
+.cf{position:relative;height:340px;perspective:900px;touch-action:pan-y}
+.cf__k{position:absolute;left:50%;top:0;width:66%;margin-left:-33%;height:100%;border:0;padding:0;border-radius:16px;overflow:hidden;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .45s;background:#000;cursor:pointer}
+.cf__k img{width:100%;height:100%;object-fit:cover;pointer-events:none}.cf__k b{position:absolute;left:12px;bottom:12px;right:12px;color:#fff;text-align:left;z-index:2}.cf__k::after{content:'';position:absolute;inset:60% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.85))}
+.cf__sheet{position:relative;margin:-40px 8px 0;background:#fff;color:#111;border-radius:18px;padding:12px 18px 18px;z-index:9;transform:translateY(30px);opacity:0;max-height:0;overflow:hidden;transition:.4s}
+.cf__sheet.open{transform:none;opacity:1;max-height:400px}.cf__grip{width:40px;height:4px;border-radius:2px;background:#ccd;margin:0 auto 12px}.cf__sheet h3{margin:8px 0 0}
+/* C */
+.sp{position:relative;border-radius:18px;overflow:hidden}
+.sp__rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.sp__rail::-webkit-scrollbar{display:none}
+.sp__f{position:relative;flex:0 0 100%;height:420px;margin:0;scroll-snap-align:start;cursor:pointer}.sp__f img{width:100%;height:100%;object-fit:cover}
+.sp__f figcaption{position:absolute;left:10px;right:10px;bottom:16px;background:rgba(255,255,255,.82);backdrop-filter:blur(12px);border-radius:14px;padding:12px 14px;transition:.35s}
+.sp__f b{display:block}.sp__f small{color:#667}.sp__meer{max-height:0;overflow:hidden;transition:max-height .4s}.sp__f.open .sp__meer{max-height:220px}.sp__meer p{margin:10px 0 8px;font-size:.92rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips span{font-size:.75rem;font-weight:700;background:var(--navy);color:#fff;padding:3px 9px;border-radius:999px}
+.sp__pijl{position:absolute;right:14px;top:12px;font-weight:900;transition:.3s}.sp__f.open .sp__pijl{transform:rotate(180deg)}
+.sp__bar{position:absolute;left:0;right:0;top:0;height:4px;background:rgba(255,255,255,.35)}.sp__bar i{display:block;height:100%;background:var(--red);transition:width .3s}
+.sp__thumbs{display:flex;gap:8px;margin-top:10px}.sp__thumbs button{flex:1;height:58px;padding:0;border:2px solid transparent;border-radius:10px;overflow:hidden;opacity:.5;cursor:pointer}.sp__thumbs button.on{border-color:var(--red);opacity:1}.sp__thumbs img{width:100%;height:100%;object-fit:cover}
+</style>
