@@ -82,8 +82,7 @@ const wp = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'bas
           </div>
           <label class="sa__veld">E-mail<input type="email" name="email" required autocomplete="email" /></label>
           <label class="sa__veld">Telefoon<input type="tel" name="telefoon" required autocomplete="tel" /></label>
-          <label class="sa__veld">IBAN voor automatische incasso<input name="iban" required autocomplete="off" placeholder="NL00 BANK 0123 4567 89" /></label>
-          <label class="sa__veld">Ten name van<input name="iban_tnv" required /></label>
+          <p class="sa__info">Je betaalt via automatische incasso. Na je aanmelding sturen we je een veilige digitale machtiging; je hoeft hier dus geen bankgegevens in te vullen.</p>
         </fieldset>
 
         <!-- 4 -->
@@ -91,7 +90,7 @@ const wp = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'bas
           <legend>Controleren en akkoord</legend>
           <div class="card sa__overzicht" data-overzicht></div>
           <label class="sa__r"><input type="checkbox" name="akkoord_voorwaarden" required /> Ik ga akkoord met de <a href="/voorwaarden/" target="_blank">servicevoorwaarden</a>.</label>
-          <label class="sa__r"><input type="checkbox" name="akkoord_incasso" required /> Ik machtig De Klimaatheld om het bedrag automatisch af te schrijven.</label>
+          <label class="sa__r"><input type="checkbox" name="akkoord_incasso" required /> Ik ga akkoord met betaling via automatische incasso (de machtiging ontvang ik per e-mail).</label>
           <div class="sa__sig">
             <span>Handtekening</span>
             <canvas data-sig width="600" height="200" aria-label="Teken hier je handtekening"></canvas>
@@ -251,6 +250,7 @@ const wp = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'bas
   .sa__nav .btn--outline { background: transparent; border-color: var(--navy); color: var(--navy); }
   .sa__opname { font-size: .9rem; background: #FFF4F5; border-left: 4px solid var(--red); padding: 10px 12px; border-radius: 6px; }
   .sa__opname[hidden] { display: none; }
+  .sa__info { font-size: .88rem; color: var(--muted); background: var(--bg); padding: 10px 12px; border-radius: 6px; }
   .sa__fout { color: var(--red); font-weight: 600; }
   .hp { position: absolute; left: -9999px; }
 </style>
