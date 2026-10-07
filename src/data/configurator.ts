@@ -60,7 +60,7 @@ export const boilers: Boiler[] = [
 export const boilersOpAanvraag: Boiler[] = boilers.map((b) => ({ ...b, price: null }));
 
 export const inbegrepen: Fact[] = [
-  { value: 'Installatie door eigen monteurs', label: 'Vakkundig geplaatst en aangesloten' },
+  { value: 'Vakkundige installatie', label: 'Geplaatst, aangesloten en in bedrijf gesteld' },
   { value: 'Waterzijdig inregelen (Heat Geek-methode)', label: 'Ontworpen op lage temperatuur voor meer rendement' },
   { value: 'Hulp bij je ISDE-subsidieaanvraag', label: 'We helpen je met het dossier bij de RVO' },
   { value: 'Nazorg en monitoring', label: 'Service in Den Haag en omstreken' },

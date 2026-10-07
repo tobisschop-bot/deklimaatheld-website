@@ -41,7 +41,7 @@ export const airco: DienstData = {
   slug: 'airco',
   meta: {
     title: 'Airco laten installeren in Den Haag – De Klimaatheld',
-    description: 'Airco laten plaatsen in Den Haag en omstreken: koelen in de zomer, verwarmen in de winter. Single-split of multi-split, inclusief montage door eigen monteurs.',
+    description: 'Airco laten plaatsen in Den Haag en omstreken: koelen in de zomer, verwarmen in de winter. Single-split of multi-split, inclusief vakkundige montage.',
   },
   hero: {
     label: 'Airco',
@@ -87,7 +87,7 @@ export const airco: DienstData = {
     title: 'Wat zit er in de prijs',
     items: [
       { title: 'Advies aan huis', tekst: 'Opname van je situatie en een berekening van het benodigde vermogen.' },
-      { title: 'Montage door eigen monteurs', tekst: 'Geen onderaannemers.' },
+      { title: 'Vakkundige montage', tekst: 'Door gecertificeerde monteurs, netjes afgewerkt.' },
       { title: 'Leidingwerk en afwerking', tekst: 'Nette leidinggoten en afgewerkte doorvoeren.' },
       { title: 'Inbedrijfstelling en uitleg', tekst: 'We stellen het systeem in en leggen de bediening uit, ook van de app.' },
       { title: 'Nazorg en onderhoud', tekst: 'Na de installatie blijven we bereikbaar voor service en onderhoud.' },
@@ -98,7 +98,7 @@ export const airco: DienstData = {
     items: [
       { title: 'Aanvraag', tekst: 'Vraag vrijblijvend advies aan via de website.' },
       { title: 'Adviesgesprek', tekst: 'Telefonisch of bij je thuis nemen we je situatie door.' },
-      { title: 'Installatie', tekst: 'Vakkundige en schone montage door onze eigen monteurs.' },
+      { title: 'Installatie', tekst: 'Vakkundige en schone montage.' },
       { title: 'Nazorg', tekst: 'Genieten van koeling en warmte, met service als je die nodig hebt.' },
     ],
   },
@@ -179,7 +179,7 @@ export const vloerverwarming: DienstData = {
     items: [
       { title: 'Opname en warmteverliesberekening', tekst: 'We berekenen per ruimte hoeveel warmte nodig is.' },
       { title: 'Legplan op maat', tekst: 'Leidingafstand en groepen afgestemd op jouw woning en warmtepomp.' },
-      { title: 'Aanleg door eigen monteurs', tekst: 'Infrezen of aanleggen, stofarm en netjes.' },
+      { title: 'Vakkundige aanleg', tekst: 'Infrezen of opbouw, stofarm en netjes.' },
       { title: 'Verdeler en aansluiting', tekst: 'We plaatsen de verdeler en sluiten aan op je cv-ketel of warmtepomp.' },
       { title: 'Waterzijdig inregelen', tekst: 'Elke groep krijgt de juiste hoeveelheid water, voor gelijke warmte overal.' },
     ],
@@ -265,7 +265,7 @@ export const ltVerwarming: DienstData = {
     items: [
       { title: 'Warmteverliesberekening per ruimte', tekst: 'We rekenen uit welke radiator of oplossing elke ruimte nodig heeft.' },
       { title: 'Advies op maat', tekst: 'Alleen vervangen wat nodig is, volgens de Heat Geek-methode.' },
-      { title: 'Montage door eigen monteurs', tekst: 'Oude radiatoren eruit, nieuwe erin, netjes afgewerkt.' },
+      { title: 'Vakkundige montage', tekst: 'Oude radiatoren eruit, nieuwe erin, netjes afgewerkt.' },
       { title: 'Waterzijdig inregelen', tekst: 'Zodat elke ruimte precies de juiste warmte krijgt.' },
     ],
   },
