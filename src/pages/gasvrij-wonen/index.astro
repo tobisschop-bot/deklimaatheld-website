@@ -61,12 +61,14 @@ const redenen = [
     <div class="cs" id="cs">
       {cases.map(c => (
         <article class="k" data-s={c.soort}>
-          <img src={c.img} alt={c.alt} draggable="false" />
+          {c.fotos.map((f, i) => <img class:list={['k__foto', { on: i === 0 }]} src={f.src} alt={f.alt} draggable="false" loading={i ? 'lazy' : undefined} />)}
+          {c.fotos.length > 1 && <span class="k__tel"><span>1</span>/{c.fotos.length}</span>}
           <div class="k__la">
             <span class:list={['pill', 'pill--' + c.soort]}>{soortLabel[c.soort]}</span>
             <b>{c.titel}</b>
             <p class="meta">📍 {c.plaats} · {c.jaar}</p>
             <div class="k__meer">
+              {c.fotos.length > 1 && <div class="k__thumbs">{c.fotos.map((f, i) => <button type="button" class:list={{ on: i === 0 }} data-n={i} style={`background-image:url(${f.src})`} aria-label={`Foto ${i + 1}`} />)}</div>}
               <p>{c.info}</p>
               {c.quote && <blockquote>“{c.quote.tekst}”<cite>— {c.quote.naam}</cite></blockquote>}
               <div class="chips">{c.punten.map(p => <span>{p}</span>)}</div>
@@ -77,7 +79,7 @@ const redenen = [
         </article>
       ))}
     </div>
-    <div class="mini">{cases.map(c => <i data-s={c.soort} style={`background-image:url(${c.img})`} />)}</div>
+    <div class="mini">{cases.map(c => <i data-s={c.soort} style={`background-image:url(${c.fotos[0].src})`} />)}</div>
   </section>
   <script>
     const root = document.getElementById('cs')!;
@@ -97,8 +99,18 @@ const redenen = [
     root.addEventListener('pointermove', e => { if (!down) return; const dx = e.clientX - x0; moved = Math.max(moved, Math.abs(dx)); pos = Math.max(-.4, Math.min(ks.length - .6, start - dx / (root.clientWidth * .5))); draw(); });
     root.addEventListener('pointerup', e => { if (!down) return; down = false;
       if (moved < 6) { const el = document.elementsFromPoint(e.clientX, e.clientY).find(x => x.classList?.contains('k')) as HTMLElement; const i = ks.indexOf(el);
-        if (i < 0) return; if (i === Math.round(pos)) el.classList.toggle('open'); else snap(i); return; }
+        if (i < 0) return; if (i !== Math.round(pos)) { snap(i); return; }
+        const t = (e.target as HTMLElement), th = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement;
+        if (th?.matches('.k__thumbs button')) { toon(el, +th.dataset.n!); return; }
+        if (el.classList.contains('open') && !th?.closest('.k__la')) { toon(el, (+(el.dataset.n || 0) + 1) % el.querySelectorAll('.k__foto').length); return; }
+        el.classList.toggle('open'); return; }
       const dx = e.clientX - x0; snap(Math.abs(dx) > 30 && Math.round(pos) === Math.round(start) ? start + (dx < 0 ? 1 : -1) : Math.round(pos)); });
+    function toon(k: HTMLElement, n: number) {
+      k.dataset.n = String(n);
+      k.querySelectorAll('.k__foto').forEach((f, i) => f.classList.toggle('on', i === n));
+      k.querySelectorAll('.k__thumbs button').forEach((f, i) => f.classList.toggle('on', i === n));
+      const t = k.querySelector('.k__tel span'); if (t) t.textContent = String(n + 1);
+    }
     allMini.forEach(m => m.addEventListener('click', () => snap(mini.indexOf(m))));
     document.querySelectorAll<HTMLElement>('.cs__filter button').forEach(b => b.addEventListener('click', () => {
       document.querySelectorAll('.cs__filter button').forEach(x => x.classList.toggle('on', x === b));
@@ -140,7 +152,13 @@ const redenen = [
   .cs__filter button.on { background: var(--navy); border-color: var(--navy); color: #fff; }
   .cs { position: relative; height: 440px; perspective: 1000px; touch-action: pan-y; user-select: none; cursor: grab; }
   .cs > .k { position: absolute; left: 50%; top: 0; width: min(78%, 380px); margin-left: calc(min(78%, 380px) / -2); height: 100%; border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: 0 25px 45px -25px rgba(10,14,30,.6); }
-  .cs .k img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+  .cs .k__foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; opacity: 0; transition: opacity .35s; }
+  .cs .k__foto.on { opacity: 1; }
+  .k__tel { position: absolute; right: 12px; top: 12px; z-index: 2; font-size: .72rem; font-weight: 700; color: #fff; background: rgba(10,14,30,.55); backdrop-filter: blur(6px); padding: 3px 9px; border-radius: 999px; }
+  .k__tel::before { content: '📷 '; }
+  .k__thumbs { display: flex; gap: 6px; margin: 12px 0 4px; overflow-x: auto; scrollbar-width: none; }
+  .k__thumbs button { flex: none; width: 52px; height: 52px; border-radius: 8px; border: 2px solid transparent; background-size: cover; background-position: center; opacity: .55; cursor: pointer; padding: 0; transition: .2s; }
+  .k__thumbs button.on { opacity: 1; border-color: var(--red); }
   .k__la { position: absolute; left: 10px; right: 10px; bottom: 10px; background: rgba(255,255,255,.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 14px; padding: 12px 14px; z-index: 2; max-height: calc(100% - 20px); overflow-y: auto; }
   .k__la b { display: block; margin-top: 6px; font-size: 1.02rem; padding-right: 30px; }
   .k__la .meta { margin: 0; color: #667; font-size: .85rem; }
