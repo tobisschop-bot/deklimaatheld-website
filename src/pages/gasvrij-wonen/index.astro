@@ -2,7 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import Button from '../../components/Button.astro';
-import { projecten } from '../../data/projecten';
+import { cases, soortLabel } from '../../data/projecten';
+const soorten = [...new Set(cases.map(c => c.soort))];
 const redenen = [
   { t: 'Meer comfort', p: 'Een warmtepomp verwarmt rustig en gelijkmatig op lage temperatuur. Geen koude hoeken en geen pieken: het hele huis blijft constant op temperatuur. Dat merken onze klanten na de overstap het meest.' },
   { t: 'Lagere energierekening', p: 'Een goed ontworpen warmtepomp haalt het grootste deel van zijn warmte gratis uit de buitenlucht. Je betaalt alleen de stroom om die warmte binnen te brengen, en je bent minder afhankelijk van de gasprijs.' },
@@ -50,57 +51,62 @@ const redenen = [
 
   <section class="section gw__klus">
     <div class="container">
-      <h2>Ons werk</h2>
-      <p>Tik op een klus voor meer informatie.</p>
-    </div>
-    <div class="kr" id="kr">
-      {projecten.map(k => (
-        <button class="kr__kaart" type="button" data-id={k.id}>
-          <img src={k.img} alt={k.alt} loading="lazy" />
-          <span class="kr__type">{k.type}</span>
-          <span class="kr__naam">{k.titel}<small>{k.plaats}</small></span>
-        </button>
-      ))}
-    </div>
-    <div class="kr__dots">{projecten.map((_, i) => <span class:list={['kr__dot', { on: i === 0 }]} />)}</div>
-  </section>
-
-  <div class="ks" id="ks" hidden>
-    <div class="ks__bg" data-close></div>
-    <div class="ks__paneel" role="dialog" aria-modal="true">
-      <button class="ks__x" type="button" data-close aria-label="Sluiten">×</button>
-      <img class="ks__img" alt="" />
-      <div class="ks__info">
-        <span class="kr__type ks__type"></span>
-        <h3 class="ks__titel"></h3>
-        <p class="ks__plaats"></p>
-        <p class="ks__tekst"></p>
-        <ul class="ks__punten"></ul>
+      <h2>Ons werk in de praktijk</h2>
+      <p class="cs__hint">Swipe door onze cases · tik voor het hele verhaal</p>
+      <div class="cs__filter" role="tablist">
+        <button class="on" data-f="alle">Alles</button>
+        {soorten.map(s => <button data-f={s}>{({ klant: 'Klantverhalen', project: 'Projecten', groot: 'Grote projecten' })[s]}</button>)}
       </div>
     </div>
-  </div>
-  <script type="application/json" id="kr-data" set:html={JSON.stringify(projecten)} />
+    <div class="cs" id="cs">
+      {cases.map(c => (
+        <article class="k" data-s={c.soort}>
+          <img src={c.img} alt={c.alt} draggable="false" />
+          <div class="k__la">
+            <span class:list={['pill', 'pill--' + c.soort]}>{soortLabel[c.soort]}</span>
+            <b>{c.titel}</b>
+            <p class="meta">📍 {c.plaats} · {c.jaar}</p>
+            <div class="k__meer">
+              <p>{c.info}</p>
+              {c.quote && <blockquote>“{c.quote.tekst}”<cite>— {c.quote.naam}</cite></blockquote>}
+              <div class="chips">{c.punten.map(p => <span>{p}</span>)}</div>
+              <a class="cta" href="/offerte/">Ook zoiets? →</a>
+            </div>
+            <span class="k__pijl" aria-hidden="true">⌃</span>
+          </div>
+        </article>
+      ))}
+    </div>
+    <div class="mini">{cases.map(c => <i data-s={c.soort} style={`background-image:url(${c.img})`} />)}</div>
+  </section>
   <script>
-    const data = JSON.parse(document.getElementById('kr-data')!.textContent!);
-    const kr = document.getElementById('kr')!, ks = document.getElementById('ks')!;
-    const dots = [...document.querySelectorAll('.kr__dot')];
-    kr.addEventListener('scroll', () => {
-      const i = Math.round(kr.scrollLeft / (kr.firstElementChild as HTMLElement).offsetWidth);
-      dots.forEach((d, j) => d.classList.toggle('on', j === i));
-    }, { passive: true });
-    const q = (s: string) => ks.querySelector(s) as HTMLElement;
-    kr.querySelectorAll<HTMLElement>('.kr__kaart').forEach(b => b.addEventListener('click', () => {
-      const k = data.find((x: any) => x.id === b.dataset.id);
-      (q('.ks__img') as HTMLImageElement).src = k.img; (q('.ks__img') as HTMLImageElement).alt = k.alt;
-      q('.ks__type').textContent = k.type; q('.ks__titel').textContent = k.titel;
-      q('.ks__plaats').textContent = k.plaats; q('.ks__tekst').textContent = k.info;
-      q('.ks__punten').innerHTML = k.punten.map((p: string) => `<li>${p}</li>`).join('');
-      ks.hidden = false; document.body.style.overflow = 'hidden';
-      requestAnimationFrame(() => ks.classList.add('open'));
+    const root = document.getElementById('cs')!;
+    const all = [...root.querySelectorAll<HTMLElement>('.k')];
+    const allMini = [...document.querySelectorAll<HTMLElement>('.mini i')];
+    let ks = all, mini = allMini, pos = 0, start = 0, x0 = 0, moved = 0, down = false, anim = 0;
+    const draw = () => {
+      ks.forEach((k, i) => { const d = i - pos, a = Math.max(-1, Math.min(1, d));
+        k.style.transform = `translateX(${d * 72}%) scale(${1 - Math.min(1, Math.abs(d)) * .14}) rotateY(${-a * 18}deg)`;
+        k.style.zIndex = String(100 - Math.round(Math.abs(d) * 10)); k.style.opacity = String(Math.max(0, 1 - Math.abs(d) * .4));
+        if (Math.abs(d) > .5) k.classList.remove('open'); });
+      const c = Math.round(pos); mini.forEach((m, i) => m.classList.toggle('on', i === c));
+    };
+    const snap = (t: number) => { cancelAnimationFrame(anim); t = Math.max(0, Math.min(ks.length - 1, t)); const f = pos, t0 = performance.now();
+      const st = (n: number) => { const p = Math.min(1, (n - t0) / 380), e = 1 - Math.pow(1 - p, 3); pos = f + (t - f) * e; draw(); if (p < 1) anim = requestAnimationFrame(st); }; anim = requestAnimationFrame(st); };
+    root.addEventListener('pointerdown', e => { if ((e.target as HTMLElement).closest('a')) return; down = true; x0 = e.clientX; start = pos; moved = 0; cancelAnimationFrame(anim); root.setPointerCapture(e.pointerId); });
+    root.addEventListener('pointermove', e => { if (!down) return; const dx = e.clientX - x0; moved = Math.max(moved, Math.abs(dx)); pos = Math.max(-.4, Math.min(ks.length - .6, start - dx / (root.clientWidth * .5))); draw(); });
+    root.addEventListener('pointerup', e => { if (!down) return; down = false;
+      if (moved < 6) { const el = document.elementsFromPoint(e.clientX, e.clientY).find(x => x.classList?.contains('k')) as HTMLElement; const i = ks.indexOf(el);
+        if (i < 0) return; if (i === Math.round(pos)) el.classList.toggle('open'); else snap(i); return; }
+      const dx = e.clientX - x0; snap(Math.abs(dx) > 30 && Math.round(pos) === Math.round(start) ? start + (dx < 0 ? 1 : -1) : Math.round(pos)); });
+    allMini.forEach(m => m.addEventListener('click', () => snap(mini.indexOf(m))));
+    document.querySelectorAll<HTMLElement>('.cs__filter button').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('.cs__filter button').forEach(x => x.classList.toggle('on', x === b));
+      const f = b.dataset.f; ks = all.filter(k => f === 'alle' || k.dataset.s === f); mini = allMini.filter(m => f === 'alle' || m.dataset.s === f);
+      all.forEach(k => { const v = ks.includes(k); k.style.display = v ? '' : 'none'; }); allMini.forEach(m => m.style.display = mini.includes(m) ? '' : 'none');
+      pos = 0; draw();
     }));
-    const sluit = () => { ks.classList.remove('open'); document.body.style.overflow = ''; setTimeout(() => ks.hidden = true, 300); };
-    ks.querySelectorAll('[data-close]').forEach(e => e.addEventListener('click', sluit));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !ks.hidden) sluit(); });
+    draw();
   </script>
 
   <section class="section gw__belofte">
@@ -127,28 +133,29 @@ const redenen = [
   .gw__knoppen { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 24px; }
   .gw__link { color: #fff; font-weight: 700; text-decoration: none; }
   @media (min-width: 760px) { .gw__kaarten { grid-template-columns: repeat(3,1fr); } .gw__keuze { grid-template-columns: 1fr 1fr; } }
-  .kr { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 16px 8px; scroll-padding: 0 16px; scrollbar-width: none; }
-  .kr::-webkit-scrollbar { display: none; }
-  .kr__kaart { position: relative; flex: 0 0 78%; max-width: 340px; aspect-ratio: 4 / 5; scroll-snap-align: start; border: 0; padding: 0; border-radius: 14px; overflow: hidden; cursor: pointer; background: #222; text-align: left; font: inherit; }
-  .kr__kaart img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .kr__kaart::after { content: ''; position: absolute; inset: 50% 0 0; background: linear-gradient(transparent, rgba(10,14,30,.85)); }
-  .kr__type { position: absolute; left: 12px; top: 12px; z-index: 1; font-size: .72rem; font-weight: 700; color: #fff; background: var(--red); padding: 3px 10px; border-radius: 999px; }
-  .kr__naam { position: absolute; left: 14px; right: 14px; bottom: 14px; z-index: 1; color: #fff; font-weight: 800; font-size: 1.05rem; }
-  .kr__naam small { display: block; font-weight: 500; font-size: .82rem; color: #C9CFDA; }
-  .kr__dots { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
-  .kr__dot { width: 7px; height: 7px; border-radius: 50%; background: #C9CFDA; transition: .2s; }
-  .kr__dot.on { background: var(--red); width: 18px; border-radius: 4px; }
-  .ks { position: fixed; inset: 0; z-index: 100; }
-  .ks__bg { position: absolute; inset: 0; background: rgba(10,14,30,.6); opacity: 0; transition: opacity .3s; }
-  .ks__paneel { position: absolute; left: 0; right: 0; bottom: 0; max-height: 88vh; overflow-y: auto; background: #fff; border-radius: 18px 18px 0 0; transform: translateY(100%); transition: transform .3s ease; }
-  .ks.open .ks__bg { opacity: 1; }
-  .ks.open .ks__paneel { transform: none; }
-  .ks__x { position: absolute; right: 12px; top: 12px; z-index: 2; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(255,255,255,.9); font-size: 1.5rem; line-height: 1; cursor: pointer; }
-  .ks__img { width: 100%; max-height: 50vh; object-fit: cover; display: block; }
-  .ks__info { position: relative; padding: 20px 16px 32px; }
-  .ks__type { position: static; display: inline-block; margin-bottom: 8px; }
-  .ks__titel { margin: 0; }
-  .ks__plaats { margin: 2px 0 10px; color: #667; }
-  .ks__punten { padding-left: 18px; }
-  @media (min-width: 760px) { .ks__paneel { max-width: 560px; margin: 0 auto; } .kr__kaart { flex-basis: 300px; } }
+  .gw__klus { overflow: hidden; }
+  .cs__hint { color: #778; font-size: .9rem; margin: 0 0 14px; }
+  .cs__filter { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px 22px; padding: 0 16px; }
+  .cs__filter button { flex: none; border: 1.5px solid #D5D9E3; background: #fff; color: var(--navy); font: inherit; font-size: .85rem; font-weight: 700; padding: 7px 14px; border-radius: 999px; cursor: pointer; }
+  .cs__filter button.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .cs { position: relative; height: 440px; perspective: 1000px; touch-action: pan-y; user-select: none; cursor: grab; }
+  .cs > .k { position: absolute; left: 50%; top: 0; width: min(78%, 380px); margin-left: calc(min(78%, 380px) / -2); height: 100%; border-radius: 18px; overflow: hidden; background: #ddd; box-shadow: 0 25px 45px -25px rgba(10,14,30,.6); }
+  .cs .k img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+  .k__la { position: absolute; left: 10px; right: 10px; bottom: 10px; background: rgba(255,255,255,.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-radius: 14px; padding: 12px 14px; z-index: 2; max-height: calc(100% - 20px); overflow-y: auto; }
+  .k__la b { display: block; margin-top: 6px; font-size: 1.02rem; padding-right: 30px; }
+  .k__la .meta { margin: 0; color: #667; font-size: .85rem; }
+  .pill { display: inline-block; font-size: .72rem; font-weight: 700; color: #fff; background: var(--red); padding: 3px 10px; border-radius: 999px; }
+  .pill--klant { background: #1E9E6A; } .pill--groot { background: var(--navy); }
+  .k__meer { max-height: 0; overflow: hidden; opacity: 0; transition: max-height .45s, opacity .3s; }
+  .k.open .k__meer { max-height: 420px; opacity: 1; }
+  .k__meer p { margin: 10px 0 8px; font-size: .9rem; }
+  .k__meer blockquote { margin: 0 0 10px; padding: 8px 12px; border-left: 3px solid var(--red); background: rgba(255,255,255,.7); border-radius: 0 8px 8px 0; font-style: italic; font-size: .9rem; }
+  .k__meer cite { display: block; font-style: normal; font-weight: 700; font-size: .78rem; margin-top: 4px; color: #556; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; } .chips span { font-size: .75rem; font-weight: 700; background: var(--navy); color: #fff; padding: 3px 9px; border-radius: 999px; }
+  .cta { display: inline-block; margin-top: 12px; background: var(--red); color: #fff; font-weight: 700; padding: 8px 14px; border-radius: 10px; text-decoration: none; font-size: .9rem; }
+  .k__pijl { position: absolute; right: 12px; top: 10px; width: 28px; height: 28px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-weight: 900; transition: .3s; }
+  .k.open .k__pijl { transform: rotate(180deg); }
+  .mini { display: flex; justify-content: center; gap: 6px; margin-top: 16px; }
+  .mini i { width: 34px; height: 34px; border-radius: 8px; background-size: cover; background-position: center; opacity: .4; transition: .25s; cursor: pointer; }
+  .mini i.on { opacity: 1; outline: 2px solid var(--red); outline-offset: 2px; transform: translateY(-3px); }
 </style>
