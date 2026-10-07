@@ -17,6 +17,7 @@ export const nav = [
   { label: 'Airco', href: '/airco/' },
   { label: 'Vloerverwarming', href: '/vloerverwarming/' },
   { label: 'LT-verwarming', href: '/lt-verwarming/' },
+  { label: 'Service & onderhoud', href: '/service/' },
   { label: 'Subsidie', href: '/subsidie/' },
   { label: 'Over ons', href: '/over-ons/' },
 ];

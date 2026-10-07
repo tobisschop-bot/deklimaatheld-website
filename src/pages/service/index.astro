@@ -1,0 +1,128 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+import Faq from '../../components/Faq.astro';
+import { site } from '../../data/site';
+import { pakketten, kenmerken, prijzen, eur } from '../../data/service';
+
+const beloftes = [
+  { t: 'Eigen monteurs', d: 'Geen onderaannemers. De monteur die installeert, kent ook je onderhoud.' },
+  { t: 'Monitoring op afstand', d: 'We kijken mee. Daalt je rendement of komt er een foutcode, dan bellen wij jou.' },
+  { t: 'Snel geholpen', d: 'Bij storing reageren we binnen [X] uur en lossen we veel al op afstand op.' },
+  { t: 'Eén aanspreekpunt', d: 'Geen callcenter, maar een vast nummer en vaste gezichten.' },
+];
+const storing = [
+  { t: 'Melden', d: 'Bel of app ons, het liefst met een foto van de foutcode.' },
+  { t: 'Op afstand kijken', d: 'Via de monitoring zien we vaak direct wat er speelt en lossen we het op.' },
+  { t: 'Monteur langs', d: 'Lukt het niet op afstand, dan plannen we zo snel mogelijk een bezoek.' },
+  { t: 'Verslag', d: 'Je krijgt na afloop een kort verslag van wat er is gedaan.' },
+];
+const faq = [
+  { q: 'Wat moet ik eerst zelf checken bij een storing?', a: 'Kijk of de thermostaat goed staat, of de groep in de meterkast niet is uitgeschakeld en of de waterdruk tussen 1 en 2 bar staat. Staat er een foutcode in de app of op het display, stuur ons dan een foto.' },
+  { q: 'Doen jullie ook onderhoud aan installaties die niet door jullie zijn geplaatst?', a: 'Ja, in veel gevallen wel. Bij de eerste beurt checken we de installatie en zetten we de monitoring op.' },
+  { q: 'Kan ik tussentijds opzeggen?', a: 'Na het eerste jaar is het abonnement maandelijks opzegbaar.' },
+  { q: 'Wat valt er niet onder Compleet?', a: 'Het bijvullen van koudemiddel en schade door externe oorzaken (zoals vorst door een uitgeschakelde installatie of waterkwaliteit) vallen niet onder het pakket. We bespreken altijd vooraf wat er gedekt is.' },
+];
+const vanaf = (id: 'basis' | 'zorgeloos' | 'compleet') => Math.min(...Object.values(prijzen).map((p) => p[id] ?? Infinity));
+const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' : v);
+---
+<Base title="Service & onderhoud – De Klimaatheld" description="Onderhoud en service voor je warmtepomp of airco in Den Haag en omstreken: monitoring op afstand, vaste monteurs en heldere servicepakketten.">
+  <PageHero label="Service & onderhoud" title="Ook na de installatie in goede handen" lead="Monitoring op afstand, vaste monteurs en heldere servicepakketten. Zo blijft je warmtepomp of airco jarenlang zuinig draaien." crumbs={[{ label: 'Home', href: '/' }, { label: 'Service & onderhoud' }]} />
+
+  <section class="section section--tight">
+    <div class="container sv-cta">
+      <Button href="/service/afsluiten/" full>Servicepakket afsluiten →</Button>
+      <Button href={site.whatsappHref} variant="outline" full>Storing melden</Button>
+    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="container">
+      <span class="label">Onze belofte</span>
+      <h2>Service zoals het hoort</h2>
+      <ul class="sv-beloftes">
+        {beloftes.map((b) => <li class="card"><strong>{b.t}</strong><span>{b.d}</span></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <span class="label">Servicepakketten</span>
+      <h2>Kies je pakket</h2>
+      <p class="lead">Monitoring op afstand en een rendementscontrole zitten in elk pakket.</p>
+      <div class="sv-pakketten">
+        {pakketten.map((p) => (
+          <article class:list={['card sv-pk', { 'sv-pk--top': p.tag }]}>
+            {p.tag && <span class="sv-pk__tag">{p.tag}</span>}
+            <h3>{p.naam}</h3>
+            <p class="sv-pk__prijs">v.a. <strong>{eur(vanaf(p.id))}</strong> <small>per maand</small></p>
+            <p class="sv-pk__kort">{p.kort}</p>
+            <ul class="sv-pk__lijst">
+              {kenmerken.map((k) => {
+                const v = k[p.id];
+                return <li class:list={{ 'is-nee': v === false }}><span>{cel(v) === '✓' ? '✓' : cel(v) === '–' ? '–' : '✓'}</span>{k.label}{typeof v === 'string' && <small> · {v}</small>}</li>;
+              })}
+            </ul>
+            <Button href={`/service/afsluiten/?pakket=${p.id}`} variant={p.tag ? 'primary' : 'outline'} full>Kies {p.naam}</Button>
+          </article>
+        ))}
+      </div>
+      <p class="note">Prijzen per maand incl. btw, voor een lucht-water warmtepomp. Hybride en airco hebben een eigen tarief; dat zie je bij het afsluiten. Na het eerste jaar maandelijks opzegbaar.</p>
+    </div>
+  </section>
+
+  <section class="section section--white">
+    <div class="container">
+      <span class="label">Storing?</span>
+      <h2>Zo helpen we je</h2>
+      <ol class="sv-stappen">
+        {storing.map((s, i) => <li><span class="sv-n">{i + 1}</span><div><strong>{s.t}</strong><p>{s.d}</p></div></li>)}
+      </ol>
+      <div class="sv-contact card">
+        <strong>Direct contact</strong>
+        <a href={site.phoneHref}>📞 {site.phone}</a>
+        <a href={site.whatsappHref}>💬 WhatsApp {site.whatsapp}</a>
+        <small>{site.hours}</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <Faq items={faq} />
+      <p style="margin-top:24px"><Button href="/service/afsluiten/" full>Servicepakket afsluiten →</Button></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .sv-cta { display: grid; gap: 10px; }
+  .sv-beloftes { list-style: none; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sv-beloftes li { display: grid; gap: 4px; padding: 14px; }
+  .sv-beloftes strong { color: var(--navy); }
+  .sv-beloftes span { font-size: .85rem; color: var(--muted); line-height: 1.4; }
+  .sv-pakketten { display: grid; gap: 14px; margin-top: 16px; }
+  .sv-pk { position: relative; display: flex; flex-direction: column; }
+  .sv-pk--top { border: 2px solid var(--red); }
+  .sv-pk__tag { position: absolute; top: -11px; right: 16px; background: var(--red); color: #fff; font-size: .72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+  .sv-pk h3 { margin: 0; }
+  .sv-pk__prijs { margin: 4px 0 6px; }
+  .sv-pk__prijs strong { font-size: 1.5rem; color: var(--navy); }
+  .sv-pk__prijs small, .sv-pk__kort { color: var(--muted); }
+  .sv-pk__kort { margin: 0 0 12px; font-size: .92rem; }
+  .sv-pk__lijst { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 6px; font-size: .9rem; }
+  .sv-pk__lijst li { display: flex; gap: 8px; }
+  .sv-pk__lijst li > span { color: var(--green); font-weight: 700; width: 14px; flex-shrink: 0; }
+  .sv-pk__lijst li.is-nee { color: #A0A7B4; }
+  .sv-pk__lijst li.is-nee > span { color: #A0A7B4; }
+  .sv-pk__lijst small { color: var(--muted); }
+  .sv-pk :global(.btn) { margin-top: auto; }
+  .sv-stappen { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 14px; }
+  .sv-stappen li { display: flex; gap: 12px; }
+  .sv-stappen p { margin: 2px 0 0; color: var(--muted); font-size: .92rem; }
+  .sv-n { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-weight: 700; }
+  .sv-contact { display: grid; gap: 6px; }
+  .sv-contact a { font-weight: 700; color: var(--red); text-decoration: none; }
+</style>

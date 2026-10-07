@@ -1,0 +1,236 @@
+---
+// Afsluitscherm servicepakket – ook bruikbaar op een tablet bij oplevering.
+// Prijzen komen uit src/data/service.ts. Inzending via Netlify Forms ('service').
+import Base from '../../../layouts/Base.astro';
+import { pakketten, installaties, prijzen, aircoExtraBinnendeel, jaarKorting, kenmerken, eur } from '../../../data/service';
+const data = JSON.stringify({ prijzen, aircoExtraBinnendeel, jaarKorting });
+const stappen = ['Installatie', 'Pakket', 'Gegevens', 'Akkoord'];
+---
+<Base title="Servicepakket afsluiten – De Klimaatheld" description="Sluit direct een servicepakket af voor je warmtepomp of airco.">
+  <section class="sa">
+    <div class="container narrow">
+      <a class="sa__terug" href="/service/">← Service & onderhoud</a>
+      <h1>Servicepakket afsluiten</h1>
+      <ol class="sa__prog" aria-hidden="true">{stappen.map((s, i) => <li data-dot class:list={{ 'is-on': i === 0 }}><span>{i + 1}</span>{s}</li>)}</ol>
+
+      <form name="service" method="POST" action="/service/bedankt/" data-netlify="true" netlify-honeypot="bot-field" data-sa data-prijs={data}>
+        <input type="hidden" name="form-name" value="service" />
+        <p class="hp"><label>Niet invullen: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+        <input type="hidden" name="maandprijs" data-out-prijs />
+        <input type="hidden" name="handtekening" data-sig-out />
+
+        <!-- 1 -->
+        <fieldset class="sa__stap" data-step>
+          <legend>Wat voor installatie heb je?</legend>
+          <div class="sa__keuzes">
+            {installaties.map((i, n) => (
+              <label class="sa__k"><input type="radio" name="installatie" value={i.id} required checked={n === 0} /><span><strong>{i.naam}</strong><small>{i.sub}</small></span></label>
+            ))}
+          </div>
+          <label class="sa__veld" data-binnen hidden>Aantal binnendelen
+            <select name="binnendelen">{[1, 2, 3, 4, 5].map((n) => <option>{n}</option>)}</select>
+          </label>
+          <label class="sa__veld">Merk en type (optioneel)
+            <input name="merk" placeholder="Bijv. Weheat Sparrow P60" />
+          </label>
+          <label class="sa__veld">Geplaatst door De Klimaatheld?
+            <select name="door_ons"><option>Ja</option><option>Nee, door een ander bedrijf</option><option>Weet ik niet</option></select>
+          </label>
+        </fieldset>
+
+        <!-- 2 -->
+        <fieldset class="sa__stap" data-step>
+          <legend>Kies je pakket</legend>
+          <div class="sa__keuzes">
+            {pakketten.map((p) => (
+              <label class="sa__k sa__pk" data-pk={p.id}>
+                <input type="radio" name="pakket" value={p.id} required checked={p.id === 'zorgeloos'} />
+                <span>
+                  <strong>{p.naam} {p.tag && <em>{p.tag}</em>}</strong>
+                  <small>{p.kort}</small>
+                  <b data-pk-prijs></b>
+                </span>
+              </label>
+            ))}
+          </div>
+          <details class="sa__wat"><summary>Wat zit er in elk pakket?</summary>
+            <table>
+              <tr><th></th>{pakketten.map((p) => <th>{p.naam}</th>)}</tr>
+              {kenmerken.map((k) => <tr><td>{k.label}</td>{pakketten.map((p) => { const v = k[p.id]; return <td>{v === true ? '✓' : v === false ? '–' : v}</td>; })}</tr>)}
+            </table>
+          </details>
+          <fieldset class="sa__sub"><legend>Betalen per</legend>
+            <label class="sa__r"><input type="radio" name="betaling" value="maand" checked /> Maand</label>
+            <label class="sa__r"><input type="radio" name="betaling" value="jaar" /> Jaar <small>(5% korting)</small></label>
+          </fieldset>
+          <p class="sa__totaal">Jouw prijs: <strong data-totaal>–</strong></p>
+        </fieldset>
+
+        <!-- 3 -->
+        <fieldset class="sa__stap" data-step>
+          <legend>Jouw gegevens</legend>
+          <label class="sa__veld">Naam<input name="naam" required autocomplete="name" /></label>
+          <div class="sa__2">
+            <label class="sa__veld">Postcode<input name="postcode" required autocomplete="postal-code" /></label>
+            <label class="sa__veld">Huisnummer<input name="huisnummer" required /></label>
+          </div>
+          <label class="sa__veld">E-mail<input type="email" name="email" required autocomplete="email" /></label>
+          <label class="sa__veld">Telefoon<input type="tel" name="telefoon" required autocomplete="tel" /></label>
+          <label class="sa__veld">IBAN voor automatische incasso<input name="iban" required autocomplete="off" placeholder="NL00 BANK 0123 4567 89" /></label>
+          <label class="sa__veld">Ten name van<input name="iban_tnv" required /></label>
+        </fieldset>
+
+        <!-- 4 -->
+        <fieldset class="sa__stap" data-step>
+          <legend>Controleren en akkoord</legend>
+          <div class="card sa__overzicht" data-overzicht></div>
+          <label class="sa__r"><input type="checkbox" name="akkoord_voorwaarden" required /> Ik ga akkoord met de <a href="/voorwaarden/" target="_blank">servicevoorwaarden</a>.</label>
+          <label class="sa__r"><input type="checkbox" name="akkoord_incasso" required /> Ik machtig De Klimaatheld om het bedrag automatisch af te schrijven.</label>
+          <div class="sa__sig">
+            <span>Handtekening</span>
+            <canvas data-sig width="600" height="200" aria-label="Teken hier je handtekening"></canvas>
+            <button type="button" class="sa__wis" data-sig-wis>Wissen</button>
+          </div>
+        </fieldset>
+
+        <div class="sa__nav">
+          <button type="button" class="btn btn--outline" data-prev hidden>Vorige</button>
+          <button type="button" class="btn btn--primary" data-next>Volgende</button>
+          <button type="submit" class="btn btn--primary" data-submit hidden>Pakket afsluiten</button>
+        </div>
+        <p class="sa__fout" data-fout hidden></p>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-sa]')!;
+  const D = JSON.parse(form.dataset.prijs!);
+  const eur = (n: number) => '€ ' + n.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const val = (n: string) => (form.querySelector<HTMLInputElement>(`[name="${n}"]:checked`) ?? form.querySelector<HTMLInputElement>(`[name="${n}"]`))?.value ?? '';
+  const steps = [...form.querySelectorAll<HTMLElement>('[data-step]')];
+  const dots = [...document.querySelectorAll('[data-dot]')];
+  let cur = 0;
+
+  // Voorselectie pakket uit URL (?pakket=basis)
+  const qp = new URLSearchParams(location.search).get('pakket');
+  if (qp) form.querySelector<HTMLInputElement>(`[name="pakket"][value="${qp}"]`)?.click();
+
+  const prijs = (inst: string, pk: string) => {
+    const b = D.prijzen[inst]?.[pk];
+    if (b == null) return null;
+    const bd = Number(val('binnendelen') || 1);
+    return b + (inst === 'airco' ? Math.max(0, bd - 1) * D.aircoExtraBinnendeel : 0);
+  };
+  const update = () => {
+    const inst = val('installatie');
+    form.querySelector<HTMLElement>('[data-binnen]')!.hidden = inst !== 'airco';
+    form.querySelectorAll<HTMLElement>('[data-pk]').forEach((el) => {
+      const p = prijs(inst, el.dataset.pk!);
+      const inp = el.querySelector('input')!;
+      inp.disabled = p == null;
+      el.classList.toggle('is-uit', p == null);
+      el.querySelector('[data-pk-prijs]')!.textContent = p == null ? 'Niet beschikbaar voor airco' : `${eur(p)} per maand`;
+      if (p == null && inp.checked) form.querySelector<HTMLInputElement>('[name="pakket"][value="zorgeloos"]')!.checked = true;
+    });
+    const m = prijs(inst, val('pakket'));
+    const jaar = val('betaling') === 'jaar';
+    const tekst = m == null ? '–' : jaar ? `${eur(m * 12 * (1 - D.jaarKorting))} per jaar` : `${eur(m)} per maand`;
+    form.querySelector('[data-totaal]')!.textContent = tekst;
+    form.querySelector<HTMLInputElement>('[data-out-prijs]')!.value = tekst;
+    const naam = (s: string) => form.querySelector(`[name="${s}"]:checked`)?.closest('label')?.querySelector('strong')?.childNodes[0]?.textContent?.trim() ?? '';
+    form.querySelector('[data-overzicht]')!.innerHTML =
+      `<p><b>${naam('installatie')}</b>${inst === 'airco' ? ` · ${val('binnendelen')} binnendeel/delen` : ''}</p>` +
+      `<p>Pakket <b>${naam('pakket')}</b> · ${tekst}</p>` +
+      `<p>${val('naam')}<br>${val('postcode')} ${val('huisnummer')}<br>${val('email')} · ${val('telefoon')}</p>`;
+  };
+  form.addEventListener('change', update);
+  form.addEventListener('input', update);
+
+  const show = (i: number) => {
+    cur = i;
+    steps.forEach((s, n) => (s.hidden = n !== i));
+    dots.forEach((d, n) => d.classList.toggle('is-on', n <= i));
+    form.querySelector<HTMLElement>('[data-prev]')!.hidden = i === 0;
+    form.querySelector<HTMLElement>('[data-next]')!.hidden = i === steps.length - 1;
+    form.querySelector<HTMLElement>('[data-submit]')!.hidden = i !== steps.length - 1;
+    update();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  const fout = form.querySelector<HTMLElement>('[data-fout]')!;
+  const geldig = () => {
+    const velden = [...steps[cur].querySelectorAll<HTMLInputElement>('input, select')];
+    const bad = velden.find((v) => !v.disabled && !v.checkValidity());
+    if (bad) { bad.reportValidity(); return false; }
+    return true;
+  };
+  form.querySelector('[data-next]')!.addEventListener('click', () => { if (geldig()) show(cur + 1); });
+  form.querySelector('[data-prev]')!.addEventListener('click', () => show(cur - 1));
+
+  // Handtekening
+  const cv = form.querySelector<HTMLCanvasElement>('[data-sig]')!;
+  const ctx = cv.getContext('2d')!;
+  ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.strokeStyle = '#141A2E';
+  let tekenen = false, getekend = false;
+  const pos = (e: PointerEvent) => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * cv.width / r.width, (e.clientY - r.top) * cv.height / r.height]; };
+  cv.addEventListener('pointerdown', (e) => { tekenen = true; getekend = true; const [x, y] = pos(e); ctx.beginPath(); ctx.moveTo(x, y); cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', (e) => { if (!tekenen) return; const [x, y] = pos(e); ctx.lineTo(x, y); ctx.stroke(); });
+  cv.addEventListener('pointerup', () => (tekenen = false));
+  form.querySelector('[data-sig-wis]')!.addEventListener('click', () => { ctx.clearRect(0, 0, cv.width, cv.height); getekend = false; });
+
+  form.addEventListener('submit', (e) => {
+    if (!getekend) { e.preventDefault(); fout.hidden = false; fout.textContent = 'Zet je handtekening om af te sluiten.'; return; }
+    form.querySelector<HTMLInputElement>('[data-sig-out]')!.value = cv.toDataURL('image/png');
+  });
+
+  form.classList.add('is-js');
+  show(0);
+</script>
+
+<style>
+  .sa { padding: 24px 0 56px; }
+  .sa__terug { font-size: .9rem; color: var(--muted); text-decoration: none; }
+  .sa h1 { font-size: 2rem; margin: 8px 0 16px; }
+  .sa__prog { list-style: none; padding: 0; margin: 0 0 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-size: .72rem; color: var(--muted); }
+  .sa__prog li { display: grid; justify-items: center; gap: 4px; text-align: center; }
+  .sa__prog span { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--border); color: var(--navy); font-weight: 700; }
+  .sa__prog li.is-on span { background: var(--red); color: #fff; }
+  .sa__stap { border: 0; padding: 0; margin: 0 0 20px; }
+  .sa__stap > legend { font-size: 1.35rem; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+  .sa__keuzes { display: grid; gap: 10px; margin-bottom: 14px; }
+  .sa__k { display: block; cursor: pointer; }
+  .sa__k input { position: absolute; opacity: 0; }
+  .sa__k > span { display: grid; gap: 2px; padding: 16px; border: 2px solid var(--border); border-radius: var(--radius); background: #fff; min-height: 64px; }
+  .sa__k input:checked + span { border-color: var(--red); box-shadow: 0 0 0 3px rgba(214,40,58,.12); }
+  .sa__k small { color: var(--muted); }
+  .sa__k em { font-style: normal; font-size: .7rem; background: var(--red); color: #fff; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
+  .sa__k b { color: var(--navy); margin-top: 4px; }
+  .sa__k.is-uit { opacity: .45; pointer-events: none; }
+  .sa__veld { display: grid; gap: 6px; font-weight: 600; font-size: .92rem; margin-bottom: 12px; }
+  .sa__veld input, .sa__veld select { font: inherit; font-weight: 400; padding: 14px; border: 1px solid var(--border); border-radius: 8px; background: #fff; min-height: 50px; }
+  .sa__2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sa__sub { border: 0; padding: 0; margin: 4px 0 8px; display: flex; gap: 16px; flex-wrap: wrap; }
+  .sa__sub legend { font-weight: 600; margin-bottom: 6px; }
+  .sa__r { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 10px; font-size: .95rem; }
+  .sa__r input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--red); }
+  .sa__totaal { font-size: 1.1rem; background: var(--bg); padding: 12px 14px; border-radius: 8px; }
+  .sa__totaal strong { color: var(--red); }
+  .sa__wat { margin: 0 0 14px; font-size: .88rem; }
+  .sa__wat summary { cursor: pointer; font-weight: 600; color: var(--red); }
+  .sa__wat table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: .78rem; }
+  .sa__wat th, .sa__wat td { padding: 6px 4px; border-bottom: 1px solid var(--border); text-align: center; }
+  .sa__wat td:first-child { text-align: left; }
+  .sa__overzicht { margin-bottom: 14px; font-size: .95rem; }
+  .sa__overzicht :global(p) { margin: 0 0 6px; }
+  .sa__sig { display: grid; gap: 6px; font-weight: 600; }
+  .sa__sig canvas { width: 100%; height: auto; aspect-ratio: 3 / 1; border: 2px dashed var(--border); border-radius: 8px; background: #fff; touch-action: none; }
+  .sa__wis { justify-self: end; background: none; border: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font: inherit; font-size: .85rem; }
+  .sa__nav { display: flex; gap: 10px; }
+  .sa__nav button { flex: 1; font: inherit; font-weight: 700; font-size: 1.05rem; padding: 16px; border-radius: var(--radius); border: 2px solid transparent; cursor: pointer; min-height: 56px; }
+  .sa__nav button[hidden] { display: none; }
+  .sa__nav .btn--primary { background: var(--red); color: #fff; }
+  .sa__nav .btn--outline { background: transparent; border-color: var(--navy); color: var(--navy); }
+  .sa__fout { color: var(--red); font-weight: 600; }
+  .hp { position: absolute; left: -9999px; }
+</style>
