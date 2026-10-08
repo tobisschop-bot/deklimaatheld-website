@@ -1,0 +1,156 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+import CasesCarrousel from '../../components/CasesCarrousel.astro';
+
+const redenen = [
+  { icoon: 'comfort', t: 'Meer comfort', p: 'Een warmtepomp verwarmt rustig en gelijkmatig op lage temperatuur. Geen koude hoeken en geen pieken: het hele huis blijft constant op temperatuur. Dat merken onze klanten na de overstap het meest.' },
+  { icoon: 'euro', t: 'Lagere energierekening', p: 'Een goed ontworpen warmtepomp haalt het grootste deel van zijn warmte gratis uit de buitenlucht. Je betaalt alleen de stroom om die warmte binnen te brengen, en je bent minder afhankelijk van de gasprijs.' },
+  { icoon: 'blad', t: 'Beter voor het milieu', p: 'Je verbrandt thuis geen gas meer en stoot dus geen CO₂ uit bij het verwarmen. Met stroom van zonnepanelen of groene stroom wordt de winst nog groter.' },
+];
+const keuzes = [
+  { pill: 'Hybride', t: 'De eerste stap', p: 'De warmtepomp doet het grootste deel van het werk; je cv-ketel springt alleen bij op de koudste dagen en voor warm tapwater.', punten: ['Ideaal als je huis nog niet volledig geïsoleerd is', 'Geleidelijk overstappen', 'Later uit te breiden naar all-electric'] },
+  { pill: 'All-electric', t: 'Helemaal gasvrij', p: 'De warmtepomp verzorgt alle verwarming én warm tapwater via een boiler.', punten: ['Geen gasaansluiting meer nodig', 'Geen vastrecht voor gas', 'Past het best bij een redelijk geïsoleerd huis'] },
+];
+const gwp = [
+  { n: 'R290', w: 3, label: '≈ 3', ons: true },
+  { n: 'R32', w: 675, label: '≈ 675' },
+  { n: 'R410A', w: 2000, label: 'ruim 2000' },
+];
+---
+<Base title="Verduurzamen – De Klimaatheld" description="Zo verduurzamen wij bij De Klimaatheld: bekijk ons werk in de praktijk en lees alles over gasvrij of hybride wonen.">
+  <PageHero label="Verduurzamen" title="Zo verduurzamen wij" lead="Wij staan achter onze warmtepompen en helpen je stap voor stap van het gas af. Met een systeem dat écht bij je huis past." />
+
+  <section class="vd__intro">
+    <div class="container narrow">
+      <p class="vd__lead">Verduurzamen is meer dan een warmtepomp ophangen. We kijken naar je hele huis: je isolatie, je radiatoren of vloerverwarming, je meterkast en wat jij belangrijk vindt.</p>
+      <p>Zo kiezen we samen de route die past, van een hybride eerste stap tot helemaal gasvrij. Hieronder zie je hoe dat er in de praktijk uitziet.</p>
+      <ul class="vd__stippen">
+        <li>Eerlijk advies</li><li>Ontwerp op lage temperatuur</li><li>Subsidie geregeld</li>
+      </ul>
+    </div>
+  </section>
+
+  <CasesCarrousel id="ons-werk" label="Ons werk" title="In de praktijk" />
+
+  <section class="vd__gv" id="gasvrij-of-hybride">
+    <div class="container narrow">
+      <span class="label">Informatie</span>
+      <h2>Gasvrij of hybride wonen</h2>
+      <p class="vd__gvlead">Alles wat je wilt weten voordat je de stap zet: waarom van het gas af, welke route bij je past en waarom wij met R290 werken.</p>
+      <h3 class="vd__sub"><span>1</span>Waarom van het gas af?</h3>
+      <div class="vd__redenen">
+        {redenen.map((r) => (
+          <div class="vd__reden">
+            <span class="vd__icoon" aria-hidden="true">
+              {r.icoon === 'comfort' && <svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 0 0-3 3v7.3a4.5 4.5 0 1 0 6 0V6a3 3 0 0 0-3-3z"/><path d="M12 10v6"/></svg>}
+              {r.icoon === 'euro' && <svg viewBox="0 0 24 24"><path d="M17 6.5A6.5 6.5 0 1 0 17 17.5"/><path d="M4 10.5h9M4 13.5h9"/></svg>}
+              {r.icoon === 'blad' && <svg viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15"/><path d="M5 19l7-7"/></svg>}
+            </span>
+            <div><h3>{r.t}</h3><p>{r.p}</p></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="vd__keuze">
+    <div class="container narrow">
+      <h3 class="vd__sub"><span>2</span>Hybride of all-electric?</h3>
+      <div class="vd__keuzes">
+        {keuzes.map((k) => (
+          <div class="vd__kaart">
+            <span class="vd__pill">{k.pill}</span>
+            <h3>{k.t}</h3>
+            <p>{k.p}</p>
+            <ul class="vd__vinkjes">{k.punten.map((pt) => <li>{pt}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+      <p class="vd__twijfel"><b>Twijfel je?</b> We kijken samen naar je woning, isolatie en afgiftesysteem en adviseren eerlijk wat het beste werkt. Soms is hybride nu slim en stap je later over.</p>
+    </div>
+  </section>
+
+  <section class="vd__r290">
+    <div class="container narrow">
+      <h3 class="vd__sub"><span>3</span>Toekomstbestendig met R290</h3>
+      <p>We werken met warmtepompen op <strong>R290 (propaan)</strong>, een natuurlijk koudemiddel. Het broeikaseffect (GWP) is veel lager dan dat van de gangbare alternatieven:</p>
+      <div class="vd__gwp" role="img" aria-label="GWP: R290 ongeveer 3, R32 ongeveer 675, R410A ruim 2000">
+        {gwp.map((g) => (
+          <div class:list={['vd__rij', { 'vd__rij--ons': g.ons }]}>
+            <span class="vd__naam">{g.n}</span>
+            <span class="vd__baan"><i style={`width:${Math.max(1.5, g.w / 20)}%`}></i></span>
+            <span class="vd__waarde">{g.label}</span>
+          </div>
+        ))}
+      </div>
+      <p>Synthetische koudemiddelen worden in Europa steeds verder beperkt, dus met R290 zit je ook op de lange termijn goed. R290 haalt daarnaast hoge aanvoertemperaturen, wat handig is als je bestaande radiatoren wilt blijven gebruiken.</p>
+    </div>
+  </section>
+
+  <section class="vd__belofte">
+    <div class="container narrow">
+      <span class="label">Onze belofte</span>
+      <h2>Comfortabel warm én zo zuinig mogelijk</h2>
+      <p>We ontwerpen je systeem op lage temperatuur en regelen het waterzijdig in. Zo zorgen we ervoor dat je huis comfortabel warm wordt én dat de warmtepomp zo zuinig mogelijk draait. Daar staan we voor.</p>
+      <div class="vd__knoppen">
+        <Button href="/offerte/">Vraag gratis advies aan</Button>
+        <a class="vd__link" href="/warmtepompen/">Bekijk warmtepompen →</a>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .vd__intro { background: #fff; padding: 36px 0 30px; }
+  .vd__lead { font-size: 1.12rem; font-weight: 600; color: var(--text); margin: 0 0 12px; }
+  .vd__intro p { color: var(--muted); }
+  .vd__stippen { list-style: none; padding: 0; margin: 18px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .vd__stippen li { font-size: .82rem; font-weight: 700; color: var(--navy); background: #F3F4F8; border: 1px solid var(--border); padding: 6px 12px; border-radius: 999px; }
+  .vd__stippen li::before { content: '✓ '; color: #1E9E6A; }
+
+  .vd__gv { background: #fff; padding: 56px 0 36px; }
+  .vd__gvlead { color: var(--muted); margin: 6px 0 26px; }
+  .vd__sub { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; margin: 0; }
+  .vd__sub span { flex: 0 0 30px; height: 30px; border-radius: 50%; background: var(--red); color: #fff; font-size: .9rem; display: grid; place-items: center; }
+  .vd__gv .label, .vd__r290 .label { color: var(--red); }
+  .vd__redenen { display: grid; gap: 14px; margin-top: 20px; }
+  .vd__reden { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border-radius: 14px; background: #F7F8FB; }
+  .vd__reden h3 { margin: 0 0 4px; font-size: 1.05rem; }
+  .vd__reden p { margin: 0; color: var(--muted); font-size: .95rem; }
+  .vd__icoon { flex: 0 0 44px; height: 44px; border-radius: 12px; background: #FDE3E6; color: var(--red); display: grid; place-items: center; }
+  .vd__icoon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .vd__keuze { background: #F3F4F8; padding: 40px 0; }
+  .vd__keuzes { display: grid; gap: 14px; margin: 20px 0 16px; }
+  .vd__kaart { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 14px 30px -20px rgba(20,25,45,.35); border-top: 4px solid var(--red); }
+  .vd__kaart:nth-child(2) { border-top-color: var(--navy); }
+  .vd__kaart h3 { margin: 0 0 6px; }
+  .vd__kaart > p { margin: 0 0 12px; color: var(--muted); font-size: .95rem; }
+  .vd__pill { display: inline-block; font-size: .72rem; font-weight: 700; color: #fff; background: var(--red); padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; }
+  .vd__kaart:nth-child(2) .vd__pill { background: var(--navy); }
+  .vd__vinkjes { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; font-size: .92rem; }
+  .vd__vinkjes li::before { content: '✓  '; color: #1E9E6A; font-weight: 800; }
+  .vd__twijfel { margin: 0; padding: 14px 16px; border-radius: 12px; background: #fff; border: 1px dashed #C9CEDA; color: var(--muted); font-size: .95rem; }
+  .vd__twijfel b { color: var(--text); }
+
+  .vd__r290 { background: #fff; padding: 40px 0 48px; }
+  .vd__r290 .vd__sub { margin-bottom: 12px; }
+  .vd__r290 p { color: var(--muted); }
+  .vd__gwp { display: grid; gap: 10px; margin: 18px 0 20px; padding: 16px; border-radius: 14px; background: #F7F8FB; }
+  .vd__rij { display: grid; grid-template-columns: 58px 1fr 72px; align-items: center; gap: 10px; font-size: .88rem; }
+  .vd__naam { font-weight: 800; color: var(--navy); }
+  .vd__baan { height: 10px; background: #E6E9F0; border-radius: 6px; overflow: hidden; }
+  .vd__baan i { display: block; height: 100%; background: #9AA3B2; border-radius: 6px; }
+  .vd__rij--ons .vd__baan i { background: #1E9E6A; }
+  .vd__rij--ons .vd__naam, .vd__rij--ons .vd__waarde { color: #1E9E6A; }
+  .vd__waarde { text-align: right; font-weight: 700; color: var(--muted); }
+
+  .vd__belofte { background: var(--navy); color: #fff; padding: 56px 0; }
+  .vd__belofte .label { color: #FF8A95; }
+  .vd__belofte h2 { color: #fff; }
+  .vd__belofte p { color: #C9CFDA; }
+  .vd__knoppen { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 24px; }
+  .vd__link { color: #fff; font-weight: 700; text-decoration: none; }
+  @media (min-width: 760px) { .vd__redenen { grid-template-columns: repeat(3, 1fr); } .vd__reden { flex-direction: column; } .vd__keuzes { grid-template-columns: 1fr 1fr; } }
+</style>
