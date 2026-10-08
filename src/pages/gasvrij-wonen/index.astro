@@ -12,6 +12,41 @@ const redenen = [
 <Base title="Gasvrij of hybride wonen – De Klimaatheld" description="Advies over gasvrij of hybride wonen: meer comfort, lagere kosten en beter voor het milieu.">
   <PageHero label="Advies" title="Gasvrij of hybride wonen" lead="Wij staan achter onze warmtepompen en helpen je stap voor stap van het gas af. Met een systeem dat écht bij je huis past." />
 
+  <section class="cz cz--a" id="ons-werk">
+    <div class="container"><span class="label">Ons werk</span><h2>In de praktijk</h2><p class="hint">Swipe door onze projecten · tik voor het verhaal</p></div>
+    <div class="rail">
+      {cases.map((c, i) => (
+        <article class="sl">
+          <div class="sl__beeld">
+            <img class="sl__groot" src={c.groot.src} alt={c.groot.alt} draggable="false" loading={i > 1 ? 'lazy' : undefined} />
+            <span class:list={['pill', 'pill--' + c.soort]}>{soortLabel[c.soort]}</span>
+            <div class:list={["sl__klein", { "sl__klein--r": c.kleinRechts }]}><img src={c.klein.src} alt={c.klein.alt} draggable="false" loading="lazy" /></div>
+          </div>
+          <div class="sl__kop"><div><b>{c.titel}</b>{c.plaats && <small>📍 {c.plaats}{c.jaar && ` · ${c.jaar}`}</small>}</div></div>
+          <span class="sl__pijl" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div class="sl__info"><div class="sl__in">
+            <p>{c.info}</p>
+            {c.quote && <blockquote>“{c.quote.tekst}”<cite>— {c.quote.naam}</cite></blockquote>}
+            <a class="cta" href="/offerte/">Ook zoiets? →</a>
+          </div></div>
+        </article>
+      ))}
+    </div>
+    <div class="container nav"><button class="pijl" data-d="-1" aria-label="Vorige">‹</button><div class="bar"><i></i></div><button class="pijl" data-d="1" aria-label="Volgende">›</button></div>
+  </section>
+  <script>
+document.querySelectorAll<HTMLElement>('.cz').forEach(sec => {
+  const rail = sec.querySelector<HTMLElement>('.rail')!, sl = [...rail.querySelectorAll<HTMLElement>('.sl')];
+  const bar = sec.querySelector<HTMLElement>('.bar i')!; let cur = 0;
+  const go = (i: number) => rail.scrollTo({ left: sl[i].offsetLeft - 16, behavior: 'smooth' });
+  rail.addEventListener('scroll', () => { const i = Math.min(sl.length - 1, Math.round(rail.scrollLeft / (sl[0].offsetWidth + 14)));
+    if (i !== cur) { sl[cur].classList.remove('open'); cur = i; } bar.style.width = ((i + 1) / sl.length * 100) + '%'; }, { passive: true });
+  sl.forEach((s, i) => s.addEventListener('click', e => { if ((e.target as HTMLElement).closest('a')) return; if (i !== cur) return go(i); s.classList.toggle('open'); }));
+  sec.querySelectorAll<HTMLElement>('.pijl').forEach(b => b.addEventListener('click', () => go(Math.max(0, Math.min(sl.length - 1, cur + +b.dataset.d!)))));
+  bar.style.width = (100 / sl.length) + '%';
+});
+</script>
+
   <section class="section">
     <div class="container narrow">
       <h2>Waarom van het gas af?</h2>
@@ -47,41 +82,6 @@ const redenen = [
       <p>R290 haalt daarnaast hoge aanvoertemperaturen, wat handig is als je bestaande radiatoren wilt blijven gebruiken.</p>
     </div>
   </section>
-
-  <section class="cz cz--a">
-    <div class="container"><span class="label">Ons werk</span><h2>In de praktijk</h2><p class="hint">Swipe door onze projecten · tik voor het verhaal</p></div>
-    <div class="rail">
-      {cases.map((c, i) => (
-        <article class="sl">
-          <div class="sl__beeld">
-            <img class="sl__groot" src={c.groot.src} alt={c.groot.alt} draggable="false" loading={i > 1 ? 'lazy' : undefined} />
-            <span class:list={['pill', 'pill--' + c.soort]}>{soortLabel[c.soort]}</span>
-            <div class:list={["sl__klein", { "sl__klein--r": c.kleinRechts }]}><img src={c.klein.src} alt={c.klein.alt} draggable="false" loading="lazy" /></div>
-          </div>
-          <div class="sl__kop"><div><b>{c.titel}</b>{c.plaats && <small>📍 {c.plaats}{c.jaar && ` · ${c.jaar}`}</small>}</div></div>
-          <span class="sl__pijl" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <div class="sl__info"><div class="sl__in">
-            <p>{c.info}</p>
-            {c.quote && <blockquote>“{c.quote.tekst}”<cite>— {c.quote.naam}</cite></blockquote>}
-            <a class="cta" href="/offerte/">Ook zoiets? →</a>
-          </div></div>
-        </article>
-      ))}
-    </div>
-    <div class="container nav"><button class="pijl" data-d="-1" aria-label="Vorige">‹</button><div class="bar"><i></i></div><button class="pijl" data-d="1" aria-label="Volgende">›</button></div>
-  </section>
-  <script>
-document.querySelectorAll<HTMLElement>('.cz').forEach(sec => {
-  const rail = sec.querySelector<HTMLElement>('.rail')!, sl = [...rail.querySelectorAll<HTMLElement>('.sl')];
-  const bar = sec.querySelector<HTMLElement>('.bar i')!; let cur = 0;
-  const go = (i: number) => rail.scrollTo({ left: sl[i].offsetLeft - 16, behavior: 'smooth' });
-  rail.addEventListener('scroll', () => { const i = Math.min(sl.length - 1, Math.round(rail.scrollLeft / (sl[0].offsetWidth + 14)));
-    if (i !== cur) { sl[cur].classList.remove('open'); cur = i; } bar.style.width = ((i + 1) / sl.length * 100) + '%'; }, { passive: true });
-  sl.forEach((s, i) => s.addEventListener('click', e => { if ((e.target as HTMLElement).closest('a')) return; if (i !== cur) return go(i); s.classList.toggle('open'); }));
-  sec.querySelectorAll<HTMLElement>('.pijl').forEach(b => b.addEventListener('click', () => go(Math.max(0, Math.min(sl.length - 1, cur + +b.dataset.d!)))));
-  bar.style.width = (100 / sl.length) + '%';
-});
-</script>
 
   <section class="section gw__belofte">
     <div class="container narrow">
