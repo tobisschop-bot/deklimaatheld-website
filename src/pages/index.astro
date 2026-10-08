@@ -1,16 +1,19 @@
 ---
-import ProductImage from '../components/ProductImage.astro';
 import Base from '../layouts/Base.astro';
 import Button from '../components/Button.astro';
 import Besparingscheck from '../components/besparingscheck/Besparingscheck.astro';
-import { warmtepompen, euro, kaartLink } from '../data/warmtepompen';
+import CasesCarrousel from '../components/CasesCarrousel.astro';
 
 const stappen = [
-  { n: '01', icon: '/icons/01-besparingscheck.svg', t: 'Besparingscheck', d: 'Je doet vrijblijvend de gratis online besparingscheck. Zo zie je direct hoeveel gas en euro’s je kunt besparen.' },
-  { n: '02', icon: '/icons/02-installatiecheck.svg', t: 'Installatiecheck', d: 'We beoordelen je huidige verwarming, radiatoren en meterkast. Zo weet je precies welke warmtepomp bij jouw woning past.' },
-  { n: '03', icon: '/icons/03-installatieplan.svg', t: 'Installatieplan', d: 'We maken een technisch installatieplan op maat en bespreken alle details via videocall of bij je thuis.' },
-  { n: '04', icon: '/icons/04-installatie.svg', t: 'Vakkundige installatie', d: 'We plaatsen en regelen je hybride of all-electric warmtepomp in, meestal binnen één tot twee dagen.' },
-  { n: '05', icon: '/icons/05-subsidie-nazorg.svg', t: 'Subsidie & nazorg', d: 'Wij regelen de ISDE-subsidieaanvraag en blijven bereikbaar voor onderhoud en service.' },
+  { n: '01', icon: '/icons/01-besparingscheck.svg', t: 'Check', d: 'Doe de gratis besparingscheck. Daarna kijken we naar je huidige verwarming, radiatoren en meterkast.' },
+  { n: '02', icon: '/icons/03-installatieplan.svg', t: 'Plan op maat', d: 'We maken een technisch installatieplan voor jouw woning en bespreken alles via videocall of bij je thuis.' },
+  { n: '03', icon: '/icons/05-subsidie-nazorg.svg', t: 'Installatie & nazorg', d: 'We installeren en regelen alles in, vaak binnen één tot twee dagen. De ISDE-subsidie regelen wij, en we blijven bereikbaar voor service.' },
+];
+const diensten = [
+  { i: '♨', t: 'Warmtepomp', s: 'Hybride of all-electric', href: '/warmtepompen/' },
+  { i: '▦', t: 'Vloer- & LT-verwarming', s: 'Warm op lage temperatuur', href: '/vloerverwarming/' },
+  { i: '❄', t: 'Airco', s: 'Koelen én verwarmen', href: '/airco/' },
+  { i: '☀', t: 'Zon & batterij', s: 'Zelf opwekken en opslaan', href: '/gasvrij-wonen/#routes' },
 ];
 ---
 <Base title="De Klimaatheld – Zorgeloos duurzaam verwarmen in Den Haag">
@@ -19,8 +22,9 @@ const stappen = [
     <div class="container hero__grid">
       <div>
         <span class="hero__chip">🔥 Direct energiekosten verlagen</span>
-        <h1>Duizenden euro’s besparen op je energierekening?</h1>
-        <p class="hero__lead">Kies voor een duurzame warmtepomp, inclusief vakkundige installatie en de ISDE-subsidie voor je geregeld.</p>
+        <h1>Duurzaam en comfortabel wonen, goed geregeld</h1>
+        <p class="hero__lead">Warmtepompen, airco, zonnepanelen en thuisbatterijen. Eerlijk advies, vakwerk en de ISDE-subsidie voor je geregeld.</p>
+        <a class="hero__werk" href="/gasvrij-wonen/">Bekijk ons werk →</a>
       </div>
       <div id="besparingscheck"><Besparingscheck /></div>
     </div>
@@ -35,6 +39,37 @@ const stappen = [
       </svg>
       <span class="hero__gloed"></span>
       <img class="hero__mascotte" src="/img/mascotte.webp" alt="" width="640" height="620" loading="eager" decoding="async" />
+    </div>
+  </section>
+
+  <!-- ONS WERK -->
+  <CasesCarrousel label="Ons werk" title="Recent opgeleverd" aantal={4} nieuwsteEerst meer={{ href: '/gasvrij-wonen/', tekst: 'Alle projecten' }} />
+
+  <!-- WAT WE DOEN -->
+  <section class="section section--white">
+    <div class="container">
+      <span class="label">Wat we doen</span>
+      <h2>Waar kunnen we je mee helpen?</h2>
+      <div class="tegels">
+        {diensten.map((d) => (<a class="tegel" href={d.href}><span class="tegel__icoon" aria-hidden="true">{d.i}</span><b>{d.t}</b><small>{d.s}</small></a>))}
+      </div>
+    </div>
+  </section>
+
+  <!-- STAPPEN -->
+  <section class="section">
+    <div class="container">
+      <span class="label">Helder & transparant</span>
+      <h2>Zo werkt De Klimaatheld</h2>
+      <p class="lead">In drie stappen naar een zorgeloze en duurzame woning.</p>
+      <ol class="steps">
+        {stappen.map((s) => (
+          <li class="card step">
+            <div class="step__icon"><span>{s.n}</span><img src={s.icon} alt="" width="80" height="80" loading="lazy" /></div>
+            <div><h3>{s.t}</h3><p>{s.d}</p></div>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 
@@ -54,70 +89,28 @@ const stappen = [
     </div>
   </section>
 
-  <!-- ZORGELOOS -->
-  <section class="section">
-    <div class="container narrow">
-      <h2>Zorgeloos verduurzamen</h2>
-      <p class="lead">De Klimaatheld doet meer dan alleen een warmtepomp installeren. We ontzorgen je van A tot Z.</p>
-      <p>We begeleiden je bij het hele traject: van isolatieadvies tot het aanvragen van de ISDE-subsidie. Is je woning nog niet goed genoeg geïsoleerd? Dan stippelen we samen het juiste traject uit.</p>
-      <Button href="#besparingscheck">Doe de besparingscheck</Button>
-    </div>
-  </section>
-
-  <!-- STAPPEN -->
-  <section class="section section--white">
-    <div class="container">
-      <span class="label">Helder & transparant</span>
-      <h2>Zo werkt De Klimaatheld</h2>
-      <p class="lead">In vijf stappen naar een zorgeloze en duurzame woning.</p>
-      <ol class="steps">
-        {stappen.map((s) => (
-          <li class="card step">
-            <div class="step__icon"><span>{s.n}</span><img src={s.icon} alt="" width="80" height="80" loading="lazy" /></div>
-            <div><h3>{s.t}</h3><p>{s.d}</p></div>
-          </li>
-        ))}
-      </ol>
-    </div>
-  </section>
-
-  <!-- WARMTEPOMPEN -->
+  <!-- ISDE + LENING -->
   <section class="section">
     <div class="container">
-      <span class="label">Onze warmtepompen</span>
-      <h2>Weheat warmtepompen</h2>
-      <div class="grid grid-3">
-        {warmtepompen.filter((w) => w.merk === 'Weheat').map((w) => (
-          <a class="card pump" href={kaartLink(w).href}>
-            <div class="pump__img"><ProductImage src={w.img} alt={w.name} class="pump__pi" /></div>
-            <span class="pump__tag">{w.tag}</span>
-            <h3>{w.name}</h3>
-            <p class="pump__price">{w.from == null ? <strong>Prijs op aanvraag</strong> : <>v.a. <strong>{euro(w.from)}</strong> <small>incl. montage</small></>}</p>
-            <span class="pump__link">{w.page ? 'Stel samen' : kaartLink(w).label} →</span>
-          </a>
-        ))}
+      <span class="label">Geld</span>
+      <h2>Subsidie & financiering</h2>
+      <div class="grid grid-2">
+      <div class="card feature">
+        <span class="badge">Voordeel van de overheid</span>
+        <h3>Maak gebruik van de ISDE-subsidie</h3>
+        <p>De overheid geeft subsidie aan huiseigenaren die een warmtepomp laten installeren. Hoeveel je krijgt hangt af van het type en vermogen.</p>
+        <p>Geen zin in papierwerk? De Klimaatheld verzorgt de volledige subsidieaanvraag voor je.</p>
+        <a class="more" href="/subsidie/">Meer over de ISDE-subsidie →</a>
       </div>
-      <p style="margin-top:24px"><Button href="/warmtepompen/" variant="outline">Alle warmtepompen</Button></p>
-    </div>
-  </section>
-
-  <!-- GASVRIJ / HYBRIDE -->
-  <section class="gv">
-    <div class="container narrow gv__txt">
-      <span class="label">Comfortabel wonen</span>
-      <h2>Gasvrij of hybride wonen</h2>
-      <p>Met de hoge en wisselende gasprijzen is overstappen financieel slim. Je verlaagt direct je maandelijkse energiekosten, waardoor je de installatie sneller terugverdient.</p>
-      <p>Een warmtepomp haalt warmte uit de buitenlucht en geeft hetzelfde comfort als een cv-ketel: een warm huis en warm tapwater, zonder gas te verbranden.</p>
-      <a class="gv__link" href="/gasvrij-wonen/">Bekijk ons werk →</a>
-    </div>
-    <figure class="gv__beeld">
-      <img class="gv__groot" src="/img/werk-installatie-binnen.webp" alt="Door De Klimaatheld geplaatste Weheat-installatie met boiler- en buffervat" width="941" height="1672" loading="lazy" />
-      <span class="gv__tag gv__tag--binnen">Binnen</span>
-      <div class="gv__klein">
-        <img src="/img/werk-installatie-buiten.webp" alt="Weheat-buitenunit tegen de gevel" width="900" height="782" loading="lazy" />
-        <span class="gv__tag">Buiten</span>
+      <div class="card feature">
+        <span class="badge">Lage rente</span>
+        <h3>Energiebespaarlening</h3>
+        <p>Met de Energiebespaarlening van het Nationaal Warmtefonds financier je je warmtepomp tegen een lage rente. Bij een lager inkomen kan dat zelfs tegen 0% rente.</p>
+        <p>Zo betaal je de lening af met wat je maandelijks bespaart op je gasrekening. Bekijk de actuele voorwaarden op warmtefonds.nl.</p>
+        <a class="more" href="https://www.warmtefonds.nl" rel="noopener" target="_blank">Check financieringsopties →</a>
       </div>
-    </figure>
+      </div>
+    </div>
   </section>
 
   <!-- SERVICE & ONDERHOUD -->
@@ -138,26 +131,6 @@ const stappen = [
     </div>
   </section>
 
-  <!-- ISDE + LENING -->
-  <section class="section">
-    <div class="container grid grid-2">
-      <div class="card feature">
-        <span class="badge">Voordeel van de overheid</span>
-        <h3>Maak gebruik van de ISDE-subsidie</h3>
-        <p>De overheid geeft subsidie aan huiseigenaren die een warmtepomp laten installeren. Hoeveel je krijgt hangt af van het type en vermogen.</p>
-        <p>Geen zin in papierwerk? De Klimaatheld verzorgt de volledige subsidieaanvraag voor je.</p>
-        <a class="more" href="/subsidie/">Meer over de ISDE-subsidie →</a>
-      </div>
-      <div class="card feature">
-        <span class="badge">Lage rente</span>
-        <h3>Energiebespaarlening</h3>
-        <p>Met de Energiebespaarlening van het Nationaal Warmtefonds financier je je warmtepomp tegen een lage rente. Bij een lager inkomen kan dat zelfs tegen 0% rente.</p>
-        <p>Zo betaal je de lening af met wat je maandelijks bespaart op je gasrekening. Bekijk de actuele voorwaarden op warmtefonds.nl.</p>
-        <a class="more" href="https://www.warmtefonds.nl" rel="noopener" target="_blank">Check financieringsopties →</a>
-      </div>
-    </div>
-  </section>
-
   <!-- FINAL CTA -->
   <section class="final">
     <div class="container final__grid">
@@ -173,6 +146,7 @@ const stappen = [
       <div><Button href="#besparingscheck" variant="light">Doe de besparingscheck →</Button></div>
     </div>
   </section>
+
 </Base>
 
 <style>
@@ -192,6 +166,13 @@ const stappen = [
   @keyframes zoef { 0%, 100% { opacity: .85; transform: translate(0, 0); } 50% { opacity: 1; transform: translate(4px, -6px); } }
   @media (prefers-reduced-motion: reduce) { .hero__mascotte, .hero__zoef { animation: none; } }
   .hero__chip { display: inline-block; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); padding: 6px 12px; border-radius: 999px; font-size: .85rem; font-weight: 600; margin-bottom: 16px; }
+  .hero__werk { display: inline-block; margin-top: 4px; padding: 9px 16px; border: 1.5px solid rgba(255,255,255,.55); border-radius: 999px; color: #fff; font-weight: 700; font-size: .9rem; text-decoration: none; }
+  .hero + :global(.cz) { padding-top: 80px; }
+  .tegels { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+  .tegel { display: flex; flex-direction: column; gap: 2px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-decoration: none; color: var(--text); }
+  .tegel__icoon { width: 34px; height: 34px; border-radius: 9px; background: #FDE3E6; color: var(--red); display: grid; place-items: center; font-size: 1.1rem; margin-bottom: 6px; }
+  .tegel b { font-size: .95rem; line-height: 1.2; } .tegel small { color: var(--muted); font-size: .8rem; }
+  @media (min-width: 760px) { .tegels { grid-template-columns: repeat(4, 1fr); } }
   .hero__lead { color: #C9CFDA; font-size: 1.1rem; max-width: 560px; }
   .hero__grid { display: grid; gap: 28px; align-items: center; }
   #besparingscheck { scroll-margin-top: 90px; }

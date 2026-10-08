@@ -2,91 +2,62 @@
 import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import Button from '../../components/Button.astro';
-import { cases, soortLabel } from '../../data/projecten';
+import CasesCarrousel from '../../components/CasesCarrousel.astro';
+import Faq from '../../components/Faq.astro';
+
+const routes = [
+  { pill: 'Hybride', t: 'De eerste stap', p: 'De warmtepomp doet het grootste deel van het werk; je cv-ketel springt alleen bij op de koudste dagen. Ideaal als je huis nog niet volledig geïsoleerd is of als je het geleidelijk wilt doen.' },
+  { pill: 'All-electric', t: 'Helemaal van het gas af', p: 'De warmtepomp verzorgt alle verwarming én warm tapwater via een boiler. Geen gasaansluiting meer, dus ook geen vastrecht voor gas. Past het best bij een redelijk geïsoleerd huis.' },
+  { pill: 'Zon & batterij', t: 'Zelf opwekken en opslaan', p: 'Zonnepanelen met een thuisbatterij, zo nodig met een meterkast naar drie fasen. Je gebruikt meer van je eigen stroom, ook voor je warmtepomp of airco.' },
+];
 const redenen = [
-  { t: 'Meer comfort', p: 'Een warmtepomp verwarmt rustig en gelijkmatig op lage temperatuur. Geen koude hoeken en geen pieken: het hele huis blijft constant op temperatuur. Dat merken onze klanten na de overstap het meest.' },
-  { t: 'Lagere energierekening', p: 'Een goed ontworpen warmtepomp haalt het grootste deel van zijn warmte gratis uit de buitenlucht. Je betaalt alleen de stroom om die warmte binnen te brengen, en je bent minder afhankelijk van de gasprijs.' },
-  { t: 'Beter voor het milieu', p: 'Je verbrandt thuis geen gas meer en stoot dus geen CO₂ uit bij het verwarmen. Met stroom van zonnepanelen of groene stroom wordt de winst nog groter.' },
+  { t: 'Meer comfort', p: 'Rustig en gelijkmatig warm op lage temperatuur. Geen koude hoeken, geen pieken.' },
+  { t: 'Lagere energierekening', p: 'Het grootste deel van de warmte komt gratis uit de buitenlucht. Je bent minder afhankelijk van de gasprijs.' },
+  { t: 'Beter voor het milieu', p: 'Thuis geen gas meer verbranden. Met zonnestroom of groene stroom wordt de winst nog groter.' },
+];
+const vragen = [
+  { q: 'Past een warmtepomp bij mijn huis?', a: 'Dat hangt af van je isolatie, je radiatoren of vloerverwarming en je meterkast. We kijken er samen naar en adviseren eerlijk wat werkt. Soms is hybride nu slim en stap je later over op all-electric.' },
+  { q: 'Wat is R290 en waarom kiezen jullie ervoor?', a: "R290 (propaan) is een natuurlijk koudemiddel met een broeikaseffect (GWP) van ongeveer 3, tegenover zo'n 675 voor R32 en ruim 2000 voor het oudere R410A. Synthetische koudemiddelen worden in Europa steeds verder beperkt, dus met R290 zit je ook op de lange termijn goed. Het haalt bovendien hoge aanvoertemperaturen, handig als je je bestaande radiatoren wilt houden." },
+  { q: 'Wat kost het?', a: 'Dat verschilt per woning en per systeem. Na de gratis check krijg je een offerte op maat. De ISDE-subsidie regelen wij voor je, en met de Energiebespaarlening kun je de rest gespreid betalen.' },
 ];
 ---
-<Base title="Gasvrij of hybride wonen – De Klimaatheld" description="Advies over gasvrij of hybride wonen: meer comfort, lagere kosten en beter voor het milieu.">
-  <PageHero label="Advies" title="Gasvrij of hybride wonen" lead="Wij staan achter onze warmtepompen en helpen je stap voor stap van het gas af. Met een systeem dat écht bij je huis past." />
+<Base title="Ons werk & verduurzamen – De Klimaatheld" description="Bekijk ons werk en ontdek welke route naar duurzaam wonen bij jouw huis past: hybride, all-electric of zon en batterij.">
+  <PageHero label="Ons werk" title="Ons werk & verduurzamen" lead="Bekijk wat we bij anderen deden en ontdek welke route bij jouw huis past." />
 
-  <section class="cz cz--a" id="ons-werk">
-    <div class="container"><span class="label">Ons werk</span><h2>In de praktijk</h2><p class="hint">Swipe door onze projecten · tik voor het verhaal</p></div>
-    <div class="rail">
-      {cases.map((c, i) => (
-        <article class="sl">
-          <div class="sl__beeld">
-            <img class="sl__groot" src={c.groot.src} alt={c.groot.alt} draggable="false" loading={i > 1 ? 'lazy' : undefined} />
-            <span class:list={['pill', 'pill--' + c.soort]}>{soortLabel[c.soort]}</span>
-            <div class:list={["sl__klein", { "sl__klein--r": c.kleinRechts }]}><img src={c.klein.src} alt={c.klein.alt} draggable="false" loading="lazy" /></div>
-          </div>
-          <div class="sl__kop"><div><b>{c.titel}</b>{c.plaats && <small>📍 {c.plaats}{c.jaar && ` · ${c.jaar}`}</small>}</div></div>
-          <span class="sl__pijl" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <div class="sl__info"><div class="sl__in">
-            <p>{c.info}</p>
-            {c.quote && <blockquote>“{c.quote.tekst}”<cite>— {c.quote.naam}</cite></blockquote>}
-            <a class="cta" href="/offerte/">Ook zoiets? →</a>
-          </div></div>
-        </article>
-      ))}
+  <CasesCarrousel id="ons-werk" label="Projecten" title="In de praktijk" />
+
+  <section class="section gw__wit" id="routes">
+    <div class="container narrow">
+      <span class="label">Jouw huis</span>
+      <h2>Welke route past bij jou?</h2>
+      <div class="gw__routes">
+        {routes.map(r => (<div class="gw__route"><span class="gw__pill">{r.pill}</span><h3>{r.t}</h3><p>{r.p}</p></div>))}
+      </div>
+      <p class="gw__hint">Twijfel je? We kijken samen naar je woning en adviseren eerlijk wat het beste werkt.</p>
     </div>
-    <div class="container nav"><button class="pijl" data-d="-1" aria-label="Vorige">‹</button><div class="bar"><i></i></div><button class="pijl" data-d="1" aria-label="Volgende">›</button></div>
   </section>
-  <script>
-document.querySelectorAll<HTMLElement>('.cz').forEach(sec => {
-  const rail = sec.querySelector<HTMLElement>('.rail')!, sl = [...rail.querySelectorAll<HTMLElement>('.sl')];
-  const bar = sec.querySelector<HTMLElement>('.bar i')!; let cur = 0;
-  const go = (i: number) => rail.scrollTo({ left: sl[i].offsetLeft - 16, behavior: 'smooth' });
-  rail.addEventListener('scroll', () => { const i = Math.min(sl.length - 1, Math.round(rail.scrollLeft / (sl[0].offsetWidth + 14)));
-    if (i !== cur) { sl[cur].classList.remove('open'); cur = i; } bar.style.width = ((i + 1) / sl.length * 100) + '%'; }, { passive: true });
-  sl.forEach((s, i) => s.addEventListener('click', e => { if ((e.target as HTMLElement).closest('a')) return; if (i !== cur) return go(i); s.classList.toggle('open'); }));
-  sec.querySelectorAll<HTMLElement>('.pijl').forEach(b => b.addEventListener('click', () => go(Math.max(0, Math.min(sl.length - 1, cur + +b.dataset.d!)))));
-  bar.style.width = (100 / sl.length) + '%';
-});
-</script>
 
   <section class="section">
     <div class="container narrow">
-      <h2>Waarom van het gas af?</h2>
+      <span class="label">Waarom verduurzamen</span>
+      <h2>Drie voordelen</h2>
       <div class="gw__kaarten">
         {redenen.map(r => (<div class="gw__kaart"><h3>{r.t}</h3><p>{r.p}</p></div>))}
       </div>
     </div>
   </section>
 
-  <section class="section gw__alt">
+  <section class="section gw__wit">
     <div class="container narrow">
-      <h2>Hybride of all-electric?</h2>
-      <div class="gw__keuze">
-        <div class="gw__kaart">
-          <span class="gw__pill">Hybride</span>
-          <h3>De eerste stap</h3>
-          <p>De warmtepomp doet het grootste deel van het werk; je cv-ketel springt alleen bij op de koudste dagen en voor warm tapwater. Ideaal als je huis nog niet volledig geïsoleerd is of als je het geleidelijk wilt doen.</p>
-        </div>
-        <div class="gw__kaart">
-          <span class="gw__pill">All-electric</span>
-          <h3>Helemaal gasvrij</h3>
-          <p>De warmtepomp verzorgt alle verwarming én warm tapwater via een boiler. Geen gasaansluiting meer nodig, dus ook geen vastrecht voor gas. Past het best bij een redelijk geïsoleerd huis.</p>
-        </div>
-      </div>
-      <p>Twijfel je? We kijken samen naar je woning, isolatie en afgiftesysteem en adviseren eerlijk wat het beste werkt. Soms is hybride nu slim en stap je later over.</p>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container narrow">
-      <h2>Toekomstbestendig met R290</h2>
-      <p>We werken met warmtepompen op <strong>R290 (propaan)</strong>, een natuurlijk koudemiddel. Het broeikaseffect daarvan (GWP) is ongeveer <strong>3</strong>, tegenover zo'n 675 voor R32 en ruim 2000 voor het oudere R410A. Bovendien worden synthetische koudemiddelen in Europa steeds verder beperkt, dus met R290 zit je ook op de lange termijn goed.</p>
-      <p>R290 haalt daarnaast hoge aanvoertemperaturen, wat handig is als je bestaande radiatoren wilt blijven gebruiken.</p>
+      <span class="label">Goed om te weten</span>
+      <Faq title="Vragen" items={vragen} />
     </div>
   </section>
 
   <section class="section gw__belofte">
     <div class="container narrow">
       <h2>Onze belofte</h2>
-      <p>We ontwerpen je systeem op lage temperatuur en regelen het waterzijdig in. Zo zorgen we ervoor dat je huis comfortabel warm wordt én dat de warmtepomp zo zuinig mogelijk draait. Daar staan we voor.</p>
+      <p>We ontwerpen je systeem op lage temperatuur en regelen het waterzijdig in. Zo wordt je huis comfortabel warm én draait de warmtepomp zo zuinig mogelijk. Daar staan we voor.</p>
       <div class="gw__knoppen">
         <Button href="/offerte/">Vraag gratis advies aan</Button>
         <a class="gw__link" href="/warmtepompen/">Bekijk warmtepompen →</a>
@@ -95,54 +66,21 @@ document.querySelectorAll<HTMLElement>('.cz').forEach(sec => {
   </section>
 </Base>
 <style>
-  .gw__kaarten, .gw__keuze { display: grid; gap: 12px; margin: 20px 0; }
-  .gw__kaart { background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 6px 20px -12px rgba(20,25,45,.3); }
-  .gw__kaart h3 { margin: 0 0 6px; }
-  .gw__kaart p { margin: 0; }
-  .gw__alt { background: #EEF0F5; }
+  .gw__wit { background: #fff; }
+  .gw__routes { display: grid; gap: 12px; margin: 18px 0 14px; }
+  .gw__route { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--red); border-radius: 12px; padding: 16px; }
+  .gw__route h3 { margin: 0 0 4px; }
+  .gw__route p { margin: 0; color: var(--muted); font-size: .95rem; }
   .gw__pill { display: inline-block; font-size: .72rem; font-weight: 700; color: #fff; background: var(--red); padding: 3px 10px; border-radius: 999px; margin-bottom: 8px; }
+  .gw__hint { color: var(--muted); font-size: .95rem; margin: 0; }
+  .gw__kaarten { display: grid; gap: 12px; margin: 18px 0 0; }
+  .gw__kaart { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 6px 20px -12px rgba(20,25,45,.3); }
+  .gw__kaart h3 { margin: 0 0 4px; }
+  .gw__kaart p { margin: 0; color: var(--muted); font-size: .95rem; }
   .gw__belofte { background: var(--navy); color: #fff; }
   .gw__belofte h2 { color: #fff; }
   .gw__belofte p { color: #C9CFDA; }
   .gw__knoppen { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 24px; }
   .gw__link { color: #fff; font-weight: 700; text-decoration: none; }
-  @media (min-width: 760px) { .gw__kaarten { grid-template-columns: repeat(3,1fr); } .gw__keuze { grid-template-columns: 1fr 1fr; } }
-
-.cz { padding: 56px 0 48px; overflow: hidden; }
-.cz .label { color: var(--red); } .cz h2 { margin: 4px 0 2px; } .hint { color: #7A8295; font-size: .9rem; margin: 0 0 22px; }
-.rail { display: flex; align-items: flex-start; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 16px 24px; scroll-padding: 0 16px; scrollbar-width: none; }
-.rail::-webkit-scrollbar { display: none; }
-.sl { flex: 0 0 84%; max-width: 420px; scroll-snap-align: start; cursor: pointer; }
-.sl__beeld { position: relative; aspect-ratio: 4 / 4.4; }
-.sl__groot { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-.sl__klein { position: absolute; width: 42%; background: #fff; padding: 5px; border-radius: 10px; box-shadow: 0 14px 30px -12px rgba(20,25,45,.45); transform: rotate(-4deg); z-index: 2; transition: transform .45s cubic-bezier(.3,1.4,.5,1); }
-.sl__klein img { display: block; width: 100%; aspect-ratio: 1.15; object-fit: cover; border-radius: 7px; pointer-events: none; }
-.pill { position: absolute; right: 12px; top: 14px; z-index: 2; font-size: .72rem; font-weight: 700; color: #fff; background: var(--red); padding: 3px 10px; border-radius: 999px; }
-.pill--klant { background: #1E9E6A; } .pill--groot { background: var(--navy); }
-.sl__kop { display: flex; align-items: center; gap: 10px; }
-.sl__kop > div { flex: 1; } .sl__kop b { display: block; font-size: 1.05rem; } .sl__kop small { color: #7A8295; }
-.sl__info { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s cubic-bezier(.2,.9,.2,1); }
-.sl.open .sl__info { grid-template-rows: 1fr; }
-.sl__in { overflow: hidden; opacity: 0; transition: opacity .3s; } .sl.open .sl__in { opacity: 1; transition-delay: .1s; }
-.sl__in p { margin: 0 0 12px; color: #4A5163; font-size: .93rem; }
-.sl blockquote { margin: 0 0 12px; padding: 8px 12px; border-left: 3px solid var(--red); background: #F4F5F9; border-radius: 0 8px 8px 0; font-style: italic; font-size: .9rem; }
-.sl cite { display: block; font-style: normal; font-weight: 700; font-size: .78rem; margin-top: 4px; color: #7A8295; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; } .chips span { font-size: .75rem; font-weight: 700; background: #EEF0F5; color: var(--navy); padding: 4px 10px; border-radius: 999px; }
-.cta { display: inline-block; margin: 14px 0 4px; background: var(--red); color: #fff; font-weight: 700; padding: 9px 14px; border-radius: 10px; text-decoration: none; font-size: .9rem; }
-.cz .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; } .cz .nav .bar { order: 2; } .cz .nav .pijl[data-d='-1'] { order: 1; } .cz .nav .pijl[data-d='1'] { order: 3; }
-/* .tel */ .x-tel { font-weight: 700; font-size: .9rem; color: #9AA0AE; white-space: nowrap; } .tel b { color: var(--navy); }
-.bar { flex: 0 0 72px; height: 3px; background: #E3E6EE; border-radius: 2px; } .bar i { display: block; height: 100%; background: var(--red); border-radius: 2px; transition: width .3s; }
-.pijl { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid #D5D9E3; background: #fff; color: var(--navy); font-size: 1.4rem; line-height: 1; cursor: pointer; }
-
-.sl__pijl { transform: rotate(180deg); display: flex; justify-content: center; margin: 2px auto 8px; width: 40px; height: 26px; align-items: center; border-radius: 999px; color: var(--navy); background: #EEF0F5; transition: transform .35s, background .3s, color .3s; }
-.sl.open .sl__pijl { transform: rotate(0deg); background: var(--red); color: #fff; }
-/* A: witte kaart klapt uit op lichtgrijs */
-.cz--a { background: #F3F4F8; }
-.cz--a .sl { background: #fff; border-radius: 18px; box-shadow: 0 18px 40px -24px rgba(20,25,45,.35); overflow: hidden; }
-.cz--a .sl__groot { clip-path: polygon(0 0, 100% 0, 100% 92%, 0 100%); }
-.cz--a .sl__klein { left: 12px; bottom: 6px; }
-.cz--a .sl__klein--r { left: auto; right: 12px; bottom: 14px; transform: rotate(4deg); }
-.cz--a .sl__kop { padding: 14px 16px 2px; }
-.cz--a .sl__in { padding: 0 16px 6px; }
-
+  @media (min-width: 760px) { .gw__routes, .gw__kaarten { grid-template-columns: repeat(3,1fr); } }
 </style>
