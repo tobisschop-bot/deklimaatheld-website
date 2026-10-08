@@ -202,7 +202,8 @@ const stappen = [
   .hero__hint { font-size: .85rem; margin: 12px 0 0; }
   
   .cop { align-items: center; }
-  .cop__bron { display: block; width: 84px; height: auto; opacity: .45; margin: 0 0 -6px; }
+  .cop .card { position: relative; }
+  .cop__bron { position: absolute; top: 12px; left: 16px; width: 70px; height: auto; opacity: .45; pointer-events: none; }
   .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: .85rem; margin-top: 8px; }
   .legend i { display: inline-block; width: 18px; height: 3px; vertical-align: middle; margin-right: 6px; }
   .l-red { background: var(--red); }
