@@ -51,12 +51,12 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
   5. Hybride met open verdeler – Sassenheim
   6. Hele huis van het gas af – Leidschendam (klantverhaal, citaat over fijne omgang en strakke planning, "Klant uit Leidschendam")
   7. All-electric met thuisbatterij – Leiden (Weheat + Growatt APX 10 kWh, kleine foto links)
-  8. Zonnepanelen, thuisbatterij en driefase meterkast – **Wateringen** (16 kWh; foto's = meterkast + uitsnede groepenkast; eigen batterijfoto ontbreekt nog)
+  8. Zonnepanelen, thuisbatterij en driefase meterkast – **Wateringen** (16 kWh; hoofdfoto = eigen foto Growatt-omvormers + batterij, kleine foto = uitsnede groepenkast; `case-wateringen-meterkast.webp` niet meer in gebruik)
   9. Twee Daikin airco's – Amsterdam (klantverhaal; hoofdfoto = 2 foto's met schuine witte streep, geen kaders; citaat: "Ik had jullie werk een paar keer gezien bij het makelaarskantoor waar ik werk. Ik vind jullie fantastische mensen en zal jullie aan iedereen aanbevelen." – "Klant uit Amsterdam")
 - Foto's: `public/img/case-*.webp` (~1000 px breed, hoofdfoto 4:4.4, bijfoto 1.15:1).
 
 ## Openstaand
-- Case 8 Wateringen: eigen foto van de batterij-opstelling (dan kleine foto wisselen); evt. Growatt/kWp-gegevens.
+- Case 8 Wateringen: evt. Growatt/kWp-gegevens in de tekst.
 - Voornamen bij citaten Leidschendam en Amsterdam (nu "Klant uit …").
 - Homepage: hero-titel "Duizenden euro's…" breekt op mobiel ("ENERGIEREKENIN/G?") en is een harde claim; Weheat-kaarten op home tonen grijze vlakken in testomgeving. Alleen aanpassen als Tycho dat vraagt.
 - Footer-contactgegevens ([Adres volgt] enz.): vragen of die van Installatie Team gebruikt mogen worden of eigen gegevens.
