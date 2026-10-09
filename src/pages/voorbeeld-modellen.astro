@@ -1,0 +1,108 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductImage from '../components/ProductImage.astro';
+import { warmtepompen, euro } from '../data/warmtepompen';
+const merken = ['Weheat', 'Vaillant', 'Daikin', 'Haier'] as const;
+const prijs = (w: any) => w.from == null ? 'Prijs op aanvraag' : 'v.a. ' + euro(w.from);
+---
+<Base title="Voorbeeld modellen">
+  <!-- A: coverflow -->
+  <section class="m m--a">
+    <div class="container"><span class="lbl">Versie A · Coverflow</span><span class="label">Onze modellen</span><h2>Kom meer te weten over onze modellen</h2><p class="sub">Swipe door de warmtepompen die we installeren.</p></div>
+    <div class="cf" data-cf>
+      {warmtepompen.map((w) => (
+        <a class="cf__k" href={w.page ?? '/warmtepompen/'}>
+          <div class="cf__img"><ProductImage src={w.img} alt={w.name} /></div>
+          <span class="cf__merk">{w.merk}</span><b>{w.name.replace(w.merk + ' ', '')}</b><small>{w.tag}</small>
+          <span class="cf__p">{prijs(w)}</span>
+        </a>
+      ))}
+    </div>
+    <div class="container"><a class="knop" href="/warmtepompen/">Bekijk de hele catalogus →</a></div>
+  </section>
+
+  <!-- B: kiezer -->
+  <section class="m m--b">
+    <div class="container">
+      <span class="lbl">Versie B · Kiezer</span><span class="label">Onze modellen</span><h2>Welke warmtepomp past bij jou?</h2>
+      <div class="kz__tabs" data-kz>
+        <button class="on" data-t="hybride">Hybride</button><button data-t="all-electric">All-electric</button><button data-t="dakmontage">In het dak</button>
+      </div>
+      <div class="kz__lijst">
+        {warmtepompen.map((w) => (
+          <a class="kz__r" href={w.page ?? '/warmtepompen/'} data-types={w.types.join(' ')}>
+            <span class="kz__img"><ProductImage src={w.img} alt={w.name} /></span>
+            <span class="kz__t"><b>{w.name}</b><small>{w.tag}</small></span><span class="kz__pijl">›</span>
+          </a>
+        ))}
+      </div>
+      <a class="knop" href="/warmtepompen/">Naar de catalogus →</a>
+    </div>
+  </section>
+
+  <!-- C: showroom per merk -->
+  <section class="m m--c">
+    <div class="container">
+      <span class="lbl lbl--d">Versie C · Showroom</span><span class="label">Onze modellen</span><h2>Onze showroom</h2>
+      <div class="sr__merken" data-sr>{merken.map((m, i) => <button class:list={{ on: i === 0 }} data-m={m}>{m}</button>)}</div>
+    </div>
+    <div class="sr__podium">
+      {warmtepompen.map((w) => (
+        <a class="sr__item" href={w.page ?? '/warmtepompen/'} data-merk={w.merk}>
+          <span class="sr__img"><ProductImage src={w.img} alt={w.name} /></span>
+          <span class="sr__vloer"></span>
+          <b>{w.name.replace(w.merk + ' ', '')}</b><small>{prijs(w)}</small>
+        </a>
+      ))}
+    </div>
+    <div class="container"><a class="knop knop--l" href="/warmtepompen/">Bekijk alle modellen →</a></div>
+  </section>
+</Base>
+<script>
+  // A: middelste kaart groter
+  const cf = document.querySelector<HTMLElement>('[data-cf]')!;
+  const ks = [...cf.children] as HTMLElement[];
+  const upd = () => { const mid = cf.scrollLeft + cf.clientWidth / 2; ks.forEach(k => { const d = Math.abs(k.offsetLeft + k.offsetWidth / 2 - mid) / k.offsetWidth; k.style.setProperty('--s', String(Math.max(0, 1 - d))); }); };
+  cf.addEventListener('scroll', upd, { passive: true }); upd();
+  // B: tabs filteren
+  const kz = document.querySelector<HTMLElement>('[data-kz]')!;
+  const rows = document.querySelectorAll<HTMLElement>('.kz__r');
+  const zet = (t: string) => { kz.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); rows.forEach(r => r.hidden = !(r.dataset.types || '').split(' ').includes(t)); };
+  kz.addEventListener('click', e => { const b = (e.target as HTMLElement).closest('button'); if (b) zet(b.dataset.t!); }); zet('hybride');
+  // C: merk kiezen
+  const sr = document.querySelector<HTMLElement>('[data-sr]')!;
+  const its = document.querySelectorAll<HTMLElement>('.sr__item');
+  const kies = (m: string) => { sr.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.m === m)); its.forEach(i => i.hidden = i.dataset.merk !== m); };
+  sr.addEventListener('click', e => { const b = (e.target as HTMLElement).closest('button'); if (b) kies(b.dataset.m!); }); kies('Weheat');
+</script>
+<style>
+  .m { padding: 48px 0; overflow: hidden; } .m h2 { margin: 4px 0 6px; } .sub { color: var(--muted); margin: 0 0 18px; }
+  .label { display: block; color: var(--red); }
+  .lbl { display: inline-block; font-size: .7rem; font-weight: 800; background: #141a2d; color: #fff; padding: 3px 8px; border-radius: 6px; margin-bottom: 10px; } .lbl--d { background: #fff; color: #141a2d; }
+  .knop { display: inline-block; margin-top: 18px; padding: 12px 18px; border-radius: 12px; background: var(--red); color: #fff; font-weight: 700; text-decoration: none; }
+  /* A */
+  .m--a { background: #fff; }
+  .cf { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 18px calc(50% - 115px) 22px; scrollbar-width: none; }
+  .cf::-webkit-scrollbar { display: none; }
+  .cf__k { --s: 0; flex: 0 0 230px; scroll-snap-align: center; text-decoration: none; color: var(--text); background: linear-gradient(180deg, #F3F4F8, #fff); border: 1px solid var(--border); border-radius: 20px; padding: 16px; transform: scale(calc(.86 + .14 * var(--s))); opacity: calc(.55 + .45 * var(--s)); transition: transform .2s, opacity .2s; display: flex; flex-direction: column; gap: 2px; box-shadow: 0 18px 30px -24px rgba(20,25,45,.5); }
+  .cf__img { height: 150px; display: grid; place-items: center; margin-bottom: 10px; } .cf__img :global(.pi), .cf__img :global(.pi-box) { width: 85%; max-height: 150px; }
+  .cf__merk { font-size: .7rem; font-weight: 800; color: var(--red); text-transform: uppercase; letter-spacing: .06em; } .cf__k b { font-size: 1.1rem; } .cf__k small { color: var(--muted); } .cf__p { margin-top: 8px; font-weight: 700; }
+  /* B */
+  .m--b { background: #F3F4F8; }
+  .kz__tabs { display: grid; grid-template-columns: repeat(3, 1fr); background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 4px; margin: 16px 0 14px; }
+  .kz__tabs button { border: 0; background: none; padding: 10px 6px; border-radius: 10px; font: 700 .85rem inherit; color: var(--muted); cursor: pointer; } .kz__tabs button.on { background: var(--navy); color: #fff; }
+  .kz__lijst { display: grid; gap: 8px; }
+  .kz__r { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 14px; padding: 10px 12px; text-decoration: none; color: var(--text); }
+  .kz__img { flex: 0 0 74px; height: 56px; display: grid; place-items: center; background: #F3F4F8; border-radius: 10px; padding: 4px; } .kz__img :global(.pi), .kz__img :global(.pi-box) { width: 100%; max-height: 48px; }
+  .kz__t { flex: 1; } .kz__t b { display: block; font-size: .95rem; } .kz__t small { color: var(--muted); font-size: .8rem; } .kz__pijl { color: var(--red); font-size: 1.4rem; }
+  /* C */
+  .m--c { background: radial-gradient(120% 70% at 50% 100%, #2a3352 0%, var(--navy) 60%); color: #fff; } .m--c h2 { color: #fff; } .m--c .label { color: #FF8A95; }
+  .sr__merken { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 6px; }
+  .sr__merken button { border: 1px solid rgba(255,255,255,.25); background: transparent; color: #C9CFDA; padding: 7px 14px; border-radius: 999px; font: 700 .85rem inherit; cursor: pointer; } .sr__merken button.on { background: #fff; color: var(--navy); }
+  .sr__podium { display: flex; gap: 18px; overflow-x: auto; padding: 26px 16px 8px; scrollbar-width: none; align-items: flex-end; }
+  .sr__item { flex: 0 0 150px; display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: #fff; }
+  .sr__img { width: 100%; height: 130px; display: grid; place-items: end center; } .sr__img :global(.pi), .sr__img :global(.pi-box) { width: 100%; max-height: 130px; filter: drop-shadow(0 14px 10px rgba(0,0,0,.35)); }
+  .sr__vloer { width: 120%; height: 14px; margin-top: -4px; background: radial-gradient(closest-side, rgba(255,255,255,.22), transparent); border-radius: 50%; }
+  .sr__item b { margin-top: 8px; font-size: .95rem; } .sr__item small { color: #C9CFDA; }
+  .knop--l { background: #fff; color: var(--navy); }
+</style>
