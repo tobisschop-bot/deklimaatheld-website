@@ -1,41 +1,64 @@
 # Overdracht – website De Klimaatheld
 
-Plak dit in een nieuwe chat (of zeg: "lees OVERDRACHT.md in de repo") om verder te gaan.
+Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaatheld-website en ga verder."**
 
 ## Wie / hoe
-- Tycho, Installatie Team (Den Haag), samen met Gabriel. Eigen merk voor particulieren: **De Klimaatheld**.
-- Communicatie: kort, informeel, Nederlands.
-- Werkwijze: wijzigingen eerst als voorbeeld + screenshot (390 px mobiel), live pas na "ja". Als Tycho zegt "zet op de site / voeg toe", direct live zetten.
-- Netlify Pro: elke push = deploy = credits → wijzigingen bundelen.
-- Geen verzonnen klantcitaten, reviews of nep-foto's ("voor"-foto's/bouwval). Foto's alleen bijwerken (bijsnijden, vlekken/kras weg) zonder kwaliteitsverlies; bij twijfel niet doen.
+- Tycho (Installatie Team, Den Haag), samen met Gabriel. Eigen merk voor particulieren: **De Klimaatheld**.
+- Communicatie: kort, informeel, Nederlands. Tycho stuurt vaak spraakberichten → transcriptie kan raar zijn; bij twijfel kort checken.
+- Werkwijze:
+  - Eerst voorbeeld + screenshot (mobiel 390 px), live pas na "ja". Bij "zet het op de site / zet erin / voeg toe" direct live.
+  - Voorbeelden op een aparte branch met `[skip ci]` in de commit.
+  - **Live zetten = merge naar main met `git merge --no-ff` en een commitbericht ZONDER `[skip ci]`.** (Fout gemaakt: een fast-forward met `[skip ci]` → Netlify deployde niet.)
+  - Netlify Pro: elke push op main = deploy = credits → wijzigingen bundelen.
+  - Alleen aanpassen waar om gevraagd wordt (één keer te veel aan de homepage gezeten → teruggedraaid). Bij grotere herzieningen eerst een schets/voorstel.
+- Inhoud:
+  - Geen foto's van anderen als eigen werk (Google-foto van Renze Leufkens geweigerd), geen "random" foto's, geen verzonnen besparingsbedragen.
+  - Klantcitaten mogen als Tycho de inhoud aangeeft; geen naam bekend → "Klant uit [plaats]".
+  - Foto's opschonen mag (watermerk weg, vlekjes/krassen, vinger, serienummer/streepjescode meter onleesbaar) zonder kwaliteitsverlies. Bij twijfel niet doen.
 
 ## Techniek
 - Repo: GitHub `tobisschop-bot/deklimaatheld-website`, branch `main` (Astro, statisch).
 - Live: https://keen-crostata-8903d3.netlify.app (wachtwoord), auto-deploy bij push op main.
-- Build: `npx astro build`; test met Playwright op 390 px, check `scrollWidth == 390`.
-- Commits eindigen met de Co-Authored-By / Claude-Session regels.
+- Build: `npx astro build --outDir /tmp/...`; test met Playwright op 390 px, check `scrollWidth == 390`.
+- Weheat-productfoto's komen van een externe CDN (cdn.prod.website-files.com) → laden niet in de testomgeving, live wel.
+- Redirect in `netlify.toml`: `/gasvrij-wonen/*` → `/verduurzamen/:splat` (301).
 
-## Belangrijkste pagina's
-- Home (`src/pages/index.astro`): hero met mascotte, COP-grafiek met KH-held, alleen Weheat-modellen + knop "Alle warmtepompen", gasvrij-blok met eigen installatiefoto's + knop **"Lees meer →" naar /gasvrij-wonen/**, blok Service & onderhoud.
-- /warmtepompen/ (catalogus Weheat, Vaillant, Daikin, Haier) + configurator per model.
-- /vloerverwarming/, /lt-verwarming/, /airco/, /service/ (+ /service/afsluiten/ met handtekening), /subsidie/, /over-ons/, /offerte/.
-- **/gasvrij-wonen/** (`src/pages/gasvrij-wonen/index.astro`): advies (waarom van het gas af, hybride vs all-electric, R290, onze belofte) + **cases-carrousel "In de praktijk"**.
+## Logo
+- Definitief logo: `public/img/logo-de-klimaatheld.png` (zwart woordmerk "DE Klimaatheld" met blad, transparant, 1400×127).
+- `src/components/Logo.astro` = dat logo; header zwart, footer wit (CSS `filter: invert(1)`), geen wit kader meer.
 
-## Cases-carrousel (waar we nu mee bezig zijn)
-- Data: `src/data/projecten.ts` → array `cases`. Per case: `soort` (klant / project / groot), `titel`, `plaats`, `jaar` (leeg = verborgen), `groot` + `klein` foto, optioneel `kleinRechts: true`, `info`, optioneel `quote {tekst, naam}`.
-- Vormgeving: witte kaart, grote foto met schuine onderrand, kleine foto schuin in wit kader (links of rechts), titel + 📍 plaats, pijltje in het midden (omhoog = dicht, omlaag = tekst uitgeklapt), onderin kort balkje + pijlknoppen. Geen teller, geen detail-labels.
-- Foto's in `public/img/case-*.webp` (~1000 px breed).
-- Ingevuld en live:
+## Pagina's
+- **Home** (`src/pages/index.astro`): hero (nog "Duizenden euro's besparen…" + besparingscheck + mascotte), COP-grafiek, Zorgeloos verduurzamen, 5 stappen, Weheat-modellen, gasvrij-blok met knop **"Bekijk ons werk →"** naar /verduurzamen/, service, ISDE + lening, slot-CTA.
+  - COP-grafiek: Heat Geek-logo linksboven in de kaart als subtiele **blinddruk** (`public/img/heatgeek-stempel.png`, absoluut gepositioneerd, kaarthoogte ongewijzigd).
+- **/verduurzamen/** (`src/pages/verduurzamen/index.astro`, "Zo verduurzamen wij"):
+  1. Hero + korte intro met 3 vinkjes (eerlijk advies, ontwerp op lage temperatuur, subsidie geregeld)
+  2. Cases-carrousel "Ons werk – In de praktijk"
+  3. "Gasvrij of hybride wonen" in 3 genummerde delen: ① Waarom van het gas af (3 voordelen met icoon) ② Hybride of all-electric (2 kaarten + "Twijfel je?") + **dubbele knop** ③ Toekomstbestendig met R290 (GWP-staafjes 3 / 675 / 2000+)
+  4. **Showroom** (donker): merkknoppen Weheat/Vaillant/Daikin/Haier, modellen op verlichte vloer, knop "Bekijk alle modellen →" naar /warmtepompen/
+  5. Onze belofte + dubbele knop
+  - Dubbele knop: rood "Doe de besparingscheck" (→ /#besparingscheck) + lichtroze doorschijnend "Vraag je offerte aan" (→ /offerte/), stijl 1 ook op donker.
+- Verder: /warmtepompen/ (catalogus + configurator per model), /vloerverwarming/, /lt-verwarming/, /airco/, /service/ (+ /service/afsluiten/), /subsidie/, /over-ons/, /offerte/.
+
+## Cases-carrousel
+- Component: `src/components/CasesCarrousel.astro` (props: id, label, title, hint, aantal, nieuwsteEerst, meer). **Vormgeving niet veranderen**: per case één grote foto + één kleine schuine bijfoto (links, of rechts met `kleinRechts`), titel + 📍 plaats, pijltje (omhoog = dicht, omlaag = verhaal uitgeklapt), CTA "Ook zoiets? →".
+- Data: `src/data/projecten.ts` → `cases` (live) en `conceptCases` (placeholders, niet zichtbaar). Velden: soort (klant/project/groot), titel, plaats, jaar (leeg = verborgen), groot, klein, kleinRechts?, info, quote?.
+- Live cases:
   1. All-electric – Leiden (klantverhaal, citaat Marcel)
-  2. Hybride met Weheat Blackbird – Delft (kleine foto rechts, kras op boiler weg)
-  3. 34 warmtepompen voor een woningcorporatie – Dordrecht (groot project, pilot, meerdere woonblokken; kleine foto rechts)
-  4. Vloerverwarming + hybride warmtepomp – Nootdorp (plank weggesneden)
-  5. Hybride met open verdeler – Sassenheim (vloer egaal grijs, vlek op open verdeler weg)
-  6. Hele huis van het gas af – Leidschendam
-- Case 7 t/m 17 zijn nog placeholders met [haken] (live zichtbaar!). Volgende stap: nieuwe cases invullen óf lege cases verbergen.
+  2. Hybride met Weheat Blackbird – Delft
+  3. 34 warmtepompen voor een woningcorporatie – Dordrecht (groot project)
+  4. Vloerverwarming + hybride warmtepomp – Nootdorp
+  5. Hybride met open verdeler – Sassenheim
+  6. Hele huis van het gas af – Leidschendam (klantverhaal, citaat over fijne omgang en strakke planning, "Klant uit Leidschendam")
+  7. All-electric met thuisbatterij – Leiden (Weheat + Growatt APX 10 kWh, kleine foto links)
+  8. Zonnepanelen, thuisbatterij en driefase meterkast – **Wateringen** (16 kWh; foto's = meterkast + uitsnede groepenkast; eigen batterijfoto ontbreekt nog)
+  9. Twee Daikin airco's – Amsterdam (klantverhaal; hoofdfoto = 2 foto's met schuine witte streep, geen kaders; citaat: "Ik had jullie werk een paar keer gezien bij het makelaarskantoor waar ik werk. Ik vind jullie fantastische mensen en zal jullie aan iedereen aanbevelen." – "Klant uit Amsterdam")
+- Foto's: `public/img/case-*.webp` (~1000 px breed, hoofdfoto 4:4.4, bijfoto 1.15:1).
 
 ## Openstaand
-- Cases 7–17 vullen of verbergen; jaartallen; eventueel naam woningcorporatie Dordrecht.
-- Contactgegevens in footer, reactietijd "[X] uur" op /service/, servicevoorwaarden.
-- Prijzen Vaillant, Daikin, Haier, vloerverwarming, LT, Madoka (nu "op aanvraag").
-- Netlify-formuliermeldingen voor "service" aanzetten.
+- Case 8 Wateringen: eigen foto van de batterij-opstelling (dan kleine foto wisselen); evt. Growatt/kWp-gegevens.
+- Voornamen bij citaten Leidschendam en Amsterdam (nu "Klant uit …").
+- Homepage: hero-titel "Duizenden euro's…" breekt op mobiel ("ENERGIEREKENIN/G?") en is een harde claim; Weheat-kaarten op home tonen grijze vlakken in testomgeving. Alleen aanpassen als Tycho dat vraagt.
+- Footer-contactgegevens ([Adres volgt] enz.): vragen of die van Installatie Team gebruikt mogen worden of eigen gegevens.
+- Reactietijd "[X] uur" op /service/, servicevoorwaarden, prijzen Vaillant/Daikin/Haier/vloerverwarming/LT/Madoka, Netlify-formuliermeldingen "service".
+- Heat Geek-logo is uit een screenshot gehaald; officieel partnerbestand zou beter zijn.
+- Oude voorbeeldbranches op GitHub mogen opgeruimd worden (case7-*, case6-*, case9-*, herziening-v1, verduurzamen-*, voorbeeld-*, cop-heatgeek, nieuw-logo, carrousel-boven).
