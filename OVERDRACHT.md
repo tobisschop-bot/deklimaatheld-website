@@ -25,7 +25,8 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
 
 ## Logo
 - Definitief logo: `public/img/logo-de-klimaatheld.png` (zwart woordmerk "DE Klimaatheld" met blad, transparant, 1400×127).
-- `src/components/Logo.astro` = dat logo; header zwart, footer wit (CSS `filter: invert(1)`), geen wit kader meer.
+- `src/components/Logo.astro` = dat logo; in header én footer wit (CSS `filter: invert(1)`).
+- Header (`src/components/Header.astro`): zwevende glazen pil op donkere strook (#0B132B), sticky; losse topbalk weg, regio + openingstijden staan onderin het mobiele menu.
 
 ## Pagina's
 - **Home** (`src/pages/index.astro`): hero (nog "Duizenden euro's besparen…" + besparingscheck + mascotte), COP-grafiek, Zorgeloos verduurzamen, 5 stappen, Weheat-modellen, gasvrij-blok met knop **"Bekijk ons werk →"** naar /verduurzamen/, service, ISDE + lening, slot-CTA.
