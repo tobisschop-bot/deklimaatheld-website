@@ -2,7 +2,6 @@
 import Logo from './Logo.astro';
 import { site, nav } from '../data/site';
 ---
-<div class="topbar">{site.region} · {site.hours}</div>
 <header class="header">
   <div class="container header__inner">
     <Logo />
@@ -21,6 +20,7 @@ import { site, nav } from '../data/site';
         <nav class="menu__panel" aria-label="Mobiel menu">
           {nav.map((item) => <a href={item.href}>{item.label}</a>)}
           <a href="/offerte/" class="menu__cta">Offerte aanvragen</a>
+          <p class="menu__info">{site.region} · {site.hours}</p>
         </nav>
       </details>
     </div>
@@ -28,21 +28,23 @@ import { site, nav } from '../data/site';
 </header>
 
 <style>
-  .topbar { background: var(--navy); color: #fff; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; text-align: center; padding: 6px var(--gutter); }
-  .header { background: #fff; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
-  .header__inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 68px; }
+  /* Zwevende glazen header op donkere strook – sluit aan op de donkere hero */
+  .header { background: #0B132B; position: sticky; top: 0; z-index: 50; padding: 10px 10px 0; }
+  .header__inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 62px; padding: 0 8px 0 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+  .header :global(.logo__img) { filter: invert(1); }
   .header__nav { display: none; gap: 28px; font-weight: 600; }
-  .header__nav a { text-decoration: none; }
-  .header__nav a:hover { color: var(--red); }
+  .header__nav a { text-decoration: none; color: rgba(255,255,255,.88); }
+  .header__nav a:hover { color: #ff6b7a; }
   .header__actions { display: flex; align-items: center; gap: 8px; }
-  .icon-btn, .menu summary { width: 44px; height: 44px; border-radius: var(--radius); display: grid; place-items: center; cursor: pointer; }
-  .icon-btn { background: var(--red-soft); color: var(--red); }
-  .menu summary { background: var(--bg); list-style: none; }
+  .icon-btn, .menu summary { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; cursor: pointer; }
+  .icon-btn { background: rgba(214,40,58,.18); color: #ff6b7a; border: 1px solid rgba(214,40,58,.35); }
+  .menu summary { background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.14); list-style: none; }
   .menu summary::-webkit-details-marker { display: none; }
-  .cta { display: none; background: var(--red); color: #fff; font-weight: 700; text-decoration: none; padding: 11px 18px; border-radius: var(--radius); }
+  .cta { display: none; background: var(--red); color: #fff; font-weight: 700; text-decoration: none; padding: 11px 18px; border-radius: 12px; }
   .menu { position: relative; }
-  .menu__panel { position: absolute; right: 0; top: 52px; width: min(280px, calc(100vw - 32px)); background: #fff; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 8px; display: flex; flex-direction: column; }
+  .menu__panel { position: absolute; right: 0; top: 56px; width: min(280px, calc(100vw - 32px)); background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 8px; display: flex; flex-direction: column; }
   .menu__panel a { padding: 12px; text-decoration: none; font-weight: 600; border-radius: 8px; }
   .menu__panel a:hover { background: var(--bg); }
   .menu__panel .menu__cta { background: var(--red); color: #fff; text-align: center; margin-top: 6px; }
-  </style>
+  .menu__info { margin: 10px 12px 4px; font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); text-align: center; }
+</style>
