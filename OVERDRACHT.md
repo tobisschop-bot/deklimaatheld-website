@@ -40,6 +40,10 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
   - Dubbele knop: rood "Doe de besparingscheck" (→ /#besparingscheck) + lichtroze doorschijnend "Vraag je offerte aan" (→ /offerte/), stijl 1 ook op donker.
 - Verder: /warmtepompen/ (catalogus + configurator per model), /vloerverwarming/, /lt-verwarming/, /airco/, /service/ (+ /service/afsluiten/), /subsidie/, /over-ons/, /offerte/.
 
+## Productfoto's
+- Daikin Altherma 4 H kaart op /warmtepompen/: `public/img/daikin-altherma-4h-set.webp` = officiële Daikin-packshots (buitenunit zonder voeten, vóór; ECH2O erachter, onderste deel tank verlengd). Configurator houdt `daikin-altherma-4h.webp`.
+- Haier Super Aqua: nog de oude foto. Online geen nette officiële foto (model niet meer op Haier-sites); wacht op PNG van groothandel/Haier.
+
 ## Cases-carrousel
 - Component: `src/components/CasesCarrousel.astro` (props: id, label, title, hint, aantal, nieuwsteEerst, meer). **Vormgeving niet veranderen**: per case één grote foto + één kleine schuine bijfoto (links, of rechts met `kleinRechts`), titel + 📍 plaats, pijltje (omhoog = dicht, omlaag = verhaal uitgeklapt), CTA "Ook zoiets? →".
 - Data: `src/data/projecten.ts` → `cases` (live) en `conceptCases` (placeholders, niet zichtbaar). Velden: soort (klant/project/groot), titel, plaats, jaar (leeg = verborgen), groot, klein, kleinRechts?, info, quote?.
