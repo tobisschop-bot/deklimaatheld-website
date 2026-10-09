@@ -342,8 +342,8 @@ export const configurators: Record<string, ConfigModel> = {
     short: 'Altherma 4 H',
     title: 'Stel jouw Altherma 4 H samen',
     lead: 'De krachtige hogetemperatuurwarmtepomp van Daikin op natuurlijk R290. Tot 75 °C aanvoer, dus ideaal om je cv-ketel volledig te vervangen, ook met gewone radiatoren.',
-    img: '/img/daikin-altherma-4h.webp',
-    imgAlt: 'Daikin Altherma 4 H buitenunit in antraciet',
+    img: '/img/daikin-altherma-4h-set.webp',
+    imgAlt: 'Daikin Altherma 4 H buitenunit met ECH2O-binnenunit',
     photoColor: 'antraciet',
     quickFacts: [
       { value: '6–14 kW', label: 'Vermogensklasse' },
@@ -360,7 +360,7 @@ export const configurators: Record<string, ConfigModel> = {
     ],
     defaultVermogen: '8',
     bediening: madoka,
-    kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3B3D40', img: '/img/daikin-altherma-4h.webp' }],
+    kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3B3D40', img: '/img/daikin-altherma-4h-set.webp' }],
     kleurNote: 'De Altherma 4 H buitenunit is alleen leverbaar in antraciet.',
     boilers: [
       { id: 'f180', naam: 'Vloermodel', liters: 180, persons: '2–4 personen', text: 'Binnenunit met ingebouwde warmtapwatertank', price: null, recommended: true },

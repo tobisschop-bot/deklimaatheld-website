@@ -41,7 +41,7 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
 - Verder: /warmtepompen/ (catalogus + configurator per model), /vloerverwarming/, /lt-verwarming/, /airco/, /service/ (+ /service/afsluiten/), /subsidie/, /over-ons/, /offerte/.
 
 ## Productfoto's
-- Daikin Altherma 4 H kaart op /warmtepompen/: `public/img/daikin-altherma-4h-set.webp` = officiële Daikin-packshots (buitenunit zonder voeten, vóór; ECH2O erachter, onderste deel tank verlengd). Configurator houdt `daikin-altherma-4h.webp`.
+- Daikin Altherma 4 H kaart op /warmtepompen/: `public/img/daikin-altherma-4h-set.webp` = officiële Daikin-packshots (buitenunit zonder voeten, vóór; ECH2O erachter, onderste deel tank verlengd). Ook gebruikt op de configuratorpagina /warmtepompen/altherma-4h/. Losse buitenunit-cutout: `daikin-altherma-4h.webp`.
 - Haier Super Aqua: nog de oude foto. Online geen nette officiële foto (model niet meer op Haier-sites); wacht op PNG van groothandel/Haier.
 
 ## Cases-carrousel
