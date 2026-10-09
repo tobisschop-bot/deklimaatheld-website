@@ -2,6 +2,10 @@
 import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import CasesCarrousel from '../../components/CasesCarrousel.astro';
+import ProductImage from '../../components/ProductImage.astro';
+import { warmtepompen, euro } from '../../data/warmtepompen';
+const merken = ['Weheat', 'Vaillant', 'Daikin', 'Haier'] as const;
+const prijs = (w: { from: number | null }) => (w.from == null ? 'Prijs op aanvraag' : 'v.a. ' + euro(w.from));
 
 const redenen = [
   { icoon: 'comfort', t: 'Meer comfort', p: 'Een warmtepomp verwarmt rustig en gelijkmatig op lage temperatuur. Geen koude hoeken en geen pieken: het hele huis blijft constant op temperatuur. Dat merken onze klanten na de overstap het meest.' },
@@ -92,6 +96,25 @@ const gwp = [
     </div>
   </section>
 
+  <section class="sr" id="modellen">
+    <div class="container narrow">
+      <span class="label">Onze modellen</span>
+      <h2>Onze showroom</h2>
+      <p class="sr__sub">Kom meer te weten over de warmtepompen die wij installeren. Kies een merk.</p>
+      <div class="sr__merken" data-sr>{merken.map((m, i) => <button type="button" class:list={{ on: i === 0 }} data-m={m} aria-pressed={i === 0 ? 'true' : 'false'}>{m}</button>)}</div>
+    </div>
+    <div class="sr__podium">
+      {warmtepompen.map((w) => (
+        <a class="sr__item" href={w.page ?? '/warmtepompen/'} data-merk={w.merk} hidden={w.merk !== 'Weheat'}>
+          <span class="sr__img"><ProductImage src={w.img} alt={w.name} /></span>
+          <span class="sr__vloer" aria-hidden="true"></span>
+          <b>{w.name.replace(w.merk + ' ', '')}</b><small>{prijs(w)}</small>
+        </a>
+      ))}
+    </div>
+    <div class="container narrow"><a class="sr__knop" href="/warmtepompen/">Bekijk alle modellen →</a></div>
+  </section>
+
   <section class="vd__belofte">
     <div class="container narrow">
       <span class="label">Onze belofte</span>
@@ -104,6 +127,18 @@ const gwp = [
     </div>
   </section>
 </Base>
+<script>
+  const sr = document.querySelector<HTMLElement>('[data-sr]');
+  if (sr) {
+    const items = document.querySelectorAll<HTMLElement>('.sr__item');
+    sr.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>('button'); if (!b) return;
+      sr.querySelectorAll('button').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', String(x === b)); });
+      items.forEach((it) => { it.hidden = it.dataset.merk !== b.dataset.m; });
+      document.querySelector('.sr__podium')?.scrollTo({ left: 0 });
+    });
+  }
+</script>
 <style>
   .vd__intro { background: #fff; padding: 36px 0 30px; }
   .vd__lead { font-size: 1.12rem; font-weight: 600; color: var(--text); margin: 0 0 12px; }
@@ -162,4 +197,22 @@ const gwp = [
   .vd__knop--glas { background: rgba(214,40,58,.1); color: var(--red); border: 1.5px solid rgba(214,40,58,.45); }
   .vd__duo--donker .vd__knop--glas { background: #F9E3E7; color: var(--red); border-color: rgba(214,40,58,.45); }
   @media (min-width: 560px) { .vd__duo { grid-template-columns: 1fr 1fr; } }
+  .sr { background: radial-gradient(120% 70% at 50% 100%, #2a3352 0%, var(--navy) 62%); color: #fff; padding: 56px 0 44px; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.08); }
+  .sr h2 { color: #fff; margin: 4px 0 6px; }
+  .sr .label { color: #FF8A95; }
+  .sr__sub { color: #C9CFDA; margin: 0; }
+  .sr__merken { display: flex; gap: 6px; flex-wrap: wrap; margin: 16px 0 4px; }
+  .sr__merken button { border: 1px solid rgba(255,255,255,.25); background: transparent; color: #C9CFDA; padding: 7px 14px; border-radius: 999px; font: inherit; font-weight: 700; font-size: .85rem; cursor: pointer; }
+  .sr__merken button.on { background: #fff; color: var(--navy); border-color: #fff; }
+  .sr__podium { display: flex; gap: 18px; overflow-x: auto; padding: 28px 16px 8px; scrollbar-width: none; align-items: flex-end; }
+  .sr__podium::-webkit-scrollbar { display: none; }
+  .sr__item { flex: 0 0 150px; display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: #fff; }
+  .sr__item[hidden] { display: none; }
+  .sr__img { width: 100%; height: 130px; display: grid; place-items: end center; }
+  .sr__img :global(.pi), .sr__img :global(.pi-box) { width: 100%; max-height: 130px; filter: drop-shadow(0 14px 10px rgba(0,0,0,.35)); }
+  .sr__vloer { width: 120%; height: 14px; margin-top: -4px; background: radial-gradient(closest-side, rgba(255,255,255,.22), transparent); border-radius: 50%; }
+  .sr__item b { margin-top: 8px; font-size: .95rem; }
+  .sr__item small { color: #C9CFDA; }
+  .sr__knop { display: inline-block; margin-top: 18px; padding: 12px 18px; border-radius: 12px; background: #fff; color: var(--navy); font-weight: 700; text-decoration: none; }
+  @media (min-width: 760px) { .sr__podium { justify-content: center; } }
 </style>
