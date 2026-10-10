@@ -42,6 +42,7 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
 
 ## Productfoto's
 - Daikin Altherma 4 H kaart op /warmtepompen/: `public/img/daikin-altherma-4h-set.webp` = officiële Daikin-packshots (buitenunit zonder voeten, vóór; ECH2O erachter, onderste deel tank verlengd). Ook gebruikt op de configuratorpagina /warmtepompen/altherma-4h/. Losse buitenunit-cutout: `daikin-altherma-4h.webp`.
+- Vaillant: aroTHERM pro vervangt pure (redirect in netlify.toml). Pro VWL 55: hybride € 5.329 / all-electric € 7.184 + standaard boilervaten. Plus VWL 35: 8% lager (€ 4.903 / € 6.609, boilervaten ook 8% lager). Grotere vermogens nog op aanvraag. Pro gebruikt tijdelijk de foto van de plus; officiële pro-foto nog ophalen.
 - Haier Super Aqua: nog de oude foto. Online geen nette officiële foto (model niet meer op Haier-sites); wacht op PNG van groothandel/Haier.
 
 ## Cases-carrousel

@@ -9,3 +9,8 @@
   from = "/gasvrij-wonen/*"
   to = "/verduurzamen/:splat"
   status = 301
+
+[[redirects]]
+  from = "/warmtepompen/arotherm-pure/"
+  to = "/warmtepompen/arotherm-pro/"
+  status = 301
