@@ -148,9 +148,9 @@ export const vloerverwarming: DienstData = {
       {
         tag: 'Bestaande woning',
         title: 'Infrezen',
-        prijs: 'v.a. € 40 per m²',
-        prijsNoot: 'incl. aanleg · indicatief',
-        tekst: 'We frezen sleuven in je bestaande dekvloer en leggen de leidingen erin. Je hoeft de vloer niet te slopen.',
+        prijs: '€ 22 per m²',
+        prijsNoot: '+ € 1.200 starttarief · indicatief',
+        tekst: 'We frezen sleuven in je bestaande dekvloer en leggen de leidingen erin. Je hoeft de vloer niet te slopen. Het starttarief dekt de verdeler, het aansluiten en het inregelen.',
         cta: 'Vraag advies',
         href: '/offerte/?dienst=Vloerverwarming',
       },
