@@ -624,9 +624,9 @@ export const configurators: Record<string, ConfigModel> = {
     ],
     uitvoeringen: [hybride(5329), allElectric(7184)],
     vermogens: [
-      { id: '55', label: 'VWL 55/7.1', sub: '4,8 kW bij -7 °C · 230 V · 750 mm hoog', prijs: { hybride: 5329, 'all-electric': 7184 } },
-      { id: '75', label: 'VWL 75/7.1', sub: '6,4 kW bij -7 °C · 230 V · 750 mm hoog', prijs: { hybride: 5895, 'all-electric': 7750 } },
-      { id: '115', label: 'VWL 115/7.1', sub: '10,5 kW bij -7 °C · 230 of 400 V · 1.103 mm hoog', prijs: { hybride: 7295, 'all-electric': 9150 } },
+      { id: '55', label: 'VWL 55', sub: '4,8 kW bij -7 °C · 230 V · 750 mm hoog', prijs: { hybride: 5329, 'all-electric': 7184 } },
+      { id: '75', label: 'VWL 75', sub: '6,4 kW bij -7 °C · 230 V · 750 mm hoog', prijs: { hybride: 5895, 'all-electric': 7750 } },
+      { id: '115', label: 'VWL 115', sub: '10,5 kW bij -7 °C · 230 of 400 V · 1.103 mm hoog', prijs: { hybride: 7295, 'all-electric': 9150 } },
     ],
     defaultVermogen: '55',
     kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3A3F44', img: '/img/vaillant-arotherm-plus.webp' }],
