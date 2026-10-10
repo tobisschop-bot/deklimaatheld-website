@@ -3,7 +3,7 @@ import ProductImage from '../ProductImage.astro';
 // Data-gedreven productconfigurator voor een warmtepompmodel.
 // Alle inhoud komt uit src/data/configurator.ts – een nieuw model heeft alleen data nodig.
 import PageHero from '../PageHero.astro';
-import { euro } from '../../data/warmtepompen';
+import { euro, warmtepompen } from '../../data/warmtepompen';
 import type { ConfigModel } from '../../data/configurator';
 import ModelDetails from './ModelDetails.astro';
 import ConfigBar from './ConfigBar.astro';
@@ -23,6 +23,7 @@ const startPrijs = prijsVan(startU.id);
 const startTotal = startPrijs == null || (startU.needsBoiler && startB.price == null) ? null : startPrijs + (startU.needsBoiler ? startB.price ?? 0 : 0);
 const bNaam = (b: { naam?: string; liters: number }) => (b.naam ? `${b.naam} ${b.liters} L` : `${b.liters} L`);
 const toonBoiler = m.uitvoeringen.some((u) => u.needsBoiler);
+const isdeMax = warmtepompen.find((w) => w.slug === m.slug)?.isde ?? null;
 let n = 0; const nr = () => ++n; // stapnummers (vermogen-stap is optioneel)
 const uid = `cfg-${m.slug}`;
 ---
@@ -141,7 +142,7 @@ const uid = `cfg-${m.slug}`;
     </fieldset>}
 
     <aside class="isde">
-      <strong>ISDE-subsidie: € [bedrag]</strong>
+      <strong>{isdeMax == null ? 'ISDE-subsidie mogelijk' : `ISDE-subsidie: tot ${euro(isdeMax)}`}</strong>
       <span>Indicatief, zie de actuele RVO-lijst. We helpen je met de aanvraag. <a href="/subsidie/">Meer over subsidie →</a></span>
     </aside>
   </div>

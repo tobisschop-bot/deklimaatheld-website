@@ -35,7 +35,7 @@ const stappen = [
 const faq = [
   { q: 'Wat is een warmtepomp?', a: 'Een warmtepomp haalt energie uit de buitenlucht en zet die efficiënt om in warmte voor je centrale verwarming en tapwater. Ook als het buiten koud is, haalt hij nog warmte uit de lucht.' },
   { q: 'Hybride of all-electric?', a: 'Een hybride warmtepomp werkt samen met je huidige cv-ketel en neemt het grootste deel van de verwarming over, zodat je direct minder gas verbruikt. All-electric verwarmt je woning en tapwater volledig zonder gasaansluiting.' },
-  { q: 'Hoeveel subsidie krijg ik?', a: 'Via de ISDE-regeling van de Rijksoverheid krijg je subsidie op een warmtepomp; het bedrag (€ [bedrag]) hangt af van het type en vermogen. Indicatief, zie de RVO-lijst voor actuele bedragen. De Klimaatheld verzorgt de aanvraag voor je.' },
+  { q: 'Hoeveel subsidie krijg ik?', a: 'Via de ISDE-regeling van de Rijksoverheid krijg je subsidie op een warmtepomp; het bedrag hangt af van het type en vermogen, van ongeveer € 1.700 (hybride) tot € 4.375 (groot all-electric). Indicatief, zie de RVO-lijst voor actuele bedragen. De Klimaatheld verzorgt de aanvraag voor je.' },
   { q: 'Hoe lang duurt de installatie?', a: 'Een hybride warmtepomp plaatsen we meestal in één dag. Een all-electric systeem met buffervat en aanpassingen duurt meestal één tot twee dagen.' },
   { q: 'Is mijn woning geschikt?', a: 'Veel woningen met dak-, gevel- of glasisolatie zijn geschikt voor een hybride warmtepomp. Vul de postcodecheck hieronder in, dan kijken we samen naar jouw situatie.' },
 ];
@@ -78,7 +78,7 @@ const faq = [
               <p class="model__tag">{w.tag}</p>
               <ul class="model__facts">
                 <li class="model__price">{w.from == null ? <strong>Prijs op aanvraag</strong> : <>v.a. <strong>{euro(w.from)},-</strong> <small>incl. montage</small></>}</li>
-                <li>Tot € [bedrag] ISDE-subsidie<sup>*</sup></li>
+                <li>{w.isde == null ? 'ISDE-subsidie mogelijk' : `Tot ${euro(w.isde)} ISDE-subsidie`}<sup>*</sup></li>
                 <li>{w.includes}</li>
               </ul>
               <Button href={link.href} variant={w.page ? 'primary' : 'outline'} full>{link.label}</Button>

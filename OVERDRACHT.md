@@ -45,6 +45,12 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
 - Vaillant: aroTHERM pro vervangt pure (redirect in netlify.toml). Pro VWL 55: hybride € 5.329 / all-electric € 7.184 + standaard boilervaten. Plus VWL 35: 8% lager (€ 4.903 / € 6.609, boilervaten ook 8% lager). Grotere vermogens nog op aanvraag. Pro gebruikt tijdelijk de foto van de plus; officiële pro-foto nog ophalen.
 - Haier Super Aqua: nog de oude foto. Online geen nette officiële foto (model niet meer op Haier-sites); wacht op PNG van groothandel/Haier.
 
+## Prijzen (okt 2026, HYPOTHESE – Tycho herziet later)
+- Warmtepompen incl. montage: Haier Super Aqua v.a. € 3.668, GT R290 v.a. € 5.240; all-electric = hybride + € 4.020 (ook Swift: € 13.871). Daikin Altherma H Hybride € 3.895, met nieuwe ketel € 6.295. Altherma 4 H all-electric 6–14 kW € 10.545–15.195 + binnenunit (vloer 180 L € 3.950 … wand+300 L € 4.950); kaart v.a. € 14.495. Grotere vermogens = marktstappen.
+- ISDE 2026 per model (RVO-meldcodes): veld `isde` in warmtepompen.ts (Swift onbekend).
+- Airco incl. montage: cross-ref NL-installateurs (Hornbach/aircovooru, aircoverwarmingdokter, partnersinduurzaam). Kleurtoeslag € 125. Single-split v.a. € 1.749, multi-split v.a. € 3.295; besparingscheck € 2.195 + € 950/extra ruimte.
+- Vloerverwarming infrezen v.a. € 40/m², opbouw v.a. € 65/m². Jaga Strada v.a. € 495, Strada Hybrid v.a. € 995 per radiator.
+
 ## Cases-carrousel
 - Component: `src/components/CasesCarrousel.astro` (props: id, label, title, hint, aantal, nieuwsteEerst, meer). **Vormgeving niet veranderen**: per case één grote foto + één kleine schuine bijfoto (links, of rechts met `kleinRechts`), titel + 📍 plaats, pijltje (omhoog = dicht, omlaag = verhaal uitgeklapt), CTA "Ook zoiets? →".
 - Data: `src/data/projecten.ts` → `cases` (live) en `conceptCases` (placeholders, niet zichtbaar). Velden: soort (klant/project/groot), titel, plaats, jaar (leeg = verborgen), groot, klein, kleinRechts?, info, quote?.
@@ -65,6 +71,6 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
 - Voornamen bij citaten Leidschendam en Amsterdam (nu "Klant uit …").
 - Homepage: hero-titel "Duizenden euro's…" breekt op mobiel ("ENERGIEREKENIN/G?") en is een harde claim; Weheat-kaarten op home tonen grijze vlakken in testomgeving. Alleen aanpassen als Tycho dat vraagt.
 - Footer-contactgegevens ([Adres volgt] enz.): vragen of die van Installatie Team gebruikt mogen worden of eigen gegevens.
-- Reactietijd "[X] uur" op /service/, servicevoorwaarden, prijzen Vaillant/Daikin/Haier/vloerverwarming/LT/Madoka, Netlify-formuliermeldingen "service".
+- Reactietijd "[X] uur" op /service/, servicevoorwaarden, Netlify-formuliermeldingen "service". Alle prijzen zijn hypotheses en moeten nog herzien worden.
 - Heat Geek-logo is uit een screenshot gehaald; officieel partnerbestand zou beter zijn.
 - Oude voorbeeldbranches op GitHub mogen opgeruimd worden (case7-*, case6-*, case9-*, herziening-v1, verduurzamen-*, voorbeeld-*, cop-heatgeek, nieuw-logo, carrousel-boven).
