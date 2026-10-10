@@ -1,6 +1,6 @@
 // Airco-assortiment (lucht-lucht, wandmodellen). Eerste merk: Daikin.
 // Specificaties: Daikin / gepubliceerde productbladen (zie bron per serie).
-// PRIJZEN: null = "op aanvraag". Vul hier eigen prijzen incl. montage in (per vermogen).
+// PRIJZEN: v.a. incl. montage en btw = HYPOTHESE (cross-ref NL-installateurs okt 2026), later herzien. null = op aanvraag.
 
 export interface AircoVermogen {
   id: string; // bijv. '25'
@@ -73,7 +73,7 @@ export const aircos: AircoSerie[] = [
       { title: 'Schone lucht', text: 'De Flash Streamer en het zilverfilter breken allergenen en geurtjes af. Fijn voor slaapkamers en mensen met allergie.' },
       { title: 'Slim bedienen', text: 'Met de Daikin Onecta-app bedien je de airco op afstand, ook via Google Home of Alexa.' },
     ],
-    vermogens: [v('20', 2.0, 2.5), v('25', 2.5, 2.8), v('35', 3.5, 4.0), v('42', 4.2, 5.4), v('50', 5.0, 5.8)],
+    vermogens: [v('20', 2.0, 2.5, 2095), v('25', 2.5, 2.8, 2195), v('35', 3.5, 4.0, 2395), v('42', 4.2, 5.4, 2795), v('50', 5.0, 5.8, 2995)],
     kleuren: [{ id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 }],
     faq: faqAlgemeen,
     bron: 'https://www.daikin.nl/nl_nl/consument/products-and-advice/product-categories/air-conditioners/perfera-wall-mounted.html',
@@ -104,11 +104,11 @@ export const aircos: AircoSerie[] = [
       { title: 'Gelijkmatige temperatuur', text: 'Dankzij het Coanda-effect gaat de lucht langs het plafond. Bij koelen voel je geen koude luchtstroom op je hoofd.' },
       { title: 'Zuinig en stil', text: 'Tot A+++ en vanaf 19 dB(A), dus ook geschikt voor de slaapkamer.' },
     ],
-    vermogens: [v('20', 2.0, 2.5), v('25', 2.5, 2.8), v('35', 3.4, 4.0), v('42', 4.2, 5.4), v('50', 5.0, 5.8)],
+    vermogens: [v('20', 2.0, 2.5, 2645), v('25', 2.5, 2.8, 2745), v('35', 3.4, 4.0, 2995), v('42', 4.2, 5.4, 3445), v('50', 5.0, 5.8, 3695)],
     kleuren: [
       { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0, img: '/img/airco/daikin-stylish-wit.webp' },
-      { id: 'zilver', naam: 'Zilver', hex: '#B9BEC4', toeslag: null, img: '/img/airco/daikin-stylish-zilver.webp' },
-      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: null, img: '/img/airco/daikin-stylish-zwart.webp' },
+      { id: 'zilver', naam: 'Zilver', hex: '#B9BEC4', toeslag: 125, img: '/img/airco/daikin-stylish-zilver.webp' },
+      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: 125, img: '/img/airco/daikin-stylish-zwart.webp' },
     ],
     faq: faqAlgemeen,
     bron: 'https://www.daikin.nl/nl_nl/installateurs/products/product.html/FTXA-CW.html',
@@ -139,11 +139,11 @@ export const aircos: AircoSerie[] = [
       { title: 'Slimme sensor', text: 'De thermische sensor meet waar het te warm of te koud is en stuurt de lucht daarheen.' },
       { title: 'Stil en zuinig', text: 'Vanaf 19 dB(A) en tot A+++ (2,0 en 2,5 kW).' },
     ],
-    vermogens: [v('20', 2.0, 2.5), v('25', 2.5, 2.8), v('35', 3.4, 4.0), v('42', 4.2, 5.4), v('50', 5.0, 5.8)],
+    vermogens: [v('20', 2.0, 2.5, 2795), v('25', 2.5, 2.8, 2895), v('35', 3.4, 4.0, 3195), v('42', 4.2, 5.4, 3645), v('50', 5.0, 5.8, 3895)],
     kleuren: [
       { id: 'kristalwit', naam: 'Kristalwit', hex: '#F4F4F2', toeslag: 0, img: '/img/airco/daikin-emura-kristalwit.webp' },
-      { id: 'zilver', naam: 'Zilver', hex: '#B9BEC4', toeslag: null, img: '/img/airco/daikin-emura-zilver.webp' },
-      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: null, img: '/img/airco/daikin-emura-zwart.webp' },
+      { id: 'zilver', naam: 'Zilver', hex: '#B9BEC4', toeslag: 125, img: '/img/airco/daikin-emura-zilver.webp' },
+      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: 125, img: '/img/airco/daikin-emura-zwart.webp' },
     ],
     faq: faqAlgemeen,
     bron: 'https://www.daikin.nl/nl_nl/consument/products-and-advice/product-categories/air-conditioners.html',
@@ -177,7 +177,7 @@ export const aircos: AircoSerie[] = [
       { title: 'Stil in de slaapkamer', text: 'De 2,7 kW-uitvoering draait vanaf 19 dB(A) op de laagste stand.' },
       { title: 'Slim bedienen', text: 'Met de ingebouwde wifi bedien je de airco via de app, ook als je niet thuis bent.' },
     ],
-    vermogens: [v('27', 2.7, 2.9, 1249), v('35', 3.5, 3.9), v('48', 4.8, 4.8), v('62', 6.2, 6.3)],
+    vermogens: [v('27', 2.7, 2.9, 1749), v('35', 3.5, 3.9, 1849), v('48', 4.8, 4.8, 2149), v('62', 6.2, 6.3, 2549)],
     kleuren: [{ id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 }],
     faq: faqAlgemeen,
     bron: 'https://www.pelletkachelverkoop.nl/producten/airco-koelen-en-verwarmen/airco-split-unit/airco-single-split-unit/specificaties-haier-revive-plus',
@@ -208,10 +208,10 @@ export const aircos: AircoSerie[] = [
       { title: 'Schone lucht', text: 'De zelfreinigende techniek houdt de binnenunit en het filter schoon, voor frissere lucht.' },
       { title: 'Wit of mat zwart', text: 'Kies de kleur die bij je interieur past.' },
     ],
-    vermogens: [v('25', 2.5, null), v('35', 3.5, 4.2, 2439), v('50', 5.0, null)],
+    vermogens: [v('25', 2.5, null, 2295), v('35', 3.5, 4.2, 2439), v('50', 5.0, null, 2895)],
     kleuren: [
       { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0, img: '/img/airco/haier-expert-wit.webp' },
-      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: null, img: '/img/airco/haier-expert-zwart.webp' },
+      { id: 'zwart', naam: 'Zwart', hex: '#1F2024', toeslag: 125, img: '/img/airco/haier-expert-zwart.webp' },
     ],
     faq: faqAlgemeen,
     bron: 'https://airconditioningenwarmtepompservicenederland.nl/product/haier-expert-wit-35-kw-a-a/',
@@ -242,7 +242,7 @@ export const aircos: AircoSerie[] = [
       { title: 'Gezonde lucht', text: 'De UV-C-lamp en de Steri-Clean-functie houden de binnenunit schoon en de lucht fris.' },
       { title: 'Comfortabele luchtstroom', text: 'Met Coanda Plus gaat de lucht langs het plafond, zodat je geen koude luchtstroom op je voelt.' },
     ],
-    vermogens: [v('27', 2.7, null, 1969), v('36', 3.6, null), v('53', 5.3, null), v('71', 7.1, null)],
+    vermogens: [v('27', 2.7, null, 1969), v('36', 3.6, null, 2069), v('53', 5.3, null, 2369), v('71', 7.1, null, 2669)],
     kleuren: [{ id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0 }],
     faq: faqAlgemeen,
     bron: 'https://www.vrijzon.nl/producten/airco-hoge-wandmodellen-haier-pearl-premium-airco-36-kw/',
@@ -279,8 +279,8 @@ export const aircos: AircoSerie[] = [
     vermogens: [v('20', 2.0, null, 1725), v('25', 2.5, null, 1770), v('35', 3.5, null, 1885), v('50', 5.0, 5.8, 2295)],
     kleuren: [
       { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0, img: '/img/airco/mhi-premium-wit.webp' },
-      { id: 'titanium', naam: 'Titanium', hex: '#B3AC9C', toeslag: null, img: '/img/airco/mhi-premium-titanium.webp' },
-      { id: 'zwart-wit', naam: 'Zwart/wit', hex: 'linear-gradient(90deg,#1F2024 50%,#F7F7F5 50%)', toeslag: null, img: '/img/airco/mhi-premium-zwart-wit.webp' },
+      { id: 'titanium', naam: 'Titanium', hex: '#B3AC9C', toeslag: 125, img: '/img/airco/mhi-premium-titanium.webp' },
+      { id: 'zwart-wit', naam: 'Zwart/wit', hex: 'linear-gradient(90deg,#1F2024 50%,#F7F7F5 50%)', toeslag: 125, img: '/img/airco/mhi-premium-zwart-wit.webp' },
     ],
     faq: faqAlgemeen,
     bron: 'https://www.aircoprofs.nl/airconditioning/mitsubishi/premium/',
@@ -314,8 +314,8 @@ export const aircos: AircoSerie[] = [
     vermogens: [v('20', 2.0, 2.0, 2260), v('25', 2.5, 2.5, 2430), v('35', 3.5, 3.5, 2625), v('50', 5.0, 5.0, 3150)],
     kleuren: [
       { id: 'wit', naam: 'Wit', hex: '#F7F7F5', toeslag: 0, img: '/img/airco/mhi-diamond-wit.webp' },
-      { id: 'titanium', naam: 'Titanium', hex: '#B3AC9C', toeslag: null, img: '/img/airco/mhi-diamond-titanium.webp' },
-      { id: 'zwart-wit', naam: 'Zwart/wit', hex: 'linear-gradient(90deg,#1F2024 50%,#F7F7F5 50%)', toeslag: null, img: '/img/airco/mhi-diamond-zwart-wit.webp' },
+      { id: 'titanium', naam: 'Titanium', hex: '#B3AC9C', toeslag: 125, img: '/img/airco/mhi-diamond-titanium.webp' },
+      { id: 'zwart-wit', naam: 'Zwart/wit', hex: 'linear-gradient(90deg,#1F2024 50%,#F7F7F5 50%)', toeslag: 125, img: '/img/airco/mhi-diamond-zwart-wit.webp' },
     ],
     faq: faqAlgemeen,
     bron: 'https://www.aircoprofs.nl/airconditioning/mitsubishi/diamond/',

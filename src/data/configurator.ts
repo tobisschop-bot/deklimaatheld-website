@@ -141,7 +141,7 @@ export const configurators: Record<string, ConfigModel> = {
       },
       {
         q: 'Hoeveel subsidie (ISDE) ontvang ik op de Weheat Sparrow?',
-        a: 'Het ISDE-bedrag is € [bedrag] (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag na oplevering.',
+        a: 'Het ISDE-bedrag is € 2.575 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag na oplevering.',
       },
       {
         q: 'Kan de Sparrow P60 ook koelen in de zomer?',
@@ -208,7 +208,7 @@ export const configurators: Record<string, ConfigModel> = {
       },
       {
         q: 'Hoeveel ISDE-subsidie ontvang ik op de Weheat Flint P40?',
-        a: 'Het ISDE-bedrag is € [bedrag] (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag na oplevering.',
+        a: 'Het ISDE-bedrag is € 2.350 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag na oplevering.',
       },
       {
         q: 'Hoe stil is de Flint P40?',
@@ -267,7 +267,7 @@ export const configurators: Record<string, ConfigModel> = {
       },
       {
         q: 'Hoeveel ISDE-subsidie ontvang ik op de Weheat Blackbird?',
-        a: 'Het ISDE-bedrag is € [bedrag] (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag na oplevering.',
+        a: 'Het ISDE-bedrag is € 3.025 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag na oplevering.',
       },
       {
         q: 'Wat kost de all-electric uitvoering?',
@@ -290,7 +290,7 @@ export const configurators: Record<string, ConfigModel> = {
       { value: 'In het dak', label: 'Geen buitenunit' },
       { value: 'R290', label: 'Natuurlijk koudemiddel' },
     ],
-    uitvoeringen: [hybride(9851), allElectric(null)],
+    uitvoeringen: [hybride(9851), allElectric(13871)],
     kleuren: [{ id: 'standaard', name: 'Wit (binnenzijde)', hex: '#F3F4F6' }],
     kleurNote: 'Aan de buitenkant zie je alleen een dakelement, vergelijkbaar met een dakraam.',
     boilers,
@@ -328,7 +328,7 @@ export const configurators: Record<string, ConfigModel> = {
       },
       {
         q: 'Hoeveel ISDE-subsidie ontvang ik op de Weheat Swift?',
-        a: 'Het ISDE-bedrag is € [bedrag] (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag na oplevering.',
+        a: 'Het ISDE-bedrag hangt af van de RVO-meldcode van dit model. We rekenen het voor je uit in de offerte en helpen je met de aanvraag.',
       },
     ],
   },
@@ -350,24 +350,24 @@ export const configurators: Record<string, ConfigModel> = {
       { value: '70–75 °C', label: 'Aanvoer, ook bij -15 °C' },
       { value: '28 dB(A)', label: 'Op 3 m (6 kW)' },
     ],
-    uitvoeringen: [allElectric(null)],
+    uitvoeringen: [allElectric(10545)],
     vermogens: [
-      { id: '6', label: '6 kW', sub: '1-fase' },
-      { id: '8', label: '8 kW', sub: '1- of 3-fase' },
-      { id: '10', label: '10 kW', sub: '1- of 3-fase' },
-      { id: '12', label: '12 kW', sub: '1- of 3-fase' },
-      { id: '14', label: '14 kW', sub: '1- of 3-fase' },
+      { id: '6', label: '6 kW', sub: '1-fase', prijs: { 'all-electric': 10545 } },
+      { id: '8', label: '8 kW', sub: '1- of 3-fase', prijs: { 'all-electric': 12245 } },
+      { id: '10', label: '10 kW', sub: '1- of 3-fase', prijs: { 'all-electric': 13195 } },
+      { id: '12', label: '12 kW', sub: '1- of 3-fase', prijs: { 'all-electric': 13945 } },
+      { id: '14', label: '14 kW', sub: '1- of 3-fase', prijs: { 'all-electric': 15195 } },
     ],
     defaultVermogen: '8',
     bediening: madoka,
     kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3B3D40', img: '/img/daikin-altherma-4h-set.webp' }],
     kleurNote: 'De Altherma 4 H buitenunit is alleen leverbaar in antraciet.',
     boilers: [
-      { id: 'f180', naam: 'Vloermodel', liters: 180, persons: '2–4 personen', text: 'Binnenunit met ingebouwde warmtapwatertank', price: null, recommended: true },
-      { id: 'f230', naam: 'Vloermodel', liters: 230, persons: '4+ personen', text: 'Binnenunit met ingebouwde warmtapwatertank', price: null },
-      { id: 'w150', naam: 'Wandmodel + tank', liters: 150, persons: '1–2 personen', text: 'Compacte wandunit met losse tank', price: null },
-      { id: 'w200', naam: 'Wandmodel + tank', liters: 200, persons: '3–4 personen', text: 'Compacte wandunit met losse tank', price: null },
-      { id: 'w300', naam: 'Wandmodel + tank', liters: 300, persons: '5+ personen', text: 'Compacte wandunit met losse tank', price: null },
+      { id: 'f180', naam: 'Vloermodel', liters: 180, persons: '2–4 personen', text: 'Binnenunit met ingebouwde warmtapwatertank', price: 3950, recommended: true },
+      { id: 'f230', naam: 'Vloermodel', liters: 230, persons: '4+ personen', text: 'Binnenunit met ingebouwde warmtapwatertank', price: 4450 },
+      { id: 'w150', naam: 'Wandmodel + tank', liters: 150, persons: '1–2 personen', text: 'Compacte wandunit met losse tank', price: 4150 },
+      { id: 'w200', naam: 'Wandmodel + tank', liters: 200, persons: '3–4 personen', text: 'Compacte wandunit met losse tank', price: 4450 },
+      { id: 'w300', naam: 'Wandmodel + tank', liters: 300, persons: '5+ personen', text: 'Compacte wandunit met losse tank', price: 4950 },
     ],
     defaultBoiler: 'f180',
     specs: [
@@ -393,7 +393,7 @@ export const configurators: Record<string, ConfigModel> = {
       { q: 'Vloermodel of wandmodel?', a: 'Het vloermodel heeft een ingebouwde warmtapwatertank van 180 of 230 liter. Het wandmodel is compacter en combineer je met een losse tank van 150 tot 300 liter. We adviseren je bij de installatiecheck.' },
       { q: 'Kan de Altherma 4 H hybride met mijn cv-ketel?', a: 'De Altherma 4 H is bedoeld om je cv-ketel volledig te vervangen. Wil je je ketel houden, kijk dan naar de Daikin Altherma H Hybride.' },
       { q: 'Is de Altherma 4 H in wit leverbaar?', a: 'Nee, de buitenunit is antraciet. De Daikin Altherma H Hybride heeft een witte buitenunit.' },
-      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag (€ [bedrag]) hangt af van het vermogen. Indicatief, zie de actuele RVO-lijst. We helpen je met de aanvraag.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag hangt af van het vermogen: tot € 4.375 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag.' },
     ],
   },
 
@@ -412,8 +412,8 @@ export const configurators: Record<string, ConfigModel> = {
       { value: '45 kg', label: 'Licht buitendeel' },
     ],
     uitvoeringen: [
-      { id: 'hybride', name: 'Op je huidige ketel', badge: 'Bestaande ketel', price: null, needsBoiler: false, text: 'De warmtepomp wordt gekoppeld aan je bestaande cv-ketel. Wij checken of jouw ketel geschikt is.' },
-      { id: 'hybride-ketel', name: 'Met nieuwe Daikin-ketel', badge: 'Ketel vervangen', price: null, needsBoiler: false, text: 'Compleet systeem met een nieuwe Daikin cv-ketel (28 of 32 kW) als binnendeel, voor verwarming en warm water.' },
+      { id: 'hybride', name: 'Op je huidige ketel', badge: 'Bestaande ketel', price: 3895, needsBoiler: false, text: 'De warmtepomp wordt gekoppeld aan je bestaande cv-ketel. Wij checken of jouw ketel geschikt is.' },
+      { id: 'hybride-ketel', name: 'Met nieuwe Daikin-ketel', badge: 'Ketel vervangen', price: 6295, needsBoiler: false, text: 'Compleet systeem met een nieuwe Daikin cv-ketel (28 of 32 kW) als binnendeel, voor verwarming en warm water.' },
     ],
     bediening: madoka,
     kleuren: [{ id: 'wit', name: 'Wit', hex: '#F4F5F3', img: '/img/daikin-altherma-hybride.webp' }],
@@ -441,12 +441,12 @@ export const configurators: Record<string, ConfigModel> = {
       { q: 'Kan ik mijn huidige cv-ketel houden?', a: 'Vaak wel. Bij de installatiecheck kijken we of jouw ketel geschikt is. Is hij oud, dan is de combinatie met een nieuwe Daikin-ketel vaak slimmer.' },
       { q: 'Is de Altherma Hybride in zwart leverbaar?', a: 'Nee, de buitenunit is wit. Zoek je een donkere unit, kijk dan naar de Daikin Altherma 4 H (antraciet).' },
       { q: 'Kan ik later volledig gasvrij?', a: 'Deze hybride is gemaakt om samen met een ketel te werken. Wil je nu of later helemaal van het gas af, dan is de Altherma 4 H de logische keuze.' },
-      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag is € [bedrag] (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag is € 1.700 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag na oplevering.' },
     ],
   },
 
   // ---- Haier ----
-  // Bron specs: Haier (haiercac.eu, haierhvac.eu, productbladen). PRIJZEN VOLGEN (Tycho).
+  // Bron specs: Haier (haiercac.eu, haierhvac.eu, productbladen). Prijzen: Tycho (v.a.) + hypothese per vermogen; all-electric = hybride + € 4.020.
   'haier-super-aqua': {
     slug: 'haier-super-aqua',
     name: 'Haier Super Aqua',
@@ -461,17 +461,17 @@ export const configurators: Record<string, ConfigModel> = {
       { value: 'Monoblock', label: 'Alles in het buitendeel' },
       { value: 'Tot 60 °C', label: 'Aanvoertemperatuur' },
     ],
-    uitvoeringen: [hybride(null), allElectric(null)],
+    uitvoeringen: [hybride(3668), allElectric(7688)],
     vermogens: [
-      { id: '5', label: '5 kW', sub: 'AU052FYCRA · COP 5,05 · 760 × 920 × 372 mm' },
-      { id: '8', label: '7,8 kW', sub: 'AU082FYCRA · COP 4,40 · 965 × 950 × 370 mm' },
-      { id: '11', label: '11 kW', sub: 'AU112FYCRA · COP 4,22 · 1.490 × 950 × 370 mm' },
-      { id: '16', label: '16 kW', sub: 'AU162FYCRA · COP 4,15 · 1.490 × 950 × 370 mm' },
+      { id: '5', label: '5 kW', sub: 'AU052FYCRA · COP 5,05 · 760 × 920 × 372 mm', prijs: { hybride: 3668, 'all-electric': 7688 } },
+      { id: '8', label: '7,8 kW', sub: 'AU082FYCRA · COP 4,40 · 965 × 950 × 370 mm', prijs: { hybride: 4295, 'all-electric': 8315 } },
+      { id: '11', label: '11 kW', sub: 'AU112FYCRA · COP 4,22 · 1.490 × 950 × 370 mm', prijs: { hybride: 5150, 'all-electric': 9170 } },
+      { id: '16', label: '16 kW', sub: 'AU162FYCRA · COP 4,15 · 1.490 × 950 × 370 mm', prijs: { hybride: 6195, 'all-electric': 10215 } },
     ],
     defaultVermogen: '8',
     kleuren: [{ id: 'wit', name: 'Wit', hex: '#F4F5F3', img: '/img/haier-super-aqua.webp' }],
     kleurNote: 'De Super Aqua is alleen leverbaar in wit.',
-    boilers: boilersOpAanvraag,
+    boilers,
     defaultBoiler: '200',
     specs: [
       { value: '5 · 7,8 · 11 · 16 kW', label: 'Vermogens' },
@@ -493,7 +493,7 @@ export const configurators: Record<string, ConfigModel> = {
     faq: [
       { q: 'Wat is het verschil met de Haier GT R290?', a: 'De Super Aqua werkt met R32 en gaat tot 60 °C. De GT R290 gebruikt natuurlijk koudemiddel, gaat tot 80 °C en is zuiniger, maar is grijs in plaats van wit.' },
       { q: 'Is de Super Aqua in andere kleuren leverbaar?', a: 'Nee, alleen in wit. Zoek je een donkere unit, kijk dan naar de Haier GT R290.' },
-      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag (€ [bedrag]) hangt af van het vermogen. Indicatief, zie de actuele RVO-lijst. We helpen je met de aanvraag.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag hangt af van het vermogen: tot € 4.175 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag.' },
     ],
   },
 
@@ -511,20 +511,20 @@ export const configurators: Record<string, ConfigModel> = {
       { value: '80 °C', label: 'Max. aanvoertemperatuur' },
       { value: 'R290', label: 'Natuurlijk koudemiddel' },
     ],
-    uitvoeringen: [hybride(null), allElectric(null)],
+    uitvoeringen: [hybride(5240), allElectric(9260)],
     vermogens: [
-      { id: '4', label: '4 kW', sub: 'AW042MUGHA · 1-fase' },
-      { id: '6', label: '6 kW', sub: 'AW062MUGHA · 1-fase' },
-      { id: '8', label: '8 kW', sub: 'AW082MUGHA · 1-fase' },
-      { id: '10', label: '10 kW', sub: 'AW102MUGHA · 1- of 3-fase' },
-      { id: '12', label: '12 kW', sub: 'AW122MXGHA · 1- of 3-fase' },
-      { id: '14', label: '14 kW', sub: 'AW142MXGHA · 1- of 3-fase' },
-      { id: '16', label: '16 kW', sub: 'AW162MXGHA · 1- of 3-fase' },
+      { id: '4', label: '4 kW', sub: 'AW042MUGHA · 1-fase', prijs: { hybride: 5240, 'all-electric': 9260 } },
+      { id: '6', label: '6 kW', sub: 'AW062MUGHA · 1-fase', prijs: { hybride: 5595, 'all-electric': 9615 } },
+      { id: '8', label: '8 kW', sub: 'AW082MUGHA · 1-fase', prijs: { hybride: 5995, 'all-electric': 10015 } },
+      { id: '10', label: '10 kW', sub: 'AW102MUGHA · 1- of 3-fase', prijs: { hybride: 6595, 'all-electric': 10615 } },
+      { id: '12', label: '12 kW', sub: 'AW122MXGHA · 1- of 3-fase', prijs: { hybride: 7295, 'all-electric': 11315 } },
+      { id: '14', label: '14 kW', sub: 'AW142MXGHA · 1- of 3-fase', prijs: { hybride: 7895, 'all-electric': 11915 } },
+      { id: '16', label: '16 kW', sub: 'AW162MXGHA · 1- of 3-fase', prijs: { hybride: 8495, 'all-electric': 12515 } },
     ],
     defaultVermogen: '8',
     kleuren: [{ id: 'grijs', name: 'Grijs', hex: '#5E6266', img: '/img/haier-gt-r290.webp' }],
     kleurNote: 'De GT R290 is alleen leverbaar in grijs.',
-    boilers: boilersOpAanvraag,
+    boilers,
     defaultBoiler: '200',
     specs: [
       { value: '4 t/m 16 kW', label: 'Vermogens' },
@@ -547,14 +547,14 @@ export const configurators: Record<string, ConfigModel> = {
     faq: [
       { q: 'Wat is het verschil met de Haier Super Aqua?', a: 'De GT R290 gebruikt natuurlijk koudemiddel, gaat tot 80 °C en haalt A+++ bij 55 °C. De Super Aqua (R32) is een voordeligere witte variant tot 60 °C.' },
       { q: 'Is de GT R290 in wit leverbaar?', a: 'Nee, alleen in grijs. Wil je een witte unit, kijk dan naar de Haier Super Aqua.' },
-      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag (€ [bedrag]) hangt af van het vermogen. Indicatief, zie de actuele RVO-lijst. We helpen je met de aanvraag.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag hangt af van het vermogen: tot € 3.700 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag.' },
     ],
   },
 
   // ---- Vaillant ----
   // Bron specs: vaillant.nl (aroTHERM plus, VWL ../8.1 A) en vaillant.be productblad (aroTHERM pro, VWL ../7.1 A).
   // Prijzen (Tycho, okt 2026): aroTHERM pro v.a. € 5.329 hybride, all-electric + € 1.855; aroTHERM plus 8% lager.
-  // Alleen het kleinste vermogen heeft nu een prijs; grotere vermogens = op aanvraag.
+  // Grotere vermogens = hypothese (marktstappen), later herzien.
   'arotherm-plus': {
     slug: 'arotherm-plus',
     name: 'Vaillant aroTHERM plus',
@@ -572,10 +572,10 @@ export const configurators: Record<string, ConfigModel> = {
     uitvoeringen: [hybride(4903), allElectric(6609)],
     vermogens: [
       { id: '35', label: 'VWL 35/8.1', sub: '4,2 kW bij -7 °C · 230 V · 765 mm hoog', prijs: { hybride: 4903, 'all-electric': 6609 } },
-      { id: '55', label: 'VWL 55/8.1', sub: '5,0 kW bij -7 °C · 230 V · 765 mm hoog' },
-      { id: '75', label: 'VWL 75/8.1', sub: '5,9 kW bij -7 °C · 230 V · 965 mm hoog' },
-      { id: '105', label: 'VWL 105/8.1', sub: '9,6 kW bij -7 °C · 400 V · 1.480 mm hoog' },
-      { id: '125', label: 'VWL 125/8.1', sub: '10,1 kW bij -7 °C · 400 V · 1.480 mm hoog' },
+      { id: '55', label: 'VWL 55/8.1', sub: '5,0 kW bij -7 °C · 230 V · 765 mm hoog', prijs: { hybride: 5195, 'all-electric': 6900 } },
+      { id: '75', label: 'VWL 75/8.1', sub: '5,9 kW bij -7 °C · 230 V · 965 mm hoog', prijs: { hybride: 5425, 'all-electric': 7130 } },
+      { id: '105', label: 'VWL 105/8.1', sub: '9,6 kW bij -7 °C · 400 V · 1.480 mm hoog', prijs: { hybride: 6715, 'all-electric': 8420 } },
+      { id: '125', label: 'VWL 125/8.1', sub: '10,1 kW bij -7 °C · 400 V · 1.480 mm hoog', prijs: { hybride: 7195, 'all-electric': 8900 } },
     ],
     defaultVermogen: '35',
     kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3A3F44', img: '/img/vaillant-arotherm-plus.webp' }],
@@ -604,7 +604,7 @@ export const configurators: Record<string, ConfigModel> = {
       { q: 'Welk vermogen heb ik nodig?', a: 'Dat hangt af van je woning, isolatie en gasverbruik. Doe de besparingscheck voor een eerste indicatie; het exacte vermogen berekenen we tijdens de installatiecheck.' },
       { q: 'Kan de aroTHERM plus hybride met mijn cv-ketel?', a: 'Ja. Hij kan samenwerken met je bestaande cv-ketel, of volledig gasvrij met een boilervat.' },
       { q: 'Is de aroTHERM plus in andere kleuren leverbaar?', a: 'Nee, Vaillant levert de aroTHERM plus in antraciet. Zoek je een compactere instap, kijk dan naar de aroTHERM pro.' },
-      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag (€ [bedrag]) hangt af van het vermogen. Indicatief, zie de actuele RVO-lijst. We helpen je met de aanvraag.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag hangt af van het vermogen: tot € 3.925 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag.' },
     ],
   },
 
@@ -625,8 +625,8 @@ export const configurators: Record<string, ConfigModel> = {
     uitvoeringen: [hybride(5329), allElectric(7184)],
     vermogens: [
       { id: '55', label: 'VWL 55/7.1', sub: '4,8 kW bij -7 °C · 230 V · 750 mm hoog', prijs: { hybride: 5329, 'all-electric': 7184 } },
-      { id: '75', label: 'VWL 75/7.1', sub: '6,4 kW bij -7 °C · 230 V · 750 mm hoog' },
-      { id: '115', label: 'VWL 115/7.1', sub: '10,5 kW bij -7 °C · 230 of 400 V · 1.103 mm hoog' },
+      { id: '75', label: 'VWL 75/7.1', sub: '6,4 kW bij -7 °C · 230 V · 750 mm hoog', prijs: { hybride: 5895, 'all-electric': 7750 } },
+      { id: '115', label: 'VWL 115/7.1', sub: '10,5 kW bij -7 °C · 230 of 400 V · 1.103 mm hoog', prijs: { hybride: 7295, 'all-electric': 9150 } },
     ],
     defaultVermogen: '55',
     kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3A3F44', img: '/img/vaillant-arotherm-plus.webp' }],
@@ -653,7 +653,7 @@ export const configurators: Record<string, ConfigModel> = {
     faq: [
       { q: 'Wat is het verschil met de aroTHERM plus?', a: 'Beide zijn monoblocks met R290 in antraciet. De plus is stiller, gaat tot 75 °C en heeft meer vermogens. De pro is compacter en voordeliger, tot 70 °C.' },
       { q: 'Welk vermogen heb ik nodig?', a: 'Doe de besparingscheck voor een eerste indicatie. Het exacte vermogen berekenen we tijdens de installatiecheck.' },
-      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag (€ [bedrag]) hangt af van het vermogen. Indicatief, zie de actuele RVO-lijst. We helpen je met de aanvraag.' },
+      { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag hangt af van het vermogen: tot € 3.700 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag.' },
     ],
   },
 

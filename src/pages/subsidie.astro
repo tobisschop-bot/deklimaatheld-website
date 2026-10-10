@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Faq from '../components/Faq.astro';
 import CtaCard from '../components/CtaCard.astro';
-import { warmtepompen } from '../data/warmtepompen';
+import { warmtepompen, euro } from '../data/warmtepompen';
 
 const stappen = [
   { t: 'Installatie door ons', d: 'Wij plaatsen je warmtepomp en nemen hem in bedrijf.' },
@@ -57,7 +57,7 @@ const faq = [
               {w.page ? <a href={w.page}>{w.name}</a> : <span class="amounts__title">{w.name}</span>}
               <small>{w.tag}</small>
             </div>
-            <strong class="amounts__value">€ [bedrag]</strong>
+            <strong class="amounts__value">{w.isde == null ? 'Op aanvraag' : `tot ${euro(w.isde)}`}</strong>
           </li>
         ))}
       </ul>
@@ -106,11 +106,11 @@ const faq = [
           <span class="calc__tag">Indicatief</span>
         </div>
         <dl>
-          <div><dt>Prijs warmtepomp</dt><dd>€ [bedrag]</dd></div>
-          <div class="calc__minus"><dt>ISDE-subsidie</dt><dd>– € [bedrag]</dd></div>
-          <div class="calc__total"><dt>Jouw investering<small>Netto na ISDE-uitkering</small></dt><dd>€ [bedrag]</dd></div>
+          <div><dt>Weheat Sparrow P60, hybride</dt><dd>€ 5.722</dd></div>
+          <div class="calc__minus"><dt>ISDE-subsidie</dt><dd>– € 2.575</dd></div>
+          <div class="calc__total"><dt>Jouw investering<small>Netto na ISDE-uitkering</small></dt><dd>€ 3.147</dd></div>
         </dl>
-        <p class="note">Rekenvoorbeeld, bedragen volgen. Indicatief, zie de RVO-lijst.</p>
+        <p class="note">Rekenvoorbeeld met een Weheat Sparrow P60 (hybride, incl. montage). Indicatief, zie de RVO-lijst.</p>
       </div>
     </div>
   </section>

@@ -1,4 +1,4 @@
-// Warmtepompen (Weheat, Vaillant, Daikin, Haier), in deze volgorde getoond. Prijzen zijn INDICATIEF (bron: De Warmteman) – vervangen door eigen prijzen.
+// Warmtepompen (Weheat, Vaillant, Daikin, Haier), in deze volgorde getoond. Prijzen zijn INDICATIEF (hypotheses Tycho/markt okt 2026) – later herzien.
 const CDN = 'https://cdn.prod.website-files.com/67ed5695314f69c537693240/';
 
 // Neutrale placeholder-afbeelding voor modellen zonder bruikbare productfoto
@@ -14,6 +14,8 @@ export type Warmtepomp = {
   tag: string;
   /** v.a.-prijs; null = prijs op aanvraag */
   from: number | null;
+  /** max. ISDE-bedrag 2026 (RVO-meldcodelijst, indicatief); null = onbekend */
+  isde: number | null;
   merk: 'Daikin' | 'Weheat' | 'Vaillant' | 'Haier';
   img: string;
   /** false = geen echte productfoto beschikbaar, toon een .placeholder-vak */
@@ -27,16 +29,16 @@ export type Warmtepomp = {
 };
 
 export const warmtepompen: Warmtepomp[] = [
-  { slug: 'flint', merk: 'Weheat', name: 'Weheat Flint P40', tag: 'Compact & scherp geprijsd', from: 4248, img: CDN + '680a992ae6196a42fa131878_Weheat%20warmtepomp-flint.webp', photo: true, page: '/warmtepompen/flint/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
-  { slug: 'sparrow', merk: 'Weheat', name: 'Weheat Sparrow P60', tag: 'Populaire allrounder', from: 5722, img: CDN + '680a98ecbde35b827bb60c63_Weheat%20warmtepomop-sparrow.webp', photo: true, page: '/warmtepompen/sparrow/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
-  { slug: 'blackbird', merk: 'Weheat', name: 'Weheat Blackbird P80', tag: 'Voor grotere woningen', from: 6498, img: CDN + '68134c373abc353d78e00443_Weheat_Blackbird_Products%20(1).avif', photo: true, page: '/warmtepompen/blackbird/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
-  { slug: 'swift', merk: 'Weheat', name: 'Weheat Swift', tag: 'Onzichtbaar in het schuine dak', from: 9851, img: '/img/weheat-swift.webp', photo: true, page: '/warmtepompen/swift/', types: ['dakmontage'], badge: 'Dakintegratie', includes: 'Inclusief dakmontage' },
-  { slug: 'arotherm-pro', merk: 'Vaillant', name: 'Vaillant aroTHERM pro', tag: 'Compact, R290, in antraciet', from: 5329, img: '/img/vaillant-arotherm-plus.webp', photo: true, page: '/warmtepompen/arotherm-pro/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
-  { slug: 'arotherm-plus', merk: 'Vaillant', name: 'Vaillant aroTHERM plus', tag: 'Stil, R290, in antraciet', from: 4903, img: '/img/vaillant-arotherm-plus.webp', photo: true, page: '/warmtepompen/arotherm-plus/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric', includes: 'Inclusief installatie & inbedrijfstelling' },
-  { slug: 'altherma-4h', merk: 'Daikin', name: 'Daikin Altherma 4 H', tag: 'Krachtig, tot 75 °C, in antraciet', from: null, img: '/img/daikin-altherma-4h-set.webp', photo: true, page: '/warmtepompen/altherma-4h/', types: ['all-electric'], badge: 'All-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
-  { slug: 'altherma-hybride', merk: 'Daikin', name: 'Daikin Altherma H Hybride', tag: 'Hybride met cv-ketel, in wit', from: null, img: '/img/daikin-altherma-hybride.webp', photo: true, page: '/warmtepompen/altherma-hybride/', types: ['hybride'], badge: 'Hybride', includes: 'Inclusief installatie & inbedrijfstelling' },
-  { slug: 'haier-super-aqua', merk: 'Haier', name: 'Haier Super Aqua', tag: 'Voordelige monoblock, in wit', from: null, img: '/img/haier-super-aqua.webp', photo: true, page: '/warmtepompen/haier-super-aqua/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric', includes: 'Inclusief installatie & inbedrijfstelling' },
-  { slug: 'haier-gt-r290', merk: 'Haier', name: 'Haier GT R290', tag: 'R290, tot 80 °C, in grijs', from: null, img: '/img/haier-gt-r290.webp', photo: true, page: '/warmtepompen/haier-gt-r290/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'flint', merk: 'Weheat', name: 'Weheat Flint P40', tag: 'Compact & scherp geprijsd', from: 4248, isde: 2350, img: CDN + '680a992ae6196a42fa131878_Weheat%20warmtepomp-flint.webp', photo: true, page: '/warmtepompen/flint/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'sparrow', merk: 'Weheat', name: 'Weheat Sparrow P60', tag: 'Populaire allrounder', from: 5722, isde: 2575, img: CDN + '680a98ecbde35b827bb60c63_Weheat%20warmtepomop-sparrow.webp', photo: true, page: '/warmtepompen/sparrow/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'blackbird', merk: 'Weheat', name: 'Weheat Blackbird P80', tag: 'Voor grotere woningen', from: 6498, isde: 3025, img: CDN + '68134c373abc353d78e00443_Weheat_Blackbird_Products%20(1).avif', photo: true, page: '/warmtepompen/blackbird/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric ready', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'swift', merk: 'Weheat', name: 'Weheat Swift', tag: 'Onzichtbaar in het schuine dak', from: 9851, isde: null, img: '/img/weheat-swift.webp', photo: true, page: '/warmtepompen/swift/', types: ['dakmontage'], badge: 'Dakintegratie', includes: 'Inclusief dakmontage' },
+  { slug: 'arotherm-pro', merk: 'Vaillant', name: 'Vaillant aroTHERM pro', tag: 'Compact, R290, in antraciet', from: 5329, isde: 3700, img: '/img/vaillant-arotherm-plus.webp', photo: true, page: '/warmtepompen/arotherm-pro/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'arotherm-plus', merk: 'Vaillant', name: 'Vaillant aroTHERM plus', tag: 'Stil, R290, in antraciet', from: 4903, isde: 3925, img: '/img/vaillant-arotherm-plus.webp', photo: true, page: '/warmtepompen/arotherm-plus/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'altherma-4h', merk: 'Daikin', name: 'Daikin Altherma 4 H', tag: 'Krachtig, tot 75 °C, in antraciet', from: 14495, isde: 4375, img: '/img/daikin-altherma-4h-set.webp', photo: true, page: '/warmtepompen/altherma-4h/', types: ['all-electric'], badge: 'All-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'altherma-hybride', merk: 'Daikin', name: 'Daikin Altherma H Hybride', tag: 'Hybride met cv-ketel, in wit', from: 3895, isde: 1700, img: '/img/daikin-altherma-hybride.webp', photo: true, page: '/warmtepompen/altherma-hybride/', types: ['hybride'], badge: 'Hybride', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'haier-super-aqua', merk: 'Haier', name: 'Haier Super Aqua', tag: 'Voordelige monoblock, in wit', from: 3668, isde: 4175, img: '/img/haier-super-aqua.webp', photo: true, page: '/warmtepompen/haier-super-aqua/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'haier-gt-r290', merk: 'Haier', name: 'Haier GT R290', tag: 'R290, tot 80 °C, in grijs', from: 5240, isde: 3700, img: '/img/haier-gt-r290.webp', photo: true, page: '/warmtepompen/haier-gt-r290/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
 ];
 
 /** Link + knoptekst voor een warmtepompkaart */

@@ -57,7 +57,7 @@ export const airco: DienstData = {
       {
         tag: 'Eén ruimte',
         title: 'Single-split',
-        prijs: 'v.a. € [prijs]',
+        prijs: 'v.a. € 1.749',
         prijsNoot: 'incl. montage · indicatief',
         tekst: '1 binnenunit op 1 buitenunit. Ideaal voor één ruimte, zoals de slaapkamer of werkkamer.',
         cta: 'Bekijk opties',
@@ -66,7 +66,7 @@ export const airco: DienstData = {
       {
         tag: 'Meerdere ruimtes',
         title: 'Multi-split',
-        prijs: 'v.a. € [prijs]',
+        prijs: 'v.a. € 3.295',
         prijsNoot: 'incl. montage · indicatief',
         tekst: 'Meerdere binnenunits aangesloten op 1 buitenunit, voor meerdere ruimtes in huis.',
         cta: 'Bekijk opties',
@@ -148,16 +148,16 @@ export const vloerverwarming: DienstData = {
       {
         tag: 'Bestaande woning',
         title: 'Infrezen',
-        prijs: 'v.a. € [prijs] per m²',
-        prijsNoot: 'incl. aanleg · indicatief',
-        tekst: 'We frezen sleuven in je bestaande dekvloer en leggen de leidingen erin. Je hoeft de vloer niet te slopen.',
+        prijs: '€ 22 per m²',
+        prijsNoot: '+ € 1.200 starttarief · indicatief',
+        tekst: 'We frezen sleuven in je bestaande dekvloer en leggen de leidingen erin. Je hoeft de vloer niet te slopen. Het starttarief dekt de verdeler, het aansluiten en het inregelen.',
         cta: 'Vraag advies',
         href: '/offerte/?dienst=Vloerverwarming',
       },
       {
         tag: 'Als infrezen niet kan',
         title: 'Opbouw',
-        prijs: 'v.a. € [prijs] per m²',
+        prijs: 'v.a. € 65 per m²',
         prijsNoot: 'incl. aanleg · indicatief',
         tekst: 'Een dun vloerverwarmingssysteem dat bovenop je bestaande vloer wordt gelegd en wordt afgewerkt met een dunne egalisatielaag. Handig bij bijvoorbeeld een houten of te dunne ondervloer.',
         cta: 'Vraag advies',
@@ -228,7 +228,7 @@ export const ltVerwarming: DienstData = {
       {
         tag: 'Jaga',
         title: 'Strada',
-        prijs: 'v.a. € [prijs] per radiator',
+        prijs: 'v.a. € 495 per radiator',
         prijsNoot: 'incl. montage · indicatief',
         tekst: 'De bekende Low-H2O-radiator van Jaga: weinig water, warmt snel op en reageert direct. Werkt op je huidige cv-ketel en straks op een warmtepomp.',
         punten: ['Volgens Jaga tot 16% zuiniger dan paneelradiatoren', '30 jaar garantie op de warmtewisselaar', 'Wit, zandstraalgrijs of off-black'],
@@ -240,7 +240,7 @@ export const ltVerwarming: DienstData = {
       {
         tag: 'Jaga · met ventilator',
         title: 'Strada Hybrid',
-        prijs: 'v.a. € [prijs] per radiator',
+        prijs: 'v.a. € 995 per radiator',
         prijsNoot: 'incl. montage · indicatief',
         tekst: 'De Strada met ingebouwde stille ventilatoren (Dynamic Boost). Haalt meer warmte uit laag water: ideaal bij een warmtepomp, en kan in de zomer ook koelen.',
         punten: ['Volgens Jaga tot 3x meer warmteafgifte', 'Stil: onder de 30 dB(A)', 'Verwarmen én koelen'],

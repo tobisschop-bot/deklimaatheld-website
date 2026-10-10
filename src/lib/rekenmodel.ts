@@ -27,8 +27,8 @@ export const AANNAMES = {
   looptijdJaren: 15,
 
   // Indicatieve investering airco (lucht-lucht, incl. montage); null = op aanvraag
-  aircoEersteRuimte: null as number | null,  // single-split, woonkamer
-  aircoExtraRuimte: null as number | null,   // per extra binnenunit (multi-split)
+  aircoEersteRuimte: 2195 as number | null,  // single-split, woonkamer
+  aircoExtraRuimte: 950 as number | null,   // per extra binnenunit (multi-split)
 
   boilerStandaard: 1650,   // 200 L boilervat bij all-electric (gelijk aan configurator)
 };
