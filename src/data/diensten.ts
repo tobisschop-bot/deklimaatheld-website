@@ -157,9 +157,9 @@ export const vloerverwarming: DienstData = {
       {
         tag: 'Als infrezen niet kan',
         title: 'Opbouw',
-        prijs: 'v.a. € 65 per m²',
-        prijsNoot: 'incl. aanleg · indicatief',
-        tekst: 'Een dun vloerverwarmingssysteem dat bovenop je bestaande vloer wordt gelegd en wordt afgewerkt met een dunne egalisatielaag. Handig bij bijvoorbeeld een houten of te dunne ondervloer.',
+        prijs: '€ 45 per m²',
+        prijsNoot: '+ € 1.200 starttarief · indicatief',
+        tekst: 'Een dun vloerverwarmingssysteem dat bovenop je bestaande vloer wordt gelegd en wordt afgewerkt met een dunne egalisatielaag. Handig bij bijvoorbeeld een houten of te dunne ondervloer. Het starttarief dekt de verdeler, het aansluiten en het inregelen.',
         cta: 'Vraag advies',
         href: '/offerte/?dienst=Vloerverwarming',
       },
