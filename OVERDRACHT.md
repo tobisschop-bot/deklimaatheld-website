@@ -66,6 +66,9 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
   9. Twee Daikin airco's – Amsterdam (klantverhaal; hoofdfoto = 2 foto's met schuine witte streep, geen kaders; citaat: "Ik had jullie werk een paar keer gezien bij het makelaarskantoor waar ik werk. Ik vind jullie fantastische mensen en zal jullie aan iedereen aanbevelen." – "Klant uit Amsterdam")
 - Foto's: `public/img/case-*.webp` (~1000 px breed, hoofdfoto 4:4.4, bijfoto 1.15:1).
 
+## Volgende focus
+- **Artikel toevoegen: "quad warmtepomp".** Tycho wil hier in de nieuwe chat mee verder. Eerst kort checken wat bedoeld wordt (spraakbericht: mogelijk het merk **Quatt**), waar het artikel komt (nieuwe artikelpagina/blog, of bij /verduurzamen/ of /warmtepompen/) en welke inhoud/foto's hij aanlevert. Eerst voorbeeld + screenshot, live pas na "ja". Geen verzonnen claims of cijfers; feiten over het product actueel opzoeken.
+
 ## Laatste stand (27 okt 2026)
 - Alles hierboven staat live op main; geen openstaande voorbeeldbranches met werk dat nog live moet.
 
