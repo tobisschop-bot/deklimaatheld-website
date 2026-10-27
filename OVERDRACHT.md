@@ -42,7 +42,7 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
 
 ## Productfoto's
 - Daikin Altherma 4 H kaart op /warmtepompen/: `public/img/daikin-altherma-4h-set.webp` = officiële Daikin-packshots (buitenunit zonder voeten, vóór; ECH2O erachter, onderste deel tank verlengd). Ook gebruikt op de configuratorpagina /warmtepompen/altherma-4h/. Losse buitenunit-cutout: `daikin-altherma-4h.webp`.
-- Vaillant: aroTHERM pro vervangt pure (redirect in netlify.toml). Pro VWL 55: hybride € 5.329 / all-electric € 7.184 + standaard boilervaten. Plus VWL 35: 8% lager (€ 4.903 / € 6.609, boilervaten ook 8% lager). Grotere vermogens nog op aanvraag. Pro gebruikt tijdelijk de foto van de plus; officiële pro-foto nog ophalen.
+- Vaillant: aroTHERM pro vervangt pure (redirect in netlify.toml). Pro VWL 55: hybride € 5.329 / all-electric € 7.184 + standaard boilervaten. Plus VWL 35: 8% lager (€ 4.903 / € 6.609, boilervaten ook 8% lager). Grotere vermogens nog op aanvraag. Pro gebruikt tijdelijk de foto van de plus; officiële pro-foto nog ophalen. Vermogensnamen zonder achtervoegsel: pro = VWL 55 / 75 / 115 (geen /7.1), plus = VWL 35 … (geen /8.1).
 - Haier Super Aqua: nog de oude foto. Online geen nette officiële foto (model niet meer op Haier-sites); wacht op PNG van groothandel/Haier.
 
 ## Prijzen (okt 2026, HYPOTHESE – Tycho herziet later)
@@ -65,6 +65,9 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
   8. Zonnepanelen, thuisbatterij en driefase meterkast – **Wateringen** (16 kWh; hoofdfoto = eigen foto Growatt-omvormers + batterij, kleine foto = uitsnede groepenkast; `case-wateringen-meterkast.webp` niet meer in gebruik)
   9. Twee Daikin airco's – Amsterdam (klantverhaal; hoofdfoto = 2 foto's met schuine witte streep, geen kaders; citaat: "Ik had jullie werk een paar keer gezien bij het makelaarskantoor waar ik werk. Ik vind jullie fantastische mensen en zal jullie aan iedereen aanbevelen." – "Klant uit Amsterdam")
 - Foto's: `public/img/case-*.webp` (~1000 px breed, hoofdfoto 4:4.4, bijfoto 1.15:1).
+
+## Laatste stand (27 okt 2026)
+- Alles hierboven staat live op main; geen openstaande voorbeeldbranches met werk dat nog live moet.
 
 ## Openstaand
 - Case 8 Wateringen: evt. Growatt/kWp-gegevens in de tekst.
