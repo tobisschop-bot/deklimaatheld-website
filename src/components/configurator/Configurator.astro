@@ -21,7 +21,7 @@ const startV = m.vermogens?.find((v) => v.id === m.defaultVermogen) ?? m.vermoge
 const prijsVan = (uId: string, v = startV) => (v ? (v.prijs?.[uId as 'hybride'] ?? null) : (m.uitvoeringen.find((u) => u.id === uId)?.price ?? null));
 const startPrijs = prijsVan(startU.id);
 const startTotal = startPrijs == null || (startU.needsBoiler && startB.price == null) ? null : startPrijs + (startU.needsBoiler ? startB.price ?? 0 : 0);
-const bNaam = (b: { naam?: string; liters: number }) => (b.naam ? `${b.naam} ${b.liters} L` : `${b.liters} L`);
+const bNaam = (b: { naam?: string; liters: number }) => (b.naam ? (b.liters ? `${b.naam} ${b.liters} L` : b.naam) : `${b.liters} L`);
 const toonBoiler = m.uitvoeringen.some((u) => u.needsBoiler);
 const isdeMax = warmtepompen.find((w) => w.slug === m.slug)?.isde ?? null;
 let n = 0; const nr = () => ++n; // stapnummers (vermogen-stap is optioneel)
@@ -131,7 +131,7 @@ const uid = `cfg-${m.slug}`;
             <input class="sr" type="radio" name={`${uid}-b`} value={b.id} data-price={b.price ?? ''} data-name={bNaam(b)} checked={b.id === startB.id} />
             <span class="opt__body">
               <span class="opt__main">
-                <span class="opt__name">{b.naam ? `${b.naam} (${b.liters} liter)` : `${b.liters} liter`} {b.recommended && <span class="tag">Aanbevolen</span>}</span>
+                <span class="opt__name">{b.naam ? (b.liters ? `${b.naam} (${b.liters} liter)` : b.naam) : `${b.liters} liter`} {b.recommended && <span class="tag">Aanbevolen</span>}</span>
                 <span class="opt__text">{b.persons} · {b.text}</span>
               </span>
               <span class="opt__plus">{b.price == null ? 'Op aanvraag' : `+ ${euro(b.price)}`}</span>

@@ -551,6 +551,53 @@ export const configurators: Record<string, ConfigModel> = {
     ],
   },
 
+  // ---- Quatt ----
+  // Bron specs: quatt.io (specificaties vermogen Hybrid en All-Electric). Prijzen: nog op aanvraag.
+  quatt: {
+    slug: 'quatt',
+    name: 'Quatt Hybrid',
+    short: 'Quatt',
+    title: 'Stel jouw Quatt samen',
+    lead: 'De nieuwste Quatt op natuurlijk koudemiddel R290. Begin hybride naast je cv-ketel, of ga helemaal gasvrij met de All-Electric.',
+    img: img('quatt'),
+    imgAlt: 'Quatt warmtepomp',
+    photoColor: 'standaard',
+    quickFacts: [
+      { value: '1,8–6,7 kW', label: 'Modulerend vermogen per unit' },
+      { value: '1 of 2 units', label: 'Uit te breiden (Duo)' },
+      { value: 'R290', label: 'Natuurlijk koudemiddel' },
+    ],
+    uitvoeringen: [
+      hybride(null),
+      { id: 'all-electric', name: 'All-electric', badge: 'Gasvrij', price: null, needsBoiler: true, text: 'Volledig zonder gas met de Quatt HeatCharger en HeatBattery voor verwarming én warm tapwater.' },
+    ],
+    kleuren: [{ id: 'standaard', name: 'Standaard', hex: '#E9EAEC' }],
+    kleurNote: 'De Quatt is leverbaar in één uitvoering.',
+    boilers: [
+      { id: 'm', naam: 'HeatBattery M', liters: 0, persons: '1–2 personen', text: 'Warmtebuffer voor verwarming en tapwater', price: null },
+      { id: 'l', naam: 'HeatBattery L', liters: 0, persons: '3–4 personen', text: 'Warmtebuffer voor verwarming en tapwater', price: null, recommended: true },
+      { id: 'xl', naam: 'HeatBattery XL', liters: 0, persons: '4+ personen', text: 'Warmtebuffer voor verwarming en tapwater', price: null },
+    ],
+    defaultBoiler: 'l',
+    specs: [
+      { value: '1,8–6,7 kW modulerend · 5,6 kW nominaal bij -7 °C', label: 'Vermogen (1 unit)' },
+      { value: 'Tot 14,2 kW met twee units', label: 'All-Electric met 2 units' },
+      { value: '4,9 (+7 °C buiten, 35 °C water)', label: 'COP' },
+      { value: 'R290 (propaan), 480 g', label: 'Koudemiddel' },
+      { value: 'SoundSlider en stille modus', label: 'Geluid' },
+    ],
+    waarom: [
+      { title: 'Nieuwste R290-versie', text: 'Het vernieuwde model op natuurlijk koudemiddel met een zeer lage GWP.' },
+      { title: 'Hybride of gasvrij', text: 'Start naast je cv-ketel en stap later over op all-electric met HeatCharger en HeatBattery.' },
+      { title: 'Stil instelbaar', text: 'Met de SoundSlider bepaal je zelf de balans tussen vermogen en geluid.' },
+    ],
+    inbegrepen,
+    faq: [
+      { q: 'Kan ik later van hybride naar all-electric?', a: 'Ja. Quatt biedt een upgrade naar All-Electric met de HeatCharger en HeatBattery, zodat je cv-ketel eruit kan.' },
+      { q: 'Wat kost een Quatt?', a: 'Dat hangt af van je woning en de uitvoering. Vraag advies aan, dan maken we een offerte op maat.' },
+    ],
+  },
+
   // ---- Vaillant ----
   // Bron specs: vaillant.nl (aroTHERM plus, VWL ../8.1 A) en vaillant.be productblad (aroTHERM pro, VWL ../7.1 A).
   // Prijzen (Tycho, okt 2026): aroTHERM pro v.a. € 5.329 hybride, all-electric + € 1.855; aroTHERM plus 8% lager.

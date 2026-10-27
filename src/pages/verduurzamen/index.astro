@@ -4,7 +4,7 @@ import PageHero from '../../components/PageHero.astro';
 import CasesCarrousel from '../../components/CasesCarrousel.astro';
 import ProductImage from '../../components/ProductImage.astro';
 import { warmtepompen, euro } from '../../data/warmtepompen';
-const merken = ['Weheat', 'Vaillant', 'Daikin', 'Haier'] as const;
+const merken = ['Weheat', 'Vaillant', 'Daikin', 'Haier', 'Quatt'] as const;
 const prijs = (w: { from: number | null }) => (w.from == null ? 'Prijs op aanvraag' : 'v.a. ' + euro(w.from));
 
 const redenen = [
