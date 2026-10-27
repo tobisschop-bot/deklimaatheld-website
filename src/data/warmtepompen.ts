@@ -1,4 +1,4 @@
-// Warmtepompen (Weheat, Vaillant, Daikin, Haier), in deze volgorde getoond. Prijzen zijn INDICATIEF (hypotheses Tycho/markt okt 2026) – later herzien.
+// Warmtepompen (Weheat, Vaillant, Daikin, Haier, Quatt), in deze volgorde getoond. Prijzen zijn INDICATIEF (hypotheses Tycho/markt okt 2026) – later herzien.
 const CDN = 'https://cdn.prod.website-files.com/67ed5695314f69c537693240/';
 
 // Neutrale placeholder-afbeelding voor modellen zonder bruikbare productfoto
@@ -16,7 +16,7 @@ export type Warmtepomp = {
   from: number | null;
   /** max. ISDE-bedrag 2026 (RVO-meldcodelijst, indicatief); null = onbekend */
   isde: number | null;
-  merk: 'Daikin' | 'Weheat' | 'Vaillant' | 'Haier';
+  merk: 'Daikin' | 'Weheat' | 'Vaillant' | 'Haier' | 'Quatt';
   img: string;
   /** false = geen echte productfoto beschikbaar, toon een .placeholder-vak */
   photo: boolean;
@@ -39,6 +39,8 @@ export const warmtepompen: Warmtepomp[] = [
   { slug: 'altherma-hybride', merk: 'Daikin', name: 'Daikin Altherma H Hybride', tag: 'Hybride met cv-ketel, in wit', from: 3895, isde: 1700, img: '/img/daikin-altherma-hybride.webp', photo: true, page: '/warmtepompen/altherma-hybride/', types: ['hybride'], badge: 'Hybride', includes: 'Inclusief installatie & inbedrijfstelling' },
   { slug: 'haier-super-aqua', merk: 'Haier', name: 'Haier Super Aqua', tag: 'Voordelige monoblock, in wit', from: 3668, isde: 4175, img: '/img/haier-super-aqua.webp', photo: true, page: '/warmtepompen/haier-super-aqua/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric', includes: 'Inclusief installatie & inbedrijfstelling' },
   { slug: 'haier-gt-r290', merk: 'Haier', name: 'Haier GT R290', tag: 'R290, tot 80 °C, in grijs', from: 5240, isde: 3700, img: '/img/haier-gt-r290.webp', photo: true, page: '/warmtepompen/haier-gt-r290/', types: ['hybride', 'all-electric'], badge: 'Hybride + all-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'quatt-hybrid', merk: 'Quatt', name: 'Quatt Hybrid', tag: 'Nieuwste versie op R290, naast je cv-ketel', from: null, isde: null, img: placeholderImg('Quatt Hybrid'), photo: false, page: null, types: ['hybride'], badge: 'Hybride · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
+  { slug: 'quatt-all-electric', merk: 'Quatt', name: 'Quatt All-Electric', tag: 'Volledig gasvrij met HeatCharger & HeatBattery', from: null, isde: null, img: placeholderImg('Quatt All-Electric'), photo: false, page: null, types: ['all-electric'], badge: 'All-electric · R290', includes: 'Inclusief installatie & inbedrijfstelling' },
 ];
 
 /** Link + knoptekst voor een warmtepompkaart */
