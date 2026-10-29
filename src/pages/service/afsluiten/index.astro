@@ -91,6 +91,7 @@ const wp = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'bas
           <div class="card sa__overzicht" data-overzicht></div>
           <label class="sa__r"><input type="checkbox" name="akkoord_voorwaarden" required /> Ik ga akkoord met de <a href="/voorwaarden/" target="_blank">servicevoorwaarden</a>.</label>
           <label class="sa__r"><input type="checkbox" name="akkoord_incasso" required /> Ik ga akkoord met betaling via automatische incasso (de machtiging ontvang ik per e-mail).</label>
+          <p class="sa__info">Je hebt 14 dagen bedenktijd: binnen 14 dagen na je aanmelding kun je kosteloos van het servicepakket afzien. Laat je ons in die periode al onderhoud uitvoeren, dan betaal je alleen voor wat al gedaan is.</p>
           <div class="sa__sig">
             <span>Handtekening</span>
             <canvas data-sig width="600" height="200" aria-label="Teken hier je handtekening"></canvas>
@@ -230,7 +231,7 @@ const wp = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'bas
   .sa__sub { border: 0; padding: 0; margin: 4px 0 8px; display: flex; gap: 16px; flex-wrap: wrap; }
   .sa__sub legend { font-weight: 600; margin-bottom: 6px; }
   .sa__r { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 10px; font-size: .95rem; }
-  .sa__r input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--red); }
+  .sa__r input { flex: none; width: 20px; height: 20px; margin-top: 2px; accent-color: var(--red); }
   .sa__totaal { font-size: 1.1rem; background: var(--bg); padding: 12px 14px; border-radius: 8px; }
   .sa__totaal strong { color: var(--red); }
   .sa__wat { margin: 0 0 14px; font-size: .88rem; }

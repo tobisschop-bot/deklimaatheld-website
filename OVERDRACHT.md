@@ -42,7 +42,7 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
 
 ## Productfoto's
 - Daikin Altherma 4 H kaart op /warmtepompen/: `public/img/daikin-altherma-4h-set.webp` = officiële Daikin-packshots (buitenunit zonder voeten, vóór; ECH2O erachter, onderste deel tank verlengd). Ook gebruikt op de configuratorpagina /warmtepompen/altherma-4h/. Losse buitenunit-cutout: `daikin-altherma-4h.webp`.
-- Vaillant: aroTHERM pro vervangt pure (redirect in netlify.toml). Pro VWL 55: hybride € 5.329 / all-electric € 7.184 + standaard boilervaten. Plus VWL 35: 8% lager (€ 4.903 / € 6.609, boilervaten ook 8% lager). Grotere vermogens nog op aanvraag. Pro gebruikt tijdelijk de foto van de plus; officiële pro-foto nog ophalen. Vermogensnamen zonder achtervoegsel: pro = VWL 55 / 75 / 115 (geen /7.1), plus = VWL 35 … (geen /8.1).
+- Vaillant: aroTHERM pro vervangt pure (redirect in netlify.toml). Pro VWL 55: hybride € 5.329 / all-electric € 7.184 + standaard boilervaten. Plus VWL 35: 8% lager (€ 4.903 / € 6.609, boilervaten ook 8% lager). Grotere vermogens (pro 75/115, plus 55–125) hebben inmiddels ook prijzen in configurator.ts. Pro gebruikt tijdelijk de foto van de plus; officiële pro-foto nog ophalen. Vermogensnamen zonder achtervoegsel: pro = VWL 55 / 75 / 115 (geen /7.1), plus = VWL 35 … (geen /8.1).
 - Haier Super Aqua: nog de oude foto. Online geen nette officiële foto (model niet meer op Haier-sites); wacht op PNG van groothandel/Haier.
 
 ## Prijzen (okt 2026, HYPOTHESE – Tycho herziet later)
@@ -76,7 +76,21 @@ Zeg in een nieuwe chat: **"Lees OVERDRACHT.md in de repo tobisschop-bot/deklimaa
 - Case 8 Wateringen: evt. Growatt/kWp-gegevens in de tekst.
 - Voornamen bij citaten Leidschendam en Amsterdam (nu "Klant uit …").
 - Homepage: hero-titel "Duizenden euro's…" breekt op mobiel ("ENERGIEREKENIN/G?") en is een harde claim; Weheat-kaarten op home tonen grijze vlakken in testomgeving. Alleen aanpassen als Tycho dat vraagt.
-- Footer-contactgegevens ([Adres volgt] enz.): vragen of die van Installatie Team gebruikt mogen worden of eigen gegevens.
-- Reactietijd "[X] uur" op /service/, servicevoorwaarden, Netlify-formuliermeldingen "service". Alle prijzen zijn hypotheses en moeten nog herzien worden.
+- Servicevoorwaarden en algemene voorwaarden (/voorwaarden/ is nog leeg), Netlify-formuliermeldingen "service". Alle prijzen zijn hypotheses en moeten nog herzien worden.
 - Heat Geek-logo is uit een screenshot gehaald; officieel partnerbestand zou beter zijn.
 - Oude voorbeeldbranches op GitHub mogen opgeruimd worden (case7-*, case6-*, case9-*, herziening-v1, verduurzamen-*, voorbeeld-*, cop-heatgeek, nieuw-logo, carrousel-boven).
+
+## Review 29 okt 2026 (branch `review-fixes`)
+Volledige review staat in het Docs-artifact "Review website De Klimaatheld". Op branch `review-fixes` (nog niet live) gedaan:
+- Contactgegevens = Installatie Team (Tycho, 29 okt): Oudemansstraat 432, 085 500 0105, info@installation-team.nl, ma–vr 09:00–17:00, KvK 69477388, btw NL004970218B49 in `site.ts`; footer toont "De Klimaatheld is onderdeel van Installatie Team" + KvK/btw. Geen WhatsApp-nummer: `whatsapp: ''` verbergt de WhatsApp-knoppen; "Storing melden" belt dan.
+- Lettertype Archivo zelf gehost (`@fontsource-variable/archivo`), Google Fonts weg.
+- Favicon (blad uit logo, navy), OG-tags, robots.txt. Canonical/sitemap wachten op het definitieve domein (`site` in astro.config.mjs klopt nog niet).
+- Paginatitels met regio/zoekintentie.
+- Menu + footer: "Verduurzamen" toegevoegd.
+- /over-ons/: mascotte i.p.v. placeholder, SVG-iconen i.p.v. emoji, dienstenlijst gelijk aan menu (CV-ketels/Zonnepanelen → offerte).
+- /airco/: Daikin Perfera-packshot bovenaan; /vloerverwarming/: eigen foto Nootdorp. Single-split v.a.-prijs wordt berekend uit aircos.ts (nu € 1.725).
+- Airco "Bron"-link alleen nog naar fabrikantsites, niet naar webshops van concurrenten.
+- /service/: "[X] uur" → "zo snel mogelijk"; /service/afsluiten/: regel over 14 dagen bedenktijd.
+- /privacy/: concept-privacyverklaring (laten nalezen).
+- Kleine tekst (<12 px) bij kenmerken, prijsnoten en menu-info vergroot.
+Nog open: algemene/servicevoorwaarden, teamnamen + foto's, desktop.css aan/uit, prijskeuzes en claims (zie review).

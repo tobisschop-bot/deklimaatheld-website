@@ -1,6 +1,11 @@
 // Dienstpagina's (airco, later cv-ketel, vloerverwarming, zonnepanelen).
 // Eén data-object per dienst; src/components/dienst/DienstPagina.astro rendert het.
 // Prijzen zijn placeholders en INDICATIEF – invullen zodra bekend.
+import { aircos, vanafPrijs } from './aircos';
+
+// Laagste single-split prijs uit het airco-assortiment, zodat /airco/ nooit hoger is dan een model
+const singleSplitVanaf = Math.min(...aircos.map(vanafPrijs).filter((p): p is number => p != null));
+const euroNl = (n: number) => '€ ' + n.toLocaleString('nl-NL');
 
 export type IconNaam = 'airco' | 'zon' | 'geluid' | 'blad' | 'app' | 'warmtepomp' | 'vlam' | 'vloer' | 'zonnepaneel' | 'radiator' | 'thermo';
 
@@ -8,7 +13,7 @@ export interface DienstData {
   slug: string;
   meta: { title: string; description: string };
   hero: { label: string; title: string; lead: string; cta: { label: string; href: string } };
-  product: { icon: IconNaam; placeholder: string; caption?: string; img?: string; imgAlt?: string };
+  product: { icon: IconNaam; placeholder: string; caption?: string; img?: string; imgAlt?: string; /** true = productfoto (packshot) passend tonen i.p.v. bijsnijden */ packshot?: boolean };
   keuze: {
     title: string;
     lead?: string;
@@ -49,7 +54,7 @@ export const airco: DienstData = {
     lead: 'Een airco is een lucht-lucht warmtepomp: stil, zuinig en het hele jaar bruikbaar.',
     cta: { label: 'Gratis advies aanvragen', href: '/offerte/' },
   },
-  product: { icon: 'airco', placeholder: '[Productfoto airco]', caption: 'Wandunit binnen & buitenunit' },
+  product: { icon: 'airco', placeholder: 'Airco', img: '/img/airco/daikin-perfera.webp', imgAlt: 'Daikin Perfera airco binnenunit', packshot: true },
   keuze: {
     title: 'Welke airco past bij jou?',
     lead: 'Kies voor één specifieke leefruimte of een klimaatregeling voor meerdere ruimtes.',
@@ -57,7 +62,7 @@ export const airco: DienstData = {
       {
         tag: 'Eén ruimte',
         title: 'Single-split',
-        prijs: 'v.a. € 1.749',
+        prijs: `v.a. ${euroNl(singleSplitVanaf)}`,
         prijsNoot: 'incl. montage · indicatief',
         tekst: '1 binnenunit op 1 buitenunit. Ideaal voor één ruimte, zoals de slaapkamer of werkkamer.',
         cta: 'Bekijk opties',
@@ -140,7 +145,7 @@ export const vloerverwarming: DienstData = {
     lead: 'Vloerverwarming geeft gelijkmatige, stille warmte en werkt op een lage temperatuur. Daardoor is het de perfecte partner van een warmtepomp.',
     cta: { label: 'Gratis advies aanvragen', href: '/offerte/?dienst=Vloerverwarming' },
   },
-  product: { icon: 'vloer', placeholder: '[Foto vloerverwarming]', caption: 'Leidingen in de vloer, verdeler in de meterkast of trapkast' },
+  product: { icon: 'vloer', placeholder: 'Vloerverwarming', img: '/img/case-vloer-woonkamer.webp', imgAlt: 'Woonkamer met door ons aangelegde vloerverwarming in Nootdorp' },
   keuze: {
     title: 'Welke vloerverwarming past bij jou?',
     lead: 'We werken met twee methodes: infrezen in je bestaande dekvloer, of opbouw op je huidige vloer.',
@@ -220,7 +225,7 @@ export const ltVerwarming: DienstData = {
     lead: 'Lage temperatuur verwarming geeft dezelfde warmte met lager water. Zo haalt je warmtepomp het meeste rendement, zonder dat je hele vloer eruit hoeft.',
     cta: { label: 'Gratis advies aanvragen', href: '/offerte/?dienst=LT-verwarming' },
   },
-  product: { icon: 'radiator', placeholder: '[Foto LT-radiator]', img: '/img/jaga-strada-interieur.webp', imgAlt: 'Jaga Strada radiator in een woonkamer' },
+  product: { icon: 'radiator', placeholder: 'LT-radiator', img: '/img/jaga-strada-interieur.webp', imgAlt: 'Jaga Strada radiator in een woonkamer' },
   keuze: {
     title: 'Welke oplossing past bij jou?',
     lead: 'Wij werken met de LT-radiatoren van Jaga. We berekenen per ruimte wat nodig is; vaak hoeven niet alle radiatoren te worden vervangen.',

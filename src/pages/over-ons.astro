@@ -5,9 +5,9 @@ import CtaCard from '../components/CtaCard.astro';
 import { site } from '../data/site';
 
 const waarden = [
-  { icon: '🤝', t: 'Eerlijk advies', d: 'We adviseren alleen wat past bij jouw woning. Geen overgedimensioneerde systemen of onnodige kosten.' },
-  { icon: '🔧', t: 'Vakwerk', d: 'Gecertificeerde installateurs met oog voor nette afwerking.' },
-  { icon: '✅', t: 'Ontzorgen', d: 'Van advies tot subsidie geregeld. Wij verzorgen de ISDE-aanvraag voor je.' },
+  { icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h8M8 13h5"/>', t: 'Eerlijk advies', d: 'We adviseren alleen wat past bij jouw woning. Geen overgedimensioneerde systemen of onnodige kosten.' },
+  { icon: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>', t: 'Vakwerk', d: 'Gecertificeerde installateurs met oog voor nette afwerking.' },
+  { icon: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/>', t: 'Ontzorgen', d: 'Van advies tot subsidie geregeld. Wij verzorgen de ISDE-aanvraag voor je.' },
 ];
 
 const team = [
@@ -18,19 +18,21 @@ const team = [
 const diensten = [
   { label: 'Warmtepompen', href: '/warmtepompen/' },
   { label: 'Airco', href: '/airco/' },
-  { label: 'CV-ketels' },
-  { label: 'Vloerverwarming' },
-  { label: 'Zonnepanelen' },
+  { label: 'Vloerverwarming', href: '/vloerverwarming/' },
+  { label: 'LT-verwarming', href: '/lt-verwarming/' },
+  { label: 'Service & onderhoud', href: '/service/' },
+  { label: 'CV-ketels', href: '/offerte/?dienst=CV-ketel' },
+  { label: 'Zonnepanelen', href: '/offerte/?dienst=Zonnepanelen' },
 ];
 ---
-<Base title="Over ons – De Klimaatheld" description="De Klimaatheld: installateurs uit Den Haag die verduurzamen simpel maken.">
+<Base title="Over ons – installateurs uit Den Haag – De Klimaatheld" description="De Klimaatheld: installateurs uit Den Haag die verduurzamen simpel maken.">
   <PageHero
     label="Over ons"
     title="Wij zijn De Klimaatheld"
     lead="Installateurs uit Den Haag die verduurzamen simpel maken. Eerlijk advies, vakwerk en geen gedoe."
     crumbs={[{ label: 'Home', href: '/' }, { label: 'Over ons' }]}
   >
-    <div class="placeholder mascot">[Klimaatheld-mascotte]</div>
+    <img class="mascot" src="/img/mascotte.webp" alt="" width="640" height="620" loading="eager" decoding="async" />
   </PageHero>
 
   <!-- ONS VERHAAL -->
@@ -51,7 +53,7 @@ const diensten = [
       <div class="grid">
         {waarden.map((w) => (
           <div class="card value">
-            <span class="value__icon" aria-hidden="true">{w.icon}</span>
+            <span class="value__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={w.icon} /></span>
             <h3>{w.t}</h3>
             <p>{w.d}</p>
           </div>
@@ -111,7 +113,7 @@ const diensten = [
     <div class="container">
       <span class="label">Werkgebied</span>
       <div class="card area">
-        <h3>📍 {site.region}</h3>
+        <h3><svg class="area__pin" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> {site.region}</h3>
         <p>Actief in Den Haag en de omliggende gemeenten, met lokale monteurs voor snelle service.</p>
       </div>
     </div>
@@ -133,9 +135,11 @@ const diensten = [
   .section--white { background: #fff; }
   .section--cta { padding-top: 0; }
 
-  .mascot { margin-top: 24px; min-height: 200px; background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.2); color: #C9CFDA; }
+  .mascot { display: block; width: 190px; height: auto; margin: 16px auto 0; transform: rotate(-4deg); filter: drop-shadow(0 6px 6px rgba(0,0,0,.3)); }
+  .area h3 { display: flex; align-items: center; gap: 8px; }
+  .area__pin { color: var(--red); flex: none; }
 
-  .value__icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--red-soft); font-size: 1.2rem; margin-bottom: 12px; }
+  .value__icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--red-soft); color: var(--red); margin-bottom: 12px; }
   .value h3 { margin-bottom: 6px; }
   .value p { margin: 0; color: var(--muted); }
 

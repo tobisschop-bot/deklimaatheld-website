@@ -17,9 +17,11 @@ const inbegrepen = [
   { value: 'Inbedrijfstelling en uitleg', label: 'Inclusief koppelen aan de app' },
   { value: 'Nazorg en onderhoud', label: 'Service in Den Haag en omstreken' },
 ];
+// Alleen linken naar de fabrikant zelf, niet naar webshops van andere installateurs
+const fabrikantBron = /(^|\.)(daikin|haier|mhi|mitsubishi-les|mhi-airco)\./.test(new URL(s.bron).hostname);
 const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
 ---
-<Base title={`${s.naam} airco | De Klimaatheld`} description={`${s.naam}: ${s.lead} Kies vermogen en kleur en vraag direct een offerte aan.`}>
+<Base title={`${s.naam} airco laten installeren | De Klimaatheld`} description={`${s.naam}: ${s.lead} Kies vermogen en kleur en vraag direct een offerte aan.`}>
   <PageHero
     crumbs={[{ label: 'Home', href: '/' }, { label: 'Airco', href: '/airco/' }, { label: s.naam }]}
     label={`${s.merk} · ${s.positionering}`}
@@ -92,7 +94,7 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
         <dl class="ac__specs">
           {s.specs.map((x) => <div><dt>{x.value}</dt><dd>{x.label}</dd></div>)}
         </dl>
-        <p class="ac__bron">Bron: <a href={s.bron} target="_blank" rel="noopener">{s.merk}</a>. Waarden kunnen per vermogen verschillen.</p>
+        <p class="ac__bron">Bron: {fabrikantBron ? <a href={s.bron} target="_blank" rel="noopener">{s.merk}</a> : <>specificaties {s.merk}</>}. Waarden kunnen per vermogen verschillen.</p>
       </div>
     </section>
 
@@ -185,7 +187,7 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
   .ac__facts { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .ac__facts li { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 6px; text-align: center; display: grid; gap: 2px; }
   .ac__facts strong { font-size: 1rem; color: var(--navy); }
-  .ac__facts span { font-size: .72rem; color: var(--muted); line-height: 1.2; }
+  .ac__facts span { font-size: .78rem; color: var(--muted); line-height: 1.2; }
 
   .ac__steps { display: grid; gap: 28px; }
   .ac__step { border: 0; margin: 0; padding: 0; min-width: 0; }
@@ -204,7 +206,7 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
 
   .ac__colors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .ac__color { display: grid; justify-items: center; align-content: start; gap: 6px; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 12px 6px; cursor: pointer; font-weight: 600; font-size: .9rem; text-align: center; }
-  .ac__color small { font-weight: 500; font-size: .68rem; color: var(--muted); }
+  .ac__color small { font-weight: 500; font-size: .75rem; color: var(--muted); }
   .ac__color:has(input:checked) { border-color: var(--red); box-shadow: 0 0 0 1px var(--red) inset; }
   .ac__swatch { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #CBD2DB; }
 
@@ -226,7 +228,7 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
   .ac__bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--navy); color: #fff; box-shadow: 0 -8px 24px rgba(11,19,43,.25); }
   .ac__bar-in { max-width: 480px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .ac__sum { display: grid; line-height: 1.15; min-width: 0; }
-  .ac__sum [data-sum] { font-size: .66rem; letter-spacing: .05em; text-transform: uppercase; color: #9AA3B2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ac__sum [data-sum] { font-size: .75rem; letter-spacing: .05em; text-transform: uppercase; color: #9AA3B2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ac__lbl { font-size: .75rem; color: #C9CFDA; margin-top: 2px; }
   .ac__sum strong { font-size: 1.35rem; font-weight: 800; }
   .ac__sum small { font-size: .66rem; color: #9AA3B2; }

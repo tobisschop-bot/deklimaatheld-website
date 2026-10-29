@@ -15,8 +15,8 @@
   --muted: #5A6475;
   --radius: 10px;
   --shadow: 0 2px 10px rgba(20, 26, 46, .06);
-  --font-display: 'Archivo', system-ui, sans-serif;
-  --font-body: 'Archivo', system-ui, sans-serif;
+  --font-display: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --font-body: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
   --max: 1200px;
   --gutter: 16px;
 }

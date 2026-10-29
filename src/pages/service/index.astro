@@ -9,7 +9,7 @@ import { pakketten, kenmerken, prijzen, aircoKenmerken, aircoExtraBinnendeel, ke
 const beloftes = [
   { t: 'Garantie blijft geldig', d: 'Met jaarlijks onderhoud door een erkend installateur houd je de fabrieksgarantie van je installatie in stand.' },
   { t: 'Monitoring op afstand', d: 'We kijken mee. Daalt je rendement of komt er een foutcode, dan bellen wij jou.' },
-  { t: 'Snel geholpen', d: 'Bij storing reageren we binnen [X] uur en lossen we veel al op afstand op.' },
+  { t: 'Snel geholpen', d: 'Bij storing reageren we zo snel mogelijk en lossen we veel al op afstand op.' },
   { t: 'Eén aanspreekpunt', d: 'Geen callcenter, maar een vast nummer en vaste gezichten.' },
 ];
 const storing = [
@@ -28,13 +28,13 @@ const vanaf = (id: 'basis' | 'zorgeloos' | 'compleet') => prijzen['lucht-water']
 const wpPakketten = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'basis' | 'zorgeloos' | 'compleet'; naam: string; tag?: string; kort: string }[];
 const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' : v);
 ---
-<Base title="Service & onderhoud – De Klimaatheld" description="Onderhoud en service voor je warmtepomp of airco in Den Haag en omstreken: monitoring op afstand, vaste monteurs en heldere servicepakketten.">
+<Base title="Onderhoud warmtepomp en airco in Den Haag – De Klimaatheld" description="Onderhoud en service voor je warmtepomp of airco in Den Haag en omstreken: monitoring op afstand, vaste monteurs en heldere servicepakketten.">
   <PageHero label="Service & onderhoud" title="Ook na de installatie in goede handen" lead="Monitoring op afstand, vaste monteurs en heldere servicepakketten. Zo blijft je warmtepomp of airco jarenlang zuinig draaien." crumbs={[{ label: 'Home', href: '/' }, { label: 'Service & onderhoud' }]} />
 
   <section class="section section--tight">
     <div class="container sv-cta">
       <Button href="/service/afsluiten/" full>Servicepakket afsluiten →</Button>
-      <Button href={site.whatsappHref} variant="outline" full>Storing melden</Button>
+      <Button href={site.whatsappHref || site.phoneHref} variant="outline" full>Storing melden</Button>
     </div>
   </section>
 
@@ -106,7 +106,7 @@ const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' :
       <div class="sv-contact card">
         <strong>Direct contact</strong>
         <a href={site.phoneHref}>📞 {site.phone}</a>
-        <a href={site.whatsappHref}>💬 WhatsApp {site.whatsapp}</a>
+        {site.whatsapp && <a href={site.whatsappHref}>💬 WhatsApp {site.whatsapp}</a>}
         <small>{site.hours}</small>
       </div>
     </div>

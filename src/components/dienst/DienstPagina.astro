@@ -50,7 +50,7 @@ const check = '<path d="M20 6 9 17l-5-5"/>';
   <section class="d-product" aria-label="Productfoto">
     <div class="container">
       {data.product.img ? (
-        <img class="d-product__img" src={data.product.img} alt={data.product.imgAlt ?? ''} width="1400" height="934" loading="eager" />
+        <img class:list={["d-product__img", { "d-product__img--packshot": data.product.packshot }]} src={data.product.img} alt={data.product.imgAlt ?? ''} width="1400" height="934" loading="eager" />
       ) : (
         <div class="placeholder d-product__ph">
           <svg viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons[data.product.icon]} />
@@ -196,6 +196,7 @@ const check = '<path d="M20 6 9 17l-5-5"/>';
   /* Productvlak */
   .d-product { background: #fff; padding: 24px 0 0; }
   .d-product__img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius); }
+  .d-product__img--packshot { object-fit: contain; background: var(--bg); padding: 8%; aspect-ratio: 16 / 9; }
   .d-keuze__img { margin: -4px -4px 14px; border-radius: 8px; overflow: hidden; background: #fff; }
   .d-keuze__img img { display: block; width: 100%; height: auto; }
   .d-keuze__punten { list-style: none; padding: 0; margin: 0 0 14px; display: grid; gap: 6px; font-size: .9rem; }
@@ -213,7 +214,7 @@ const check = '<path d="M20 6 9 17l-5-5"/>';
   .d-keuze .label { margin-bottom: 4px; }
   .d-keuze__prijs { text-align: right; flex-shrink: 0; margin-left: auto; }
   .d-keuze__prijs strong { display: block; font-size: 1.1rem; color: var(--navy); white-space: nowrap; }
-  .d-keuze__prijs small { display: block; font-size: .72rem; color: var(--muted); }
+  .d-keuze__prijs small { display: block; font-size: .78rem; color: var(--muted); }
   .d-keuze p { color: var(--muted); margin-bottom: 12px; }
   .d-more { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--red); font-weight: 700; text-decoration: none; align-self: flex-start; }
 
