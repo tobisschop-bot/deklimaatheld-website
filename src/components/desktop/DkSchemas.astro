@@ -1,0 +1,142 @@
+---
+// Schematische tekeningen per opstelling (bewegen via CSS in DkInstallatie)
+---
+<svg data-sys="hybride" viewBox="0 0 640 420" role="img" aria-label="Schematische tekening van een hybride warmtepomp: buitenunit, binnenunit, cv-ketel en radiatoren" font-family="Archivo,sans-serif" style="display: block; width: 100%; height: auto">
+<rect width="640" height="420" rx="16" fill="#fff"/>
+<path d="M0 380H640" stroke="#CDD3DC" stroke-width="3"/>
+<g stroke="#2F6FA8" stroke-width="2.5" stroke-linecap="round" opacity=".7"><path class="stroom" d="M4 316H32"/><path class="stroom" d="M4 338H32"/><path class="stroom" d="M4 360H32"/></g>
+<text x="8" y="292" font-size="12" font-weight="700" fill="#5A6475">buitenlucht</text>
+<path d="M180 150 400 50 620 150" fill="none" stroke="#141A2E" stroke-width="4" stroke-linejoin="round"/>
+<rect x="200" y="150" width="400" height="230" fill="#F8F9FB" stroke="#141A2E" stroke-width="4"/>
+<path d="M200 265H600" stroke="#141A2E" stroke-width="3"/>
+<!-- buitenunit -->
+<rect x="36" y="296" width="120" height="84" rx="8" fill="#E3E7ED" stroke="#141A2E" stroke-width="3"/>
+<circle cx="80" cy="338" r="30" fill="#fff" stroke="#141A2E" stroke-width="2.5"/>
+<g class="fan"><path d="M80 338 76 312 a10 10 0 0 1 14 6 Z M80 338 102 348 a10 10 0 0 1 -10 12 Z M80 338 58 352 a10 10 0 0 1 -4 -14 Z" fill="#141A2E"/></g>
+<path d="M124 312v52M136 312v52M148 312v52" stroke="#9AA3B2" stroke-width="2"/>
+<!-- leidingen buitenunit -->
+<path d="M156 322H250" stroke="#F3C1C6" stroke-width="7"/><path class="stroom" d="M156 322H250" stroke="#D6283A" stroke-width="3" fill="none"/>
+<path d="M250 352H156" stroke="#C9D8E8" stroke-width="7"/><path class="stroom" d="M250 352H156" stroke="#2F6FA8" stroke-width="3" fill="none"/>
+<!-- binnenunit -->
+<rect x="250" y="296" width="64" height="70" rx="6" fill="#fff" stroke="#141A2E" stroke-width="3"/><rect x="262" y="308" width="40" height="16" rx="3" fill="#141A2E"/><circle cx="282" cy="346" r="6" fill="#1E9E6A"/>
+<!-- cv-ketel -->
+<rect x="250" y="172" width="64" height="80" rx="6" fill="#fff" stroke="#141A2E" stroke-width="3"/>
+<g class="dkis-vlamgroep"><path class="vlam" d="M282 240c-12-8-6-20 0-30 4 8 12 12 6 24-2 3-4 5-6 6Z" fill="#D6283A"/></g>
+<text x="282" y="200" text-anchor="middle" font-size="11" font-weight="800" fill="#5A6475" class="dkis-uit">UIT</text>
+<path d="M282 252V296" stroke="#E3E7ED" stroke-width="7"/><path class="stroom dkis-ketelpijp" d="M282 252V296" stroke="#D6283A" stroke-width="3" fill="none"/>
+<!-- tapwater via ketel -->
+<path d="M314 186H372V176" fill="none" stroke="#F0B37E" stroke-width="5"/><path d="M362 168h20l-4 8h-12Z" fill="#141A2E"/><g stroke="#2F6FA8" stroke-width="2" stroke-linecap="round"><path d="M366 182v8M372 182v10M378 182v8"/></g>
+<!-- naar radiatoren -->
+<path d="M314 312H420V216H470M420 312V338H470" fill="none" stroke="#F3C1C6" stroke-width="7"/><path class="stroom" d="M314 312H420V216H470M420 312V338H470" fill="none" stroke="#D6283A" stroke-width="3"/>
+<path d="M470 228H444V350H314M470 350H444" fill="none" stroke="#C9D8E8" stroke-width="7"/><path class="stroom" d="M470 228H444V350H314" fill="none" stroke="#2F6FA8" stroke-width="3"/>
+<g fill="#fff" stroke="#141A2E" stroke-width="3"><rect x="470" y="198" width="96" height="40" rx="4"/><rect x="470" y="320" width="96" height="40" rx="4"/></g>
+<g stroke="#D6283A" stroke-width="2"><path d="M484 204v28M498 204v28M512 204v28M526 204v28M540 204v28M554 204v28"/><path d="M484 326v28M498 326v28M512 326v28M526 326v28M540 326v28M554 326v28"/></g>
+</svg>
+
+<svg hidden data-sys="ae" viewBox="0 0 640 420" role="img" aria-label="Schematische tekening van een all-electric warmtepomp: buitenunit, binnenunit, boilervat, radiator en vloerverwarming" font-family="Archivo,sans-serif" style="display: block; width: 100%; height: auto">
+<defs><linearGradient id="boilerG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7C9CE"/><stop offset="1" stop-color="#CFE0F0"/></linearGradient></defs>
+<rect width="640" height="420" rx="16" fill="#fff"/>
+<path d="M0 380H640" stroke="#CDD3DC" stroke-width="3"/>
+<g stroke="#2F6FA8" stroke-width="2.5" stroke-linecap="round" opacity=".7"><path class="stroom" d="M4 316H32"/><path class="stroom" d="M4 338H32"/><path class="stroom" d="M4 360H32"/></g>
+<text x="8" y="292" font-size="12" font-weight="700" fill="#5A6475">buitenlucht</text>
+<path d="M180 150 400 50 620 150" fill="none" stroke="#141A2E" stroke-width="4" stroke-linejoin="round"/>
+<rect x="200" y="150" width="400" height="230" fill="#F8F9FB" stroke="#141A2E" stroke-width="4"/>
+<path d="M200 265H600" stroke="#141A2E" stroke-width="3"/>
+<text x="560" y="100" font-size="12" font-weight="800" fill="#1A7D55" text-anchor="middle">geen gas</text>
+<!-- buitenunit -->
+<rect x="36" y="296" width="120" height="84" rx="8" fill="#E3E7ED" stroke="#141A2E" stroke-width="3"/>
+<circle cx="80" cy="338" r="30" fill="#fff" stroke="#141A2E" stroke-width="2.5"/>
+<g class="fan"><path d="M80 338 76 312 a10 10 0 0 1 14 6 Z M80 338 102 348 a10 10 0 0 1 -10 12 Z M80 338 58 352 a10 10 0 0 1 -4 -14 Z" fill="#141A2E"/></g>
+<path d="M124 312v52M136 312v52M148 312v52" stroke="#9AA3B2" stroke-width="2"/>
+<path d="M156 322H250" stroke="#F3C1C6" stroke-width="7"/><path class="stroom" d="M156 322H250" stroke="#D6283A" stroke-width="3" fill="none"/>
+<path d="M250 352H156" stroke="#C9D8E8" stroke-width="7"/><path class="stroom" d="M250 352H156" stroke="#2F6FA8" stroke-width="3" fill="none"/>
+<!-- binnenunit -->
+<rect x="250" y="296" width="64" height="70" rx="6" fill="#fff" stroke="#141A2E" stroke-width="3"/><rect x="262" y="308" width="40" height="16" rx="3" fill="#141A2E"/><circle cx="282" cy="346" r="6" fill="#1E9E6A"/>
+<!-- boilervat -->
+<path d="M314 306H357V280" fill="none" stroke="#F3C1C6" stroke-width="7"/><path class="stroom" d="M314 306H357V280" fill="none" stroke="#D6283A" stroke-width="3"/>
+<rect x="330" y="168" width="54" height="112" rx="27" fill="url(#boilerG)" stroke="#141A2E" stroke-width="3"/>
+<path d="M357 168V160H430V176" fill="none" stroke="#F0B37E" stroke-width="5"/><path d="M420 168h20l-4 8h-12Z" fill="#141A2E"/><g stroke="#2F6FA8" stroke-width="2" stroke-linecap="round"><path d="M424 182v8M430 182v10M436 182v8"/></g>
+<!-- radiator boven -->
+<path d="M314 322H460V216H484" fill="none" stroke="#F3C1C6" stroke-width="7"/><path class="stroom" d="M314 322H460V216H484" fill="none" stroke="#D6283A" stroke-width="3"/>
+<path d="M484 228H470V346H314" fill="none" stroke="#C9D8E8" stroke-width="7"/><path class="stroom" d="M484 228H470V346H314" fill="none" stroke="#2F6FA8" stroke-width="3"/>
+<rect x="484" y="198" width="90" height="40" rx="4" fill="#fff" stroke="#141A2E" stroke-width="3"/>
+<g stroke="#D6283A" stroke-width="2"><path d="M498 204v28M512 204v28M526 204v28M540 204v28M554 204v28"/></g>
+<!-- vloerverwarming -->
+<path d="M460 322V372H600" fill="none" stroke="#F3C1C6" stroke-width="5"/>
+<path class="stroom" d="M460 322V372h16v-10h16v10h16v-10h16v10h16v-10h16v10h16v-10h16v10h16" fill="none" stroke="#D6283A" stroke-width="3" stroke-linejoin="round"/>
+</svg>
+
+<svg hidden data-sys="zon" viewBox="0 0 640 420" role="img" aria-label="Schematische tekening van een warmtepomp met zonnepanelen: panelen op het dak, omvormer, buitenunit, binnenunit, boilervat, radiator en vloerverwarming" font-family="Archivo,sans-serif" style="display: block; width: 100%; height: auto">
+<defs><linearGradient id="boilerZ" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7C9CE"/><stop offset="1" stop-color="#CFE0F0"/></linearGradient></defs>
+<rect width="640" height="420" rx="16" fill="#fff"/>
+<path d="M0 380H640" stroke="#CDD3DC" stroke-width="3"/>
+<g class="dkis-zon"><circle cx="596" cy="34" r="14" fill="#E0A100"/><g class="fan" style="animation-duration: 9s"><path d="M596 12V4M596 64V56M574 34H566M626 34H618M580.4 18.4l-5.6-5.6M617.2 55.2l-5.6-5.6M580.4 49.6l-5.6 5.6M617.2 12.8l-5.6 5.6" stroke="#E0A100" stroke-width="3" stroke-linecap="round"/></g></g>
+<g stroke="#2F6FA8" stroke-width="2.5" stroke-linecap="round" opacity=".7"><path class="stroom" d="M4 316H32"/><path class="stroom" d="M4 338H32"/><path class="stroom" d="M4 360H32"/></g>
+<text x="8" y="292" font-size="12" font-weight="700" fill="#5A6475">buitenlucht</text>
+<path d="M180 150 400 50 620 150" fill="none" stroke="#141A2E" stroke-width="4" stroke-linejoin="round"/>
+<g transform="translate(424 61) rotate(24.44)"><g fill="#141A2E" stroke="#2F6FA8" stroke-width="1.5"><rect x="0" y="-19" width="44" height="16" rx="2"/><rect x="48" y="-19" width="44" height="16" rx="2"/><rect x="96" y="-19" width="44" height="16" rx="2"/><rect x="144" y="-19" width="44" height="16" rx="2"/></g><path d="M22-19v16M70-19v16M118-19v16M166-19v16" stroke="#2F6FA8" stroke-width="1"/></g>
+<rect x="200" y="150" width="400" height="230" fill="#F8F9FB" stroke="#141A2E" stroke-width="4"/>
+<path d="M200 265H600" stroke="#141A2E" stroke-width="3"/>
+<text x="250" y="140" font-size="12" font-weight="800" fill="#1A7D55">geen gas</text>
+<!-- stroom van panelen via omvormer naar binnenunit -->
+<path d="M486 96V156H240V176" fill="none" stroke="#F6E3B0" stroke-width="7"/><path class="stroom" d="M486 96V156H240V176" fill="none" stroke="#E0A100" stroke-width="3"/>
+<rect x="222" y="176" width="36" height="44" rx="4" fill="#fff" stroke="#141A2E" stroke-width="3"/><path d="M229 199q5.5-9 11 0t11 0" fill="none" stroke="#E0A100" stroke-width="2.5"/>
+<path d="M240 220V286H270V296" fill="none" stroke="#F6E3B0" stroke-width="7"/><path class="stroom" d="M240 220V286H270V296" fill="none" stroke="#E0A100" stroke-width="3"/>
+<!-- buitenunit -->
+<rect x="36" y="296" width="120" height="84" rx="8" fill="#E3E7ED" stroke="#141A2E" stroke-width="3"/>
+<circle cx="80" cy="338" r="30" fill="#fff" stroke="#141A2E" stroke-width="2.5"/>
+<g class="fan"><path d="M80 338 76 312 a10 10 0 0 1 14 6 Z M80 338 102 348 a10 10 0 0 1 -10 12 Z M80 338 58 352 a10 10 0 0 1 -4 -14 Z" fill="#141A2E"/></g>
+<path d="M124 312v52M136 312v52M148 312v52" stroke="#9AA3B2" stroke-width="2"/>
+<path d="M156 322H250" stroke="#F3C1C6" stroke-width="7"/><path class="stroom" d="M156 322H250" stroke="#D6283A" stroke-width="3" fill="none"/>
+<path d="M250 352H156" stroke="#C9D8E8" stroke-width="7"/><path class="stroom" d="M250 352H156" stroke="#2F6FA8" stroke-width="3" fill="none"/>
+<!-- binnenunit -->
+<rect x="250" y="296" width="64" height="70" rx="6" fill="#fff" stroke="#141A2E" stroke-width="3"/><rect x="262" y="308" width="40" height="16" rx="3" fill="#141A2E"/><circle cx="282" cy="346" r="6" fill="#1E9E6A"/>
+<!-- boilervat -->
+<path d="M314 306H357V280" fill="none" stroke="#F3C1C6" stroke-width="7"/><path class="stroom" d="M314 306H357V280" fill="none" stroke="#D6283A" stroke-width="3"/>
+<rect x="330" y="168" width="54" height="112" rx="27" fill="url(#boilerZ)" stroke="#141A2E" stroke-width="3"/>
+<path d="M357 168V162H430V176" fill="none" stroke="#F0B37E" stroke-width="5"/><path d="M420 168h20l-4 8h-12Z" fill="#141A2E"/><g stroke="#2F6FA8" stroke-width="2" stroke-linecap="round"><path d="M424 182v8M430 182v10M436 182v8"/></g>
+<!-- radiator + vloerverwarming -->
+<path d="M314 322H460V216H484" fill="none" stroke="#F3C1C6" stroke-width="7"/><path class="stroom" d="M314 322H460V216H484" fill="none" stroke="#D6283A" stroke-width="3"/>
+<path d="M484 228H470V346H314" fill="none" stroke="#C9D8E8" stroke-width="7"/><path class="stroom" d="M484 228H470V346H314" fill="none" stroke="#2F6FA8" stroke-width="3"/>
+<rect x="484" y="198" width="90" height="40" rx="4" fill="#fff" stroke="#141A2E" stroke-width="3"/>
+<g stroke="#D6283A" stroke-width="2"><path d="M498 204v28M512 204v28M526 204v28M540 204v28M554 204v28"/></g>
+<path d="M460 322V372H600" fill="none" stroke="#F3C1C6" stroke-width="5"/>
+<path class="stroom" d="M460 322V372h16v-10h16v10h16v-10h16v10h16v-10h16v10h16v-10h16v10h16" fill="none" stroke="#D6283A" stroke-width="3" stroke-linejoin="round"/>
+</svg>
+
+<svg hidden data-sys="wpb" viewBox="0 0 640 420" role="img" aria-label="Schematische tekening van een warmtepompboiler: warmtepompdeel op een voorraadvat, luchtkanaal naar buiten, douche en keukenkraan; de bestaande verwarming blijft" font-family="Archivo,sans-serif" style="display: block; width: 100%; height: auto">
+<defs><linearGradient id="vatW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7C9CE"/><stop offset="1" stop-color="#CFE0F0"/></linearGradient></defs>
+<rect width="640" height="420" rx="16" fill="#fff"/>
+<path d="M0 380H640" stroke="#CDD3DC" stroke-width="3"/>
+<path d="M180 150 400 50 620 150" fill="none" stroke="#141A2E" stroke-width="4" stroke-linejoin="round"/>
+<rect x="200" y="150" width="400" height="230" fill="#F8F9FB" stroke="#141A2E" stroke-width="4"/>
+<path d="M200 265H600" stroke="#141A2E" stroke-width="3"/>
+<text x="452" y="136" font-size="12" font-weight="800" fill="#1A7D55">alleen warm tapwater</text>
+<!-- bestaande verwarming blijft -->
+<rect x="222" y="176" width="46" height="60" rx="5" fill="#EEF0F4" stroke="#9AA3B2" stroke-width="3"/>
+<text x="245" y="212" text-anchor="middle" font-size="12" font-weight="800" fill="#5A6475">cv</text>
+<!-- luchtkanaal naar buiten -->
+<path d="M325 270V84" stroke="#E3E7ED" stroke-width="14" fill="none"/>
+<path d="M311 82h28" stroke="#141A2E" stroke-width="4" stroke-linecap="round"/>
+<path class="stroom" d="M325 268V60" stroke="#2F6FA8" stroke-width="3" fill="none"/>
+<path d="M317 62l8-8 8 8" fill="none" stroke="#2F6FA8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="340" y="44" font-size="11" font-weight="700" fill="#5A6475">afgekoelde lucht naar buiten</text>
+<!-- lucht in huis -->
+<text x="210" y="280" font-size="11" font-weight="700" fill="#5A6475">lucht in huis</text>
+<g stroke="#F0B37E" stroke-width="2.5" stroke-linecap="round"><path class="stroom" d="M212 288H296"/><path class="stroom" d="M212 298H296"/></g>
+<!-- warmtepompboiler -->
+<rect x="298" y="270" width="54" height="30" rx="6" fill="#E3E7ED" stroke="#141A2E" stroke-width="3"/>
+<circle cx="325" cy="285" r="11" fill="#fff" stroke="#141A2E" stroke-width="2"/>
+<g class="fan"><path d="M325 285 323 275 a4 4 0 0 1 6 2 Z M325 285 334 289 a4 4 0 0 1 -4 5 Z M325 285 316 290 a4 4 0 0 1 -2 -6 Z" fill="#141A2E"/></g>
+<rect x="300" y="300" width="50" height="76" rx="8" fill="url(#vatW)" stroke="#141A2E" stroke-width="3"/>
+<!-- koud water in -->
+<text x="210" y="360" font-size="11" font-weight="700" fill="#5A6475">koud water</text>
+<path d="M212 368H300" stroke="#C9D8E8" stroke-width="6"/><path class="stroom" d="M212 368H300" stroke="#2F6FA8" stroke-width="3" fill="none"/>
+<!-- warm water naar douche en keuken -->
+<path d="M350 312H440V196H496M440 312V316H486" fill="none" stroke="#F3C1C6" stroke-width="7"/><path class="stroom" d="M350 312H440V196H496" fill="none" stroke="#D6283A" stroke-width="3"/><path class="stroom" d="M440 312V316H486" fill="none" stroke="#D6283A" stroke-width="3"/>
+<path d="M496 196V186H512" fill="none" stroke="#141A2E" stroke-width="3"/><path d="M504 186h20l-4 8h-12Z" fill="#141A2E"/><g stroke="#2F6FA8" stroke-width="2" stroke-linecap="round"><path d="M508 200v8M514 200v10M520 200v8"/></g>
+<text x="534" y="196" font-size="11" font-weight="700" fill="#5A6475">douche</text>
+<path d="M486 316V306H500" fill="none" stroke="#141A2E" stroke-width="4"/><g stroke="#2F6FA8" stroke-width="2" stroke-linecap="round"><path d="M500 312v8M496 314v6"/></g>
+<rect x="470" y="330" width="90" height="8" rx="2" fill="#CDD3DC"/><text x="515" y="356" text-anchor="middle" font-size="11" font-weight="700" fill="#5A6475">keuken</text>
+</svg>
+

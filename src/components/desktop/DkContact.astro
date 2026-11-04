@@ -1,0 +1,121 @@
+---
+// Slotblok: offerte aanvragen of vraag stellen (Netlify-formulier "contact") + besparingscheck + bellen
+import { site } from '../../data/site';
+const onderwerpen = ['Warmtepomp', 'Airco', 'Vloerverwarming', 'Zonnepanelen', 'Thuisbatterij', 'Weet ik nog niet'];
+---
+<section class="dkct" id="dk-contact">
+  <div class="dk-wrap">
+    <div class="dkct__kop">
+      <div><span class="dk-kicker dk-kicker--light">Gratis en vrijblijvend</span><h2 class="dk-h2">Klaar voor de<br />volgende stap?</h2></div>
+      <p>Binnen 1 werkdag een persoonlijk advies. Geen verkooppraatjes.</p>
+    </div>
+    <div class="dkct__grid">
+      <form class="dkct__form" name="contact" method="POST" action="/bedankt/" data-netlify="true" netlify-honeypot="bot-field" data-dk-contact>
+        <input type="hidden" name="form-name" value="contact" />
+        <input type="hidden" name="soort" value="Offerte aanvragen" data-soort />
+        <p class="dkct__hp"><label>Niet invullen: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+        <div class="dkct__tabs" role="tablist" aria-label="Wat wil je doen?">
+          <button type="button" role="tab" aria-selected="true" class="is-on" data-modus="offerte">Offerte aanvragen</button>
+          <button type="button" role="tab" aria-selected="false" data-modus="vraag">Vraag stellen</button>
+        </div>
+        <h3 data-t="titel">Vraag een offerte aan</h3>
+        <p class="dkct__lead" data-t="lead">Vertel kort wat je zoekt. Wij nemen binnen 1 werkdag contact op.</p>
+        <fieldset class="dkct__onderwerp" data-alleen-offerte>
+          <legend>Waar gaat het om?</legend>
+          <div>
+            {onderwerpen.map((o, i) => <label class="dkct__chip"><input type="checkbox" name="onderwerp" value={o} checked={i === 0} /><span>{o}</span></label>)}
+          </div>
+        </fieldset>
+        <div class="dkct__velden">
+          <label>Naam<input name="naam" autocomplete="name" required /></label>
+          <label>E-mailadres<input type="email" name="email" autocomplete="email" required /></label>
+          <label>Telefoonnummer<input type="tel" name="telefoon" autocomplete="tel" /></label>
+          <label>Postcode<input name="postcode" placeholder="2511 AB" autocomplete="postal-code" /></label>
+          <label class="is-breed"><span data-t="msglabel">Toelichting (optioneel)</span><textarea name="bericht" rows="4" placeholder="Bijvoorbeeld: grootte van de woning, isolatie, wensen…" data-t-ph></textarea></label>
+        </div>
+        <div class="dkct__voet">
+          <p>We gebruiken je gegevens alleen om contact met je op te nemen. <a href="/privacy/">Privacy</a></p>
+          <button type="submit" class="dk-btn dk-btn--red" data-t="knop">Vraag offerte aan →</button>
+        </div>
+      </form>
+      <div class="dkct__rechts">
+        <div class="dkct__check">
+          <img class="dk-zweef" src="/img/mascotte-vliegend.webp" alt="" aria-hidden="true" />
+          <span class="dk-kicker" style="color:#FFE3E6">In 2 minuten</span>
+          <h3>Bereken je besparing</h3>
+          <p>Inclusief ISDE-subsidie, op basis van jouw woning.</p>
+          <a class="dk-btn dk-btn--white" href="#dk-besparingscheck">Start de besparingscheck →</a>
+        </div>
+        <div class="dkct__bel">
+          <p class="dkct__bel-kop">Liever even bellen?</p>
+          <a href={site.phoneHref}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF8A95" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>{site.phone}</a>
+          <a href={site.whatsappHref}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4CC38A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.6 7.3L3 21l2.2-5.2A8.5 8.5 0 1 1 21 11.5Z"/></svg>WhatsApp {site.whatsapp}</a>
+          <p class="dkct__uren">Bereikbaar {site.hours} · {site.region}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-dk-contact]').forEach((form) => {
+    const T = {
+      offerte: { titel: 'Vraag een offerte aan', lead: 'Vertel kort wat je zoekt. Wij nemen binnen 1 werkdag contact op.', msglabel: 'Toelichting (optioneel)', ph: 'Bijvoorbeeld: grootte van de woning, isolatie, wensen…', knop: 'Vraag offerte aan →', soort: 'Offerte aanvragen' },
+      vraag: { titel: 'Stel je vraag', lead: 'Twijfel je over iets? Een monteur beantwoordt je vraag persoonlijk.', msglabel: 'Je vraag', ph: 'Bijvoorbeeld: past een warmtepomp bij mijn huis uit 1965?', knop: 'Verstuur vraag →', soort: 'Vraag stellen' },
+    };
+    const set = (m: 'offerte' | 'vraag') => {
+      const t = T[m];
+      form.querySelectorAll<HTMLButtonElement>('[data-modus]').forEach((b) => { const on = b.dataset.modus === m; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+      form.querySelector('[data-t="titel"]')!.textContent = t.titel;
+      form.querySelector('[data-t="lead"]')!.textContent = t.lead;
+      form.querySelector('[data-t="msglabel"]')!.textContent = t.msglabel;
+      form.querySelector('[data-t="knop"]')!.textContent = t.knop;
+      (form.querySelector('[data-t-ph]') as HTMLTextAreaElement).placeholder = t.ph;
+      (form.querySelector('[data-soort]') as HTMLInputElement).value = t.soort;
+      (form.querySelector('[data-alleen-offerte]') as HTMLElement).hidden = m === 'vraag';
+      (form.querySelector('textarea[name="bericht"]') as HTMLTextAreaElement).required = m === 'vraag';
+    };
+    form.querySelectorAll<HTMLButtonElement>('[data-modus]').forEach((b) => b.addEventListener('click', () => set(b.dataset.modus as 'offerte' | 'vraag')));
+  });
+</script>
+
+<style>
+  .dkct { background: radial-gradient(50% 50% at 90% 10%, rgba(214,40,58,.3), rgba(214,40,58,0) 70%), #0B132B; color: #fff; padding: 112px 0 120px; scroll-margin-top: 100px; }
+  .dkct__kop { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 40px; }
+  .dkct__kop .dk-h2 { margin-top: 12px; color: #fff; }
+  .dkct__kop > p { max-width: 400px; font-size: 17px; line-height: 1.6; color: #C9CFDA; }
+  .dkct__grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: stretch; }
+  .dkct__form { background: #fff; color: #141A2E; border-radius: 24px; padding: 36px 40px; min-width: 0; }
+  .dkct__hp { position: absolute; left: -9999px; }
+  .dkct__tabs { display: inline-flex; gap: 6px; background: #F4F6F9; border: 1px solid #E3E7ED; border-radius: 999px; padding: 5px; margin-bottom: 26px; }
+  .dkct__tabs button { font: inherit; font-size: 15px; font-weight: 800; padding: 10px 20px; border-radius: 999px; border: 0; cursor: pointer; background: transparent; color: #141A2E; }
+  .dkct__tabs button.is-on { background: #141A2E; color: #fff; }
+  .dkct__form h3 { font-size: 40px; line-height: .95; font-weight: 900; font-stretch: 70%; text-transform: uppercase; }
+  .dkct__lead { margin: 6px 0 24px !important; color: #5A6475; font-size: 16px; }
+  .dkct__onderwerp { border: 0; padding: 0; margin: 0 0 20px; }
+  .dkct__onderwerp[hidden] { display: none; }
+  .dkct__onderwerp legend { font-size: 13px; font-weight: 800; color: #5A6475; margin-bottom: 10px; padding: 0; }
+  .dkct__onderwerp > div { display: flex; flex-wrap: wrap; gap: 8px; }
+  .dkct__chip { position: relative; cursor: pointer; }
+  .dkct__chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .dkct__chip span { display: inline-block; font-size: 14px; font-weight: 800; padding: 10px 16px; border-radius: 999px; border: 1px solid #E3E7ED; background: #fff; }
+  .dkct__chip input:checked + span { background: #D6283A; color: #fff; border-color: #D6283A; }
+  .dkct__chip input:focus-visible + span { outline: 3px solid #FFB020; outline-offset: 2px; }
+  .dkct__velden { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .dkct__velden label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700; color: #5A6475; }
+  .dkct__velden .is-breed { grid-column: 1 / -1; }
+  .dkct__velden input, .dkct__velden textarea { font: inherit; font-size: 16px; color: #141A2E; border: 1px solid #E3E7ED; border-radius: 8px; padding: 13px 14px; resize: vertical; }
+  .dkct__velden input:focus, .dkct__velden textarea:focus { outline: 2px solid #D6283A; outline-offset: 0; border-color: #D6283A; }
+  .dkct__voet { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; margin-top: 22px; }
+  .dkct__voet p { font-size: 13px; color: #5A6475; }
+  .dkct__voet a { color: #5A6475; }
+  .dkct__rechts { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .dkct__check { position: relative; overflow: hidden; background: #D6283A; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .dkct__check img { position: absolute; right: -10px; top: 6px; width: 130px; height: auto; }
+  .dkct__check h3 { font-size: 44px; line-height: .9; font-weight: 900; font-stretch: 65%; text-transform: uppercase; max-width: 260px; }
+  .dkct__check p { color: #FFE3E6; font-size: 15px; line-height: 1.5; max-width: 280px; margin-bottom: 8px !important; }
+  .dkct__bel { flex: 1; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 24px; padding: 28px 32px; display: flex; flex-direction: column; gap: 14px; }
+  .dkct__bel-kop { font-size: 24px; font-weight: 900; font-stretch: 75%; text-transform: uppercase; }
+  .dkct__bel a { display: flex; align-items: center; gap: 12px; color: #fff; text-decoration: none; font-weight: 800; font-size: 18px; }
+  .dkct__uren { margin-top: auto !important; font-size: 14px; color: #9AA3B2; }
+</style>

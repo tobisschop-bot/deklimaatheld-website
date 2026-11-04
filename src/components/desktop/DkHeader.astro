@@ -1,0 +1,23 @@
+---
+import { nav } from '../../data/site';
+---
+<header class="dkh">
+  <nav class="dkh__bar" aria-label="Hoofdmenu desktop">
+    <a href="/" class="dkh__logo" aria-label="De Klimaatheld – home"><img src="/img/logo-de-klimaatheld.png" alt="De Klimaatheld" width="1400" height="127" /></a>
+    <div class="dkh__links">
+      {nav.map((item) => <a href={item.href} class:list={{ 'dkh__extra': ['/lt-verwarming/', '/subsidie/'].includes(item.href) }}>{item.label}</a>)}
+    </div>
+    <a class="dk-btn dk-btn--red dkh__cta" href="/offerte/">Offerte</a>
+  </nav>
+</header>
+
+<style>
+  .dkh { position: sticky; top: 0; z-index: 60; padding: 16px 32px; background: linear-gradient(180deg, rgba(11,19,43,.96), rgba(11,19,43,.85)); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+  .dkh__bar { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; gap: 24px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); border-radius: 999px; padding: 10px 12px 10px 26px; }
+  .dkh__logo img { width: 200px; height: auto; filter: invert(1); }
+  .dkh__links { display: flex; flex-wrap: wrap; gap: 4px 24px; margin-left: auto; font-size: 15px; font-weight: 600; }
+  .dkh__links a { color: rgba(255,255,255,.88); text-decoration: none; padding: 6px 0; }
+  .dkh__links a:hover { color: #ff6b7a; }
+  .dkh__cta { padding: 12px 24px; font-size: 15px; }
+  @media (max-width: 1180px) { .dkh__links { gap: 4px 18px; font-size: 14px; } .dkh__logo img { width: 170px; } .dkh__extra { display: none; } }
+</style>

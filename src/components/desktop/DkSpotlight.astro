@@ -1,0 +1,124 @@
+---
+import { warmtepompen, euro, kaartLink, fotoCrop } from '../../data/warmtepompen';
+// Bijsnijden van foto's met transparante rand (zelfde kaders als ProductImage)
+const crop = (src: string) => { const c = fotoCrop[src]; if (!c) return null; const bw = c.box[2] - c.box[0], bh = c.box[3] - c.box[1]; return { ar: `${bw}/${bh}`, w: (c.w / bw) * 100, l: (-c.box[0] / bw) * 100, t: (-c.box[1] / bh) * 100 }; };
+const typeLabel: Record<string, string> = { hybride: 'Hybride', 'all-electric': 'All-electric', dakmontage: 'Dakmontage' };
+const pumps = warmtepompen.map((w) => ({
+  merk: w.merk,
+  name: w.name,
+  short: w.name.replace(new RegExp('^' + w.merk + ' '), ''),
+  tag: w.tag,
+  img: w.img,
+  crop: crop(w.img),
+  price: w.from == null ? 'Op aanvraag' : euro(w.from),
+  isde: w.isde ? euro(w.isde) : 'n.v.t.',
+  types: w.types.map((t) => typeLabel[t] ?? t),
+  href: kaartLink(w).href,
+}));
+const start = Math.max(0, pumps.findIndex((p) => p.short.startsWith('Sparrow')));
+const cur = pumps[start];
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+<section class="dksp" data-dk-spot>
+  <script type="application/json" data-dk-spot-data set:html={JSON.stringify(pumps)} />
+  <div class="dk-wrap">
+    <div class="dksp__kop">
+      <div><span class="dk-kicker dk-kicker--light">De showroom</span><h2 class="dk-h2">Ontdek ons assortiment</h2></div>
+      <p class="dksp__teller"><strong data-f="pos">{pad(start + 1)}</strong> / {pad(pumps.length)}</p>
+    </div>
+    <div class="dksp__podium">
+      <div class="dksp__stage">
+        <span class="dksp__schaduw" aria-hidden="true"></span>
+        <span class="dksp__pi" data-f="pi"><img data-f="img" src={cur.img} alt={cur.name} /></span>
+        <button type="button" class="dksp__pijl dksp__pijl--l" data-act="prev" aria-label="Vorig model">←</button>
+        <button type="button" class="dksp__pijl dksp__pijl--r" data-act="next" aria-label="Volgend model">→</button>
+      </div>
+      <div class="dksp__info">
+        <span class="dk-kicker dk-kicker--light" data-f="merk">{cur.merk}</span>
+        <h3 data-f="short">{cur.short}</h3>
+        <p class="dksp__tag" data-f="tag">{cur.tag}</p>
+        <div class="dksp__chips" data-f="types">{cur.types.map((t) => <span>{t}</span>)}</div>
+        <dl class="dksp__feiten">
+          <div><dt>Vanaf, incl. montage</dt><dd data-f="price">{cur.price}</dd></div>
+          <div class="is-groen"><dt>ISDE terug</dt><dd data-f="isde">{cur.isde}</dd></div>
+        </dl>
+        <div class="dksp__knoppen">
+          <a class="dk-btn dk-btn--red" data-f="href" href={cur.href}>Stel samen →</a>
+          <a class="dk-btn dk-btn--ghost" href="/warmtepompen/">Alle warmtepompen</a>
+        </div>
+      </div>
+    </div>
+    <div class="dksp__rail" role="group" aria-label="Kies een model">
+      {pumps.map((p, i) => (
+        <button type="button" data-i={i} aria-label={p.name} aria-pressed={i === start ? 'true' : 'false'} class:list={['dksp__thumb', { 'is-on': i === start }]}>
+          <span class="dksp__thumb-img"><img src={p.img} alt="" loading="lazy" /></span>
+          <span class="dksp__thumb-naam">{p.short}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-dk-spot]').forEach((root) => {
+    const data = JSON.parse(root.querySelector('[data-dk-spot-data]')!.textContent || '[]');
+    const thumbs = [...root.querySelectorAll<HTMLButtonElement>('.dksp__thumb')];
+    const f = (k: string) => root.querySelector<HTMLElement>(`[data-f="${k}"]`)!;
+    let i = thumbs.findIndex((t) => t.classList.contains('is-on'));
+    const show = (n: number) => {
+      i = (n + data.length) % data.length;
+      const p = data[i];
+      const img = f('img') as HTMLImageElement; img.src = p.img; img.alt = p.name;
+      const pi = f('pi');
+      if (p.crop) { pi.classList.add('is-crop'); pi.style.aspectRatio = p.crop.ar; img.style.width = p.crop.w + '%'; img.style.left = p.crop.l + '%'; img.style.top = p.crop.t + '%'; }
+      else { pi.classList.remove('is-crop'); pi.style.aspectRatio = ''; img.style.width = ''; img.style.left = ''; img.style.top = ''; }
+      f('merk').textContent = p.merk; f('short').textContent = p.short; f('tag').textContent = p.tag;
+      f('price').textContent = p.price; f('isde').textContent = p.isde;
+      (f('href') as HTMLAnchorElement).href = p.href;
+      f('types').innerHTML = '';
+      p.types.forEach((t: string) => { const s = document.createElement('span'); s.textContent = t; f('types').appendChild(s); });
+      f('pos').textContent = String(i + 1).padStart(2, '0');
+      thumbs.forEach((t, k) => { t.classList.toggle('is-on', k === i); t.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+    };
+    root.querySelector('[data-act="prev"]')!.addEventListener('click', () => show(i - 1));
+    root.querySelector('[data-act="next"]')!.addEventListener('click', () => show(i + 1));
+    thumbs.forEach((t) => t.addEventListener('click', () => show(Number(t.dataset.i))));
+    show(i);
+  });
+</script>
+
+<style>
+  .dksp { padding: 32px 0 112px; background: #0B132B; }
+  .dksp__kop { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 24px; }
+  .dksp__kop .dk-h2 { margin-top: 12px; font-size: 64px; color: #fff; }
+  .dksp__teller { color: #C9CFDA; font-size: 15px; white-space: nowrap; }
+  .dksp__teller strong { color: #fff; font-size: 28px; font-stretch: 62%; }
+  .dksp__podium { display: grid; grid-template-columns: 1.2fr 1fr; background: linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.12); border-radius: 28px; overflow: hidden; }
+  .dksp__stage { position: relative; min-height: 520px; display: grid; place-items: center; background: radial-gradient(55% 45% at 50% 62%, rgba(214,40,58,.45), rgba(214,40,58,0) 70%); }
+  .dksp__pi { position: relative; display: grid; place-items: center; width: 64%; max-height: 400px; filter: drop-shadow(0 30px 30px rgba(0,0,0,.5)); }
+  .dksp__pi img { max-height: 380px; object-fit: contain; }
+  .dksp__pi.is-crop { display: block; overflow: hidden; max-height: none; }
+  .dksp__pi.is-crop img { position: absolute; max-width: none; max-height: none; height: auto; }
+  .dksp__schaduw { position: absolute; left: 18%; right: 18%; bottom: 70px; height: 60px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.55), rgba(0,0,0,0)); }
+  .dksp__pijl { position: absolute; top: 50%; transform: translateY(-50%); width: 56px; height: 56px; border-radius: 50%; font: inherit; font-size: 22px; font-weight: 800; color: #fff; cursor: pointer; }
+  .dksp__pijl--l { left: 24px; border: 1px solid rgba(255,255,255,.3); background: rgba(11,19,43,.6); }
+  .dksp__pijl--r { right: 24px; border: 0; background: #D6283A; }
+  .dksp__info { padding: 48px 44px; display: flex; flex-direction: column; gap: 18px; background: rgba(11,19,43,.5); }
+  .dksp__info h3 { font-size: 64px; line-height: .88; font-weight: 900; font-stretch: 62%; text-transform: uppercase; color: #fff; }
+  .dksp__tag { font-size: 18px; color: #C9CFDA; }
+  .dksp__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .dksp__chips :global(span) { font-size: 12px; font-weight: 800; border: 1px solid rgba(255,255,255,.3); padding: 6px 12px; border-radius: 999px; color: #fff; }
+  .dksp__feiten { margin: 8px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .dksp__feiten div { background: rgba(255,255,255,.06); border-radius: 12px; padding: 16px; }
+  .dksp__feiten .is-groen { background: rgba(30,158,106,.16); }
+  .dksp__feiten dt { font-size: 12px; color: #9AA3B2; }
+  .dksp__feiten dd { margin: 4px 0 0; font-size: 26px; font-weight: 900; color: #fff; }
+  .dksp__feiten .is-groen dd { color: #4CC38A; }
+  .dksp__knoppen { display: flex; flex-wrap: wrap; gap: 12px; margin-top: auto; }
+  .dksp__rail { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 16px; }
+  .dksp__thumb { font: inherit; text-align: center; cursor: pointer; border-radius: 14px; padding: 10px 8px; color: #fff; background: rgba(255,255,255,.05); border: 2px solid rgba(255,255,255,.08); }
+  .dksp__thumb.is-on { background: rgba(214,40,58,.18); border-color: #D6283A; }
+  .dksp__thumb-img { height: 64px; display: grid; place-items: center; }
+  .dksp__thumb-img img { max-width: 80px; max-height: 60px; object-fit: contain; }
+  .dksp__thumb-naam { display: block; font-size: 12px; font-weight: 800; line-height: 1.2; margin-top: 6px; }
+</style>

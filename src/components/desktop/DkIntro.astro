@@ -1,0 +1,60 @@
+---
+// Zorgeloos verduurzamen: trustbalk + monteur + reviews (à la Feenstra)
+const trust = [
+  { t: 'Gecertificeerde monteurs', d: 'Heat Geek en F-gassen', icon: 'M12 2a6 6 0 1 0 0 12 6 6 0 0 0 0-12ZM15.5 13 17 22l-5-3-5 3 1.5-9', groen: false },
+  { t: 'Altijd dichtbij', d: 'Den Haag en omgeving', icon: 'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0ZM12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z', groen: false },
+  { t: 'Snel bij storing', d: 'Voorrang met servicepakket', icon: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20ZM12 6v6l4 2', groen: false },
+  { t: 'ISDE voor je geregeld', d: 'Geen papierwerk', icon: 'M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10ZM2 21c0-3 1.9-5.4 5.1-6', groen: true },
+];
+---
+<section class="dkin">
+  <ul class="dk-wrap dkin__trust">
+    {trust.map((x) => (
+      <li><span class:list={['dkin__ic', { 'is-groen': x.groen }]}><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={x.icon} /></svg></span><div><strong>{x.t}</strong><span>{x.d}</span></div></li>
+    ))}
+  </ul>
+  <div class="dk-wrap dkin__main">
+    <figure class="dkin__foto">
+      <div class="dkin__ph">[Foto: monteur in bedrijfskleding,<br />duim omhoog bij een net geplaatste unit]</div>
+      <figcaption><span class="dk-kicker dk-kicker--light">Jouw monteur</span><strong>[Naam]</strong><span>Gecertificeerd warmtepompspecialist</span></figcaption>
+      <img class="dkin__hg" src="/img/heatgeek-logo.png" alt="Heat Geek" width="360" height="149" />
+    </figure>
+    <div class="dkin__tekst">
+      <span class="dk-kicker">Over De Klimaatheld</span>
+      <h2 class="dk-h2">Zorgeloos verduurzamen, door vakmensen uit Den Haag</h2>
+      <p class="dkin__lead">We adviseren alleen wat past bij jouw woning. Geen overgedimensioneerde systemen, geen loze verkooppraatjes. Van eerste berekening tot nazorg heb je één vast aanspreekpunt.</p>
+      <div class="dkin__reviews">
+        <div><p class="dkin__cijfer">[8,X]</p><p class="dkin__sub">uit [aantal] reviews</p></div>
+        <div class="is-donker"><p class="dkin__cijfer is-groen">[XX]%</p><p class="dkin__sub">van onze klanten raadt ons aan bij familie en buren</p></div>
+      </div>
+      <div class="dkin__knoppen"><a class="dk-btn dk-btn--red" href="#dk-contact">Stel je vraag →</a><a class="dk-btn dk-btn--outline" href="/over-ons/">Meer over ons</a></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .dkin { background: #fff; color: #141A2E; border-radius: 32px 32px 0 0; padding-bottom: 96px; }
+  .dkin__trust { list-style: none; margin: 0 auto; padding-top: 32px; padding-bottom: 32px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; border-bottom: 1px solid #E3E7ED; }
+  .dkin__trust li { display: flex; gap: 14px; align-items: center; }
+  .dkin__trust strong { display: block; }
+  .dkin__trust span { font-size: 14px; color: #5A6475; }
+  .dkin__ic { flex: none; width: 48px; height: 48px; border-radius: 50%; background: #FFF0F3; color: #D6283A; display: grid !important; place-items: center; }
+  .dkin__ic.is-groen { background: #E8F6EF; color: #1A7D55; }
+  .dkin__main { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; padding-top: 112px; }
+  .dkin__foto { margin: 0; position: relative; }
+  .dkin__ph { aspect-ratio: 5/6; border-radius: 20px; background: linear-gradient(160deg, #E3E7ED, #CDD3DC); display: grid; place-items: center; color: #5A6475; font-weight: 800; font-size: 18px; text-align: center; padding: 24px; }
+  .dkin__foto figcaption { position: absolute; left: -24px; bottom: 40px; background: #141A2E; color: #fff; border-radius: 14px; padding: 18px 22px; box-shadow: 0 24px 40px -14px rgba(11,19,43,.5); display: grid; gap: 4px; }
+  .dkin__foto figcaption strong { font-size: 20px; }
+  .dkin__foto figcaption span:last-child { font-size: 14px; color: #C9CFDA; }
+  .dkin__hg { position: absolute; right: 20px; top: 20px; width: 120px; height: auto; background: #fff; border-radius: 10px; padding: 8px; }
+  .dkin__tekst .dk-h2 { margin: 14px 0 22px; font-size: clamp(60px, 5.4vw, 80px); }
+  .dkin__lead { font-size: 18px; line-height: 1.6; color: #5A6475; max-width: 540px; }
+  .dkin__reviews { display: grid; grid-template-columns: 1fr 1fr; margin: 32px 0; border: 1px solid #E3E7ED; border-radius: 16px; overflow: hidden; }
+  .dkin__reviews > div { padding: 24px; background: #F4F6F9; }
+  .dkin__reviews > .is-donker { background: #141A2E; color: #fff; }
+  .dkin__cijfer { font-size: 64px; line-height: 1; font-weight: 900; font-stretch: 65%; }
+  .dkin__cijfer.is-groen { color: #4CC38A; }
+  .dkin__sub { margin-top: 8px !important; font-size: 14px; color: #5A6475; }
+  .is-donker .dkin__sub { color: #C9CFDA; }
+  .dkin__knoppen { display: flex; flex-wrap: wrap; gap: 14px; }
+</style>
