@@ -1,26 +1,55 @@
 ---
+// Spotlight "Ontdek ons assortiment" met kleurkeuze en terugverdien-meter.
+// Besparing per jaar komt uit hetzelfde rekenmodel als de besparingscheck (src/lib/rekenmodel.ts).
 import { warmtepompen, euro, kaartLink, fotoCrop } from '../../data/warmtepompen';
+import { configurators } from '../../data/configurator';
+import { AANNAMES, bereken } from '../../lib/rekenmodel';
+
+// Referentiewoning voor de meter (indicatief). Pas hier aan als je een ander voorbeeld wilt.
+const REF = { gasM3: 1200, personen: 3, label: 'rijtjeshuis' };
+const scenario = (uitvoering: 'hybride' | 'all-electric') => {
+  const u = bereken({ soort: 'lucht-water', uitvoering, gasM3: REF.gasM3, personen: REF.personen });
+  return { perJaar: Math.round((u.nettoZonderInvestering * 12) / 10) * 10, m3: u.gasM3Bespaard };
+};
+const SCEN = { hybride: scenario('hybride'), 'all-electric': scenario('all-electric') };
+
 // Bijsnijden van foto's met transparante rand (zelfde kaders als ProductImage)
 const crop = (src: string) => { const c = fotoCrop[src]; if (!c) return null; const bw = c.box[2] - c.box[0], bh = c.box[3] - c.box[1]; return { ar: `${bw}/${bh}`, w: (c.w / bw) * 100, l: (-c.box[0] / bw) * 100, t: (-c.box[1] / bh) * 100 }; };
 const typeLabel: Record<string, string> = { hybride: 'Hybride', 'all-electric': 'All-electric', dakmontage: 'Dakmontage' };
-const pumps = warmtepompen.map((w) => ({
-  merk: w.merk,
-  name: w.name,
-  short: w.name.replace(new RegExp('^' + w.merk + ' '), ''),
-  tag: w.tag,
-  img: w.img,
-  crop: crop(w.img),
-  price: w.from == null ? 'Op aanvraag' : euro(w.from),
-  isde: w.isde ? euro(w.isde) : 'n.v.t.',
-  types: w.types.map((t) => typeLabel[t] ?? t),
-  href: kaartLink(w).href,
-}));
+
+const pumps = warmtepompen.map((w) => {
+  const cfg = configurators[w.slug];
+  const basis: 'hybride' | 'all-electric' = w.types.includes('hybride') || !w.types.includes('all-electric') ? 'hybride' : 'all-electric';
+  const kleuren = (cfg?.kleuren?.length ? cfg.kleuren : [{ id: 'std', name: 'Standaard', hex: '#9AA3B2' }]).map((k) => {
+    const img = k.img ?? w.img;
+    return { name: k.name, hex: k.hex, img, crop: crop(img) };
+  });
+  return {
+    merk: w.merk,
+    name: w.name,
+    short: w.name.replace(new RegExp('^' + w.merk + ' '), ''),
+    tag: w.tag,
+    types: w.types.map((t) => typeLabel[t] ?? t),
+    href: kaartLink(w).href,
+    from: w.from,
+    isde: w.isde ?? 0,
+    basis,
+    perJaar: SCEN[basis].perJaar,
+    m3: SCEN[basis].m3,
+    kleuren,
+    kleurNote: kleuren.length === 1 ? cfg?.kleurNote ?? '' : '',
+  };
+});
 const start = Math.max(0, pumps.findIndex((p) => p.short.startsWith('Sparrow')));
 const cur = pumps[start];
 const pad = (n: number) => String(n).padStart(2, '0');
+const terug = (p: (typeof pumps)[number]) => (p.from == null ? null : Math.max(0, (p.from - p.isde) / p.perJaar));
+const jr = (x: number) => x.toFixed(1).replace('.', ',');
+const JAREN = [1, 3, 5, 7, 10];
+const cfg = { gasprijs: AANNAMES.gasprijs, jaren: JAREN, startJaar: 3 };
 ---
 <section class="dksp" data-dk-spot>
-  <script type="application/json" data-dk-spot-data set:html={JSON.stringify(pumps)} />
+  <script type="application/json" data-dk-spot-data set:html={JSON.stringify({ pumps, cfg })} />
   <div class="dk-wrap">
     <div class="dksp__kop">
       <div><span class="dk-kicker dk-kicker--light">De showroom</span><h2 class="dk-h2">Ontdek ons assortiment</h2></div>
@@ -29,7 +58,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
     <div class="dksp__podium">
       <div class="dksp__stage">
         <span class="dksp__schaduw" aria-hidden="true"></span>
-        <span class="dksp__pi" data-f="pi"><img data-f="img" src={cur.img} alt={cur.name} /></span>
+        <span class="dksp__pi" data-f="pi"><img data-f="img" src={cur.kleuren[0].img} alt={cur.name} /></span>
+        <span class="dksp__kleurlabel"><span data-f="kleurdot"></span><span data-f="kleurnaam">{cur.kleuren[0].name}</span></span>
         <button type="button" class="dksp__pijl dksp__pijl--l" data-act="prev" aria-label="Vorig model">←</button>
         <button type="button" class="dksp__pijl dksp__pijl--r" data-act="next" aria-label="Volgend model">→</button>
       </div>
@@ -38,51 +68,140 @@ const pad = (n: number) => String(n).padStart(2, '0');
         <h3 data-f="short">{cur.short}</h3>
         <p class="dksp__tag" data-f="tag">{cur.tag}</p>
         <div class="dksp__chips" data-f="types">{cur.types.map((t) => <span>{t}</span>)}</div>
-        <dl class="dksp__feiten">
-          <div><dt>Vanaf, incl. montage</dt><dd data-f="price">{cur.price}</dd></div>
-          <div class="is-groen"><dt>ISDE terug</dt><dd data-f="isde">{cur.isde}</dd></div>
-        </dl>
+
+        <div class="dksp__kleuren" role="group" aria-label="Kies een kleur">
+          <span class="dksp__kleuren-label">Kleur</span>
+          <div data-f="kleuren"></div>
+          <p class="dksp__kleurnote" data-f="kleurnote" hidden></p>
+        </div>
+
+        <div class="dksp__meter" data-f="meter">
+          <div class="dksp__prijsregel"><span>Prijs incl. montage</span><strong data-f="prijs">{cur.from == null ? 'Op aanvraag' : euro(cur.from)}</strong></div>
+          <div data-f="metermet">
+            <div class="dksp__balk" aria-hidden="true"><span class="is-isde" data-f="bisde"></span><span class="is-gas" data-f="bgas"></span></div>
+            <div class="dksp__legenda"><span><i class="is-isde"></i>ISDE <b data-f="isde"></b></span><span><i class="is-gas"></i>Gasbesparing <b data-f="gasjaren"></b></span><span><i class="is-rest"></i>Nog te verdienen</span></div>
+            <div class="dksp__jaren" role="group" aria-label="Jaren na installatie">
+              <span>Na</span>
+              {JAREN.map((y) => <button type="button" data-jaar={y} aria-pressed={y === 3 ? 'true' : 'false'} class:list={{ 'is-on': y === 3 }}>{y === 1 ? '1 jaar' : y + ' jaar'}</button>)}
+            </div>
+            <p class="dksp__uitkomst" data-f="uitkomst" aria-live="polite"></p>
+            <ul class="dksp__inzicht" data-f="inzicht"></ul>
+          </div>
+          <p class="dksp__opaanvraag" data-f="meterzonder" hidden>Prijs op aanvraag. Je terugverdientijd rekenen we voor je uit in de offerte.</p>
+        </div>
+
         <div class="dksp__knoppen">
           <a class="dk-btn dk-btn--red" data-f="href" href={cur.href}>Stel samen →</a>
-          <a class="dk-btn dk-btn--ghost" href="/warmtepompen/">Alle warmtepompen</a>
+          <a class="dk-btn dk-btn--ghost" href="#dk-besparingscheck">Bereken jouw besparing</a>
         </div>
       </div>
     </div>
     <div class="dksp__rail" role="group" aria-label="Kies een model">
       {pumps.map((p, i) => (
         <button type="button" data-i={i} aria-label={p.name} aria-pressed={i === start ? 'true' : 'false'} class:list={['dksp__thumb', { 'is-on': i === start }]}>
-          <span class="dksp__thumb-img"><img src={p.img} alt="" loading="lazy" /></span>
+          <span class="dksp__thumb-img"><img src={p.kleuren[0].img} alt="" loading="lazy" /></span>
           <span class="dksp__thumb-naam">{p.short}</span>
+          <span class="dksp__thumb-sub">{terug(p) == null ? 'op aanvraag' : '± ' + jr(terug(p)!) + ' jaar'}</span>
         </button>
       ))}
     </div>
+    <p class="dksp__voetnoot">
+      * Indicatief. Netto besparing = minder gas min extra stroom, voor een {REF.label} met {REF.gasM3.toLocaleString('nl-NL')} m³ gas per jaar en {REF.personen} personen,
+      gas € {AANNAMES.gasprijs.toFixed(2).replace('.', ',')}/m³ en stroom € {AANNAMES.stroomprijs.toFixed(2).replace('.', ',')}/kWh (zelfde rekenmodel als de besparingscheck).
+      Hybride ± {euro(SCEN.hybride.perJaar)} per jaar, all-electric ± {euro(SCEN['all-electric'].perJaar)} per jaar. Energieprijzen gelijk gehouden; onderhoud niet meegerekend.
+      ISDE is het maximale bedrag volgens de RVO-lijst. Jouw eigen besparing zie je in de besparingscheck.
+    </p>
   </div>
 </section>
 
 <script>
+  type Kleur = { name: string; hex: string; img: string; crop: { ar: string; w: number; l: number; t: number } | null };
+  type Pump = { merk: string; name: string; short: string; tag: string; types: string[]; href: string; from: number | null; isde: number; basis: string; perJaar: number; m3: number; kleuren: Kleur[]; kleurNote: string };
+
   document.querySelectorAll<HTMLElement>('[data-dk-spot]').forEach((root) => {
-    const data = JSON.parse(root.querySelector('[data-dk-spot-data]')!.textContent || '[]');
+    const { pumps: data, cfg } = JSON.parse(root.querySelector('[data-dk-spot-data]')!.textContent || '{}') as { pumps: Pump[]; cfg: { gasprijs: number; jaren: number[]; startJaar: number } };
     const thumbs = [...root.querySelectorAll<HTMLButtonElement>('.dksp__thumb')];
+    const jaarBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-jaar]')];
     const f = (k: string) => root.querySelector<HTMLElement>(`[data-f="${k}"]`)!;
+    const eur = (n: number) => '€ ' + Math.round(n).toLocaleString('nl-NL');
+    const jl = (y: number) => (y === 1 ? '1 jaar' : y + ' jaar');
+    const komma = (x: number) => x.toFixed(1).replace('.', ',');
     let i = thumbs.findIndex((t) => t.classList.contains('is-on'));
-    const show = (n: number) => {
-      i = (n + data.length) % data.length;
-      const p = data[i];
-      const img = f('img') as HTMLImageElement; img.src = p.img; img.alt = p.name;
-      const pi = f('pi');
-      if (p.crop) { pi.classList.add('is-crop'); pi.style.aspectRatio = p.crop.ar; img.style.width = p.crop.w + '%'; img.style.left = p.crop.l + '%'; img.style.top = p.crop.t + '%'; }
+    let k = 0;
+    let jaar = cfg.startJaar;
+
+    const toonKleur = () => {
+      const p = data[i], kl = p.kleuren[Math.min(k, p.kleuren.length - 1)];
+      const img = f('img') as HTMLImageElement, pi = f('pi');
+      img.src = kl.img; img.alt = `${p.name} in ${kl.name.toLowerCase()}`;
+      if (kl.crop) { pi.classList.add('is-crop'); pi.style.aspectRatio = kl.crop.ar; img.style.width = kl.crop.w + '%'; img.style.left = kl.crop.l + '%'; img.style.top = kl.crop.t + '%'; }
       else { pi.classList.remove('is-crop'); pi.style.aspectRatio = ''; img.style.width = ''; img.style.left = ''; img.style.top = ''; }
+      f('kleurdot').style.background = kl.hex;
+      f('kleurnaam').textContent = kl.name;
+      f('kleuren').querySelectorAll<HTMLButtonElement>('button').forEach((b, j) => { b.classList.toggle('is-on', j === k); b.setAttribute('aria-pressed', String(j === k)); });
+    };
+
+    const meter = () => {
+      const p = data[i];
+      jaarBtns.forEach((b) => { const on = Number(b.dataset.jaar) === jaar; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on)); });
+      const heeftPrijs = p.from != null;
+      f('metermet').hidden = !heeftPrijs; f('meterzonder').hidden = heeftPrijs;
+      if (!heeftPrijs) return;
+      const prijs = p.from as number;
+      const gas = p.perJaar * jaar;
+      const rest = prijs - p.isde - gas;
+      const terug = Math.max(0, (prijs - p.isde) / p.perJaar);
+      const iP = Math.min(100, (p.isde / prijs) * 100), gP = Math.max(0, Math.min(100 - iP, (gas / prijs) * 100));
+      f('bisde').style.width = iP.toFixed(1) + '%';
+      f('bgas').style.width = gP.toFixed(1) + '%';
+      f('isde').textContent = p.isde ? '− ' + eur(p.isde) : 'n.v.t.';
+      f('gasjaren').textContent = jl(jaar);
+      const uit = f('uitkomst');
+      uit.textContent = rest > 0 ? `Na ${jl(jaar)}: nog ${eur(rest)}` : `Na ${jl(jaar)}: terugverdiend, + ${eur(-rest)} voordeel`;
+      uit.classList.toggle('is-winst', rest <= 0);
+
+      // Wat de jaren betekenen
+      const regels: string[] = [];
+      regels.push(`${(p.m3 * jaar).toLocaleString('nl-NL')} m³ minder gas verstookt (± ${p.m3.toLocaleString('nl-NL')} m³ per jaar, ${p.basis}).`);
+      if (rest > 0) regels.push(`Nog ± ${komma(terug - jaar)} jaar tot hij is terugverdiend (na ± ${komma(terug)} jaar).`);
+      else regels.push(`Terugverdiend na ± ${komma(terug)} jaar. Daarna elk jaar ± ${eur(p.perJaar)} extra in je zak.`);
+      if (jaar >= 5) {
+        const extra = p.m3 * jaar * cfg.gasprijs * 0.1;
+        regels.push(`Stijgt de gasprijs 10%? Dan bespaar je over ${jl(jaar)} nog ± ${eur(extra)} extra.`);
+      }
+      if (jaar >= 7 && p.basis === 'all-electric') regels.push('Gasaansluiting opgezegd? Dan vervalt ook het vastrecht voor gas (niet meegerekend).');
+      if (jaar >= 10) regels.push('Een warmtepomp gaat doorgaans 15 jaar of langer mee: het voordeel loopt na jaar 10 gewoon door.');
+      const ul = f('inzicht'); ul.innerHTML = '';
+      regels.forEach((r) => { const li = document.createElement('li'); li.textContent = r; ul.appendChild(li); });
+    };
+
+    const show = (n: number) => {
+      i = (n + data.length) % data.length; k = 0;
+      const p = data[i];
       f('merk').textContent = p.merk; f('short').textContent = p.short; f('tag').textContent = p.tag;
-      f('price').textContent = p.price; f('isde').textContent = p.isde;
+      f('prijs').textContent = p.from == null ? 'Op aanvraag' : eur(p.from);
       (f('href') as HTMLAnchorElement).href = p.href;
       f('types').innerHTML = '';
-      p.types.forEach((t: string) => { const s = document.createElement('span'); s.textContent = t; f('types').appendChild(s); });
+      p.types.forEach((t) => { const s = document.createElement('span'); s.textContent = t; f('types').appendChild(s); });
+      // kleurknoppen
+      const kc = f('kleuren'); kc.innerHTML = '';
+      p.kleuren.forEach((kl, j) => {
+        const b = document.createElement('button'); b.type = 'button';
+        const dot = document.createElement('span'); dot.className = 'dksp__dot'; dot.style.background = kl.hex;
+        b.append(dot, document.createTextNode(kl.name));
+        b.addEventListener('click', () => { k = j; toonKleur(); });
+        kc.appendChild(b);
+      });
+      const note = f('kleurnote'); note.textContent = p.kleurNote; note.hidden = !p.kleurNote;
       f('pos').textContent = String(i + 1).padStart(2, '0');
-      thumbs.forEach((t, k) => { t.classList.toggle('is-on', k === i); t.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+      thumbs.forEach((t, x) => { t.classList.toggle('is-on', x === i); t.setAttribute('aria-pressed', x === i ? 'true' : 'false'); });
+      toonKleur();
+      meter();
     };
     root.querySelector('[data-act="prev"]')!.addEventListener('click', () => show(i - 1));
     root.querySelector('[data-act="next"]')!.addEventListener('click', () => show(i + 1));
     thumbs.forEach((t) => t.addEventListener('click', () => show(Number(t.dataset.i))));
+    jaarBtns.forEach((b) => b.addEventListener('click', () => { jaar = Number(b.dataset.jaar); meter(); }));
     show(i);
   });
 </script>
@@ -93,27 +212,54 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .dksp__kop .dk-h2 { margin-top: 12px; font-size: 64px; color: #fff; }
   .dksp__teller { color: #C9CFDA; font-size: 15px; white-space: nowrap; }
   .dksp__teller strong { color: #fff; font-size: 28px; font-stretch: 62%; }
-  .dksp__podium { display: grid; grid-template-columns: 1.2fr 1fr; background: linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.12); border-radius: 28px; overflow: hidden; }
-  .dksp__stage { position: relative; min-height: 520px; display: grid; place-items: center; background: radial-gradient(55% 45% at 50% 62%, rgba(214,40,58,.45), rgba(214,40,58,0) 70%); }
-  .dksp__pi { position: relative; display: grid; place-items: center; width: 64%; max-height: 400px; filter: drop-shadow(0 30px 30px rgba(0,0,0,.5)); }
-  .dksp__pi img { max-height: 380px; object-fit: contain; }
+  .dksp__podium { display: grid; grid-template-columns: 1.1fr 1fr; background: linear-gradient(135deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); border: 1px solid rgba(255,255,255,.12); border-radius: 28px; overflow: hidden; }
+  .dksp__stage { position: relative; min-height: 560px; display: grid; place-items: center; background: radial-gradient(55% 45% at 50% 62%, rgba(214,40,58,.45), rgba(214,40,58,0) 70%); }
+  .dksp__pi { position: relative; display: grid; place-items: center; width: 66%; max-height: 420px; filter: drop-shadow(0 30px 30px rgba(0,0,0,.5)); }
+  .dksp__pi img { max-height: 400px; object-fit: contain; }
   .dksp__pi.is-crop { display: block; overflow: hidden; max-height: none; }
   .dksp__pi.is-crop img { position: absolute; max-width: none; max-height: none; height: auto; }
-  .dksp__schaduw { position: absolute; left: 18%; right: 18%; bottom: 70px; height: 60px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.55), rgba(0,0,0,0)); }
+  .dksp__schaduw { position: absolute; left: 18%; right: 18%; bottom: 80px; height: 60px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.55), rgba(0,0,0,0)); }
+  .dksp__kleurlabel { position: absolute; left: 24px; bottom: 24px; display: inline-flex; align-items: center; gap: 8px; background: rgba(11,19,43,.75); border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: 7px 14px 7px 8px; font-size: 13px; font-weight: 800; color: #fff; }
+  .dksp__kleurlabel [data-f="kleurdot"] { width: 18px; height: 18px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); }
   .dksp__pijl { position: absolute; top: 50%; transform: translateY(-50%); width: 56px; height: 56px; border-radius: 50%; font: inherit; font-size: 22px; font-weight: 800; color: #fff; cursor: pointer; }
   .dksp__pijl--l { left: 24px; border: 1px solid rgba(255,255,255,.3); background: rgba(11,19,43,.6); }
   .dksp__pijl--r { right: 24px; border: 0; background: #D6283A; }
-  .dksp__info { padding: 48px 44px; display: flex; flex-direction: column; gap: 18px; background: rgba(11,19,43,.5); }
-  .dksp__info h3 { font-size: 64px; line-height: .88; font-weight: 900; font-stretch: 62%; text-transform: uppercase; color: #fff; }
-  .dksp__tag { font-size: 18px; color: #C9CFDA; }
+  .dksp__info { padding: 40px 40px 36px; display: flex; flex-direction: column; gap: 16px; background: rgba(11,19,43,.5); min-width: 0; }
+  .dksp__info h3 { margin-top: -6px; font-size: 60px; line-height: .88; font-weight: 900; font-stretch: 62%; text-transform: uppercase; color: #fff; }
+  .dksp__tag { font-size: 17px; color: #C9CFDA; }
   .dksp__chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .dksp__chips :global(span) { font-size: 12px; font-weight: 800; border: 1px solid rgba(255,255,255,.3); padding: 6px 12px; border-radius: 999px; color: #fff; }
-  .dksp__feiten { margin: 8px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .dksp__feiten div { background: rgba(255,255,255,.06); border-radius: 12px; padding: 16px; }
-  .dksp__feiten .is-groen { background: rgba(30,158,106,.16); }
-  .dksp__feiten dt { font-size: 12px; color: #9AA3B2; }
-  .dksp__feiten dd { margin: 4px 0 0; font-size: 26px; font-weight: 900; color: #fff; }
-  .dksp__feiten .is-groen dd { color: #4CC38A; }
+  .dksp__chips :global(span) { font-size: 12px; font-weight: 800; border: 1px solid rgba(255,255,255,.3); padding: 5px 11px; border-radius: 999px; color: #fff; }
+  /* kleurkeuze */
+  .dksp__kleuren { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .dksp__kleuren-label { font-size: 13px; font-weight: 800; color: #9AA3B2; }
+  .dksp__kleuren [data-f="kleuren"] { display: flex; flex-wrap: wrap; gap: 8px; }
+  .dksp__kleuren :global(button) { font: inherit; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; padding: 7px 14px 7px 8px; border-radius: 999px; cursor: pointer; color: #fff; background: transparent; border: 2px solid rgba(255,255,255,.2); }
+  .dksp__kleuren :global(button.is-on) { background: rgba(255,255,255,.14); border-color: #fff; }
+  .dksp__kleuren :global(.dksp__dot) { width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255,255,255,.35); }
+  .dksp__kleurnote { flex-basis: 100%; font-size: 12px; color: #9AA3B2; }
+  /* terugverdien-meter */
+  .dksp__meter { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 18px 20px; }
+  .dksp__prijsregel { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .dksp__prijsregel span { font-size: 12px; color: #9AA3B2; }
+  .dksp__prijsregel strong { font-size: 24px; font-weight: 900; color: #fff; }
+  .dksp__balk { display: flex; height: 22px; border-radius: 999px; overflow: hidden; background: #D6283A; margin: 12px 0 8px; }
+  .dksp__balk span { display: block; height: 100%; transition: width .45s ease; }
+  .dksp__balk .is-isde, .dksp__legenda i.is-isde { background: #1E9E6A; }
+  .dksp__balk .is-gas, .dksp__legenda i.is-gas { background: #7FD9AE; }
+  .dksp__legenda i.is-rest { background: #D6283A; }
+  .dksp__legenda { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: #C9CFDA; margin-bottom: 14px; }
+  .dksp__legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; }
+  .dksp__legenda b { color: #fff; font-weight: 800; }
+  .dksp__jaren { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .dksp__jaren > span { font-size: 12px; font-weight: 800; color: #9AA3B2; margin-right: 4px; }
+  .dksp__jaren button { font: inherit; font-size: 13px; font-weight: 800; padding: 7px 12px; border-radius: 999px; cursor: pointer; background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .dksp__jaren button.is-on { background: #fff; color: #141A2E; border-color: #fff; }
+  .dksp__uitkomst { margin-top: 14px !important; font-size: 32px; line-height: 1; font-weight: 900; font-stretch: 70%; color: #fff; }
+  .dksp__uitkomst.is-winst { color: #4CC38A; }
+  .dksp__inzicht { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 6px; font-size: 13px; line-height: 1.45; color: #C9CFDA; }
+  .dksp__inzicht :global(li) { position: relative; padding-left: 16px; }
+  .dksp__inzicht :global(li)::before { content: ''; position: absolute; left: 0; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: #4CC38A; }
+  .dksp__opaanvraag { font-weight: 800; color: #fff; margin-top: 8px !important; }
   .dksp__knoppen { display: flex; flex-wrap: wrap; gap: 12px; margin-top: auto; }
   .dksp__rail { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-top: 16px; }
   .dksp__thumb { font: inherit; text-align: center; cursor: pointer; border-radius: 14px; padding: 10px 8px; color: #fff; background: rgba(255,255,255,.05); border: 2px solid rgba(255,255,255,.08); }
@@ -121,4 +267,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .dksp__thumb-img { height: 64px; display: grid; place-items: center; }
   .dksp__thumb-img img { max-width: 80px; max-height: 60px; object-fit: contain; }
   .dksp__thumb-naam { display: block; font-size: 12px; font-weight: 800; line-height: 1.2; margin-top: 6px; }
+  .dksp__thumb-sub { display: block; font-size: 11px; font-weight: 700; color: #4CC38A; margin-top: 3px; }
+  .dksp__voetnoot { margin-top: 18px !important; font-size: 12px; line-height: 1.5; color: #9AA3B2; max-width: 980px; }
 </style>
