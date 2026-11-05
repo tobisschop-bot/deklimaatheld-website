@@ -106,6 +106,7 @@ export const configurators: Record<string, ConfigModel> = {
     kleuren: [
       { id: 'grijs', name: 'Grijs', hex: '#6B7280', note: 'Tijdloos modern', img: '/img/weheat-sparrow-grijs.webp' },
       { id: 'koper', name: 'Koper', hex: '#B87333', note: 'Warme uitstraling', img: '/img/weheat-sparrow-koper.webp' },
+      { id: 'groen', name: 'Groen', hex: '#5F7A57', note: 'Natuurlijke uitstraling', img: '/img/weheat-sparrow-groen.webp' },
     ],
     boilers,
     defaultBoiler: '200',
