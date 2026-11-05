@@ -14,7 +14,12 @@ const scenario = (uitvoering: 'hybride' | 'all-electric') => {
 const SCEN = { hybride: scenario('hybride'), 'all-electric': scenario('all-electric') };
 
 // Bijsnijden van foto's met transparante rand (zelfde kaders als ProductImage)
-const crop = (src: string) => { const c = fotoCrop[src]; if (!c) return null; const bw = c.box[2] - c.box[0], bh = c.box[3] - c.box[1]; return { ar: `${bw}/${bh}`, w: (c.w / bw) * 100, l: (-c.box[0] / bw) * 100, t: (-c.box[1] / bh) * 100 }; };
+// Extra bijsnijdkaders alleen voor de spotlight (de rest van de site blijft ongewijzigd).
+// Quatt: de foto heeft rechtsonder een ingebakken schaduw; we snijden bij tot op de unit (incl. pootjes).
+const quattImg = warmtepompen.find((w) => w.slug === 'quatt')?.img ?? '';
+const SPOT_CROP: Record<string, { w: number; h: number; box: [number, number, number, number] }> = quattImg ? { [quattImg]: { w: 752, h: 433, box: [134, 57, 614, 385] } } : {};
+const kader = (src: string) => fotoCrop[src] ?? SPOT_CROP[src];
+const crop = (src: string) => { const c = kader(src); if (!c) return null; const bw = c.box[2] - c.box[0], bh = c.box[3] - c.box[1]; return { ar: `${bw}/${bh}`, w: (c.w / bw) * 100, l: (-c.box[0] / bw) * 100, t: (-c.box[1] / bh) * 100 }; };
 // Zichtbare verhouding (b/h) per foto, zodat alle warmtepompen ongeveer even groot ogen (gelijke oppervlakte).
 import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
@@ -22,7 +27,7 @@ const pub = fileURLToPath(new URL('../../../public', import.meta.url));
 const arCache: Record<string, number> = {};
 const aspect = async (src: string) => {
   if (arCache[src]) return arCache[src];
-  const c = fotoCrop[src];
+  const c = kader(src);
   let ar = 1.3;
   if (c) ar = (c.box[2] - c.box[0]) / (c.box[3] - c.box[1]);
   else if (src.startsWith('/')) {
@@ -34,7 +39,7 @@ const aspect = async (src: string) => {
 const podiumW = (ar: number) => Math.min(74, 54 * Math.sqrt(ar));
 const railSize = (ar: number) => { let w = 58 * Math.sqrt(ar), h = w / ar; if (h > 62) { h = 62; w = h * ar; } if (w > 90) { w = 90; h = w / ar; } return { w: Math.round(w), h: Math.round(h) }; };
 // Foto's van een externe server zonder bekend bijsnijdkader hebben soms veel lege rand: hier iets inzoomen.
-const ZOOM: Record<string, number> = { quatt: 1.5 };
+const ZOOM: Record<string, number> = {};
 const typeLabel: Record<string, string> = { hybride: 'Hybride', 'all-electric': 'All-electric', dakmontage: 'Dakmontage' };
 
 // Volgorde in de spotlight: Quatt direct na de Vaillant aroTHERM plus (alleen hier; de data-volgorde blijft gelijk)
