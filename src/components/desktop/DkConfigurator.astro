@@ -1,0 +1,627 @@
+---
+// Desktopversie (≥ 1024 px) van de configuratorpagina per warmtepompmodel (/warmtepompen/<model>/).
+// Ontwerp "C · split-screen": links een vaste kaart met foto, kerncijfers en prijs, rechts de keuzes,
+// daaronder "Wat levert het op?" (ISDE + gasbesparing) en de modelinformatie.
+// Alle inhoud komt uit src/data/configurator.ts en warmtepompen.ts; de mobiele configurator blijft ongewijzigd.
+import '../../styles/desktop-home.css';
+import DkHeader from './DkHeader.astro';
+import DkFooter from './DkFooter.astro';
+import ProductImage from '../ProductImage.astro';
+import { euro, warmtepompen } from '../../data/warmtepompen';
+import type { ConfigModel } from '../../data/configurator';
+import { AANNAMES, bereken } from '../../lib/rekenmodel';
+
+interface Props { model: ConfigModel }
+const { model: m } = Astro.props;
+const wp = warmtepompen.find((w) => w.slug === m.slug);
+const isde = wp?.isde ?? null;
+
+const startU = m.uitvoeringen[0];
+const startK = m.kleuren.find((k) => k.id === m.photoColor) ?? m.kleuren[0];
+const startB = m.boilers.find((b) => b.id === m.defaultBoiler) ?? m.boilers[0];
+const startV = m.vermogens?.find((v) => v.id === m.defaultVermogen) ?? m.vermogens?.[0];
+const single = m.kleuren.length === 1;
+const toonBoiler = m.uitvoeringen.some((u) => u.needsBoiler);
+const bNaam = (b: { naam?: string; liters: number }) => (b.naam ? (b.liters ? `${b.naam} ${b.liters} L` : b.naam) : `${b.liters} L`);
+const bTitel = (b: { naam?: string; liters: number }) => (b.naam ? (b.liters ? `${b.naam}` : b.naam) : `${b.liters} L`);
+const uid = `dkc-${m.slug}`;
+let n = 0; const nr = () => ++n;
+
+// Besparing per jaar: zelfde rekenmodel en referentiewoning als de terugverdien-meter op de homepage.
+const REF = { gasM3: 1200, personen: 3, label: 'rijtjeshuis' };
+const perJaar = (uitvoering: 'hybride' | 'all-electric') => {
+  const u = bereken({ soort: 'lucht-water', uitvoering, gasM3: REF.gasM3, personen: REF.personen });
+  return { euro: Math.round((u.nettoZonderInvestering * 12) / 10) * 10, m3: u.gasM3Bespaard };
+};
+const SCEN = { hybride: perJaar('hybride'), 'all-electric': perJaar('all-electric') };
+const JAREN = [1, 3, 7, 10];
+
+// Geluid (voor de decibelschaal), uit de specificaties of kerncijfers
+const dbTekst = [...m.specs, ...m.quickFacts].find((f) => /dB/.test(f.value))?.value;
+const db = dbTekst ? Number(dbTekst.replace(',', '.').replace(/[^0-9.]/g, '')) : null;
+const dbPos = db ? Math.max(0, Math.min(100, ((db - 20) / 60) * 100)) : 0;
+const schaal = [
+  { db: 20, t: 'Vallende bladeren' }, { db: 30, t: 'Fluisteren' }, { db: 40, t: 'Stille bibliotheek' },
+  { db: 50, t: 'Koelkast' }, { db: 60, t: 'Gesprek' }, { db: 70, t: 'Stofzuiger' }, { db: 80, t: 'Druk verkeer' },
+];
+
+const specsKort = 8;
+const stappen = [
+  { t: 'Offerte aanvragen', d: 'Je keuzes uit deze pagina gaan mee in je aanvraag.' },
+  { t: 'Installatiecheck', d: 'We komen langs, bekijken je huis en rekenen het vermogen uit.' },
+  { t: 'Installatie', d: 'Plaatsen, aansluiten en waterzijdig inregelen volgens de Heat Geek-methode.' },
+  { t: 'Subsidie en nazorg', d: 'We helpen met de ISDE-aanvraag en blijven je aanspreekpunt.' },
+];
+---
+<DkHeader />
+<main class="dkc" data-dkc data-model={m.slug} data-short={m.short}
+  data-isde={isde ?? ''} data-pj-hybride={SCEN.hybride.euro} data-pj-ae={SCEN['all-electric'].euro}
+  data-m3-hybride={SCEN.hybride.m3} data-m3-ae={SCEN['all-electric'].m3}>
+  <div class="dk-wrap">
+    <nav class="dkc__crumbs" aria-label="Kruimelpad">
+      <a href="/">Home</a><span aria-hidden="true">/</span><a href="/warmtepompen/">Warmtepompen</a><span aria-hidden="true">/</span><span>{m.name}</span>
+    </nav>
+
+    <div class="dkc__split">
+      <!-- LINKS: foto, kerncijfers, prijs (blijft in beeld) -->
+      <aside class="dkc__side" aria-label="Product en prijs">
+        <div class="dkc__card">
+          <figure class="dkc__photo">
+            <span class="dkc__chip" data-shown>Getoonde kleur: {startK.img ? startK.name.toLowerCase() : m.photoColor}</span>
+            <span class="dkc__chip dkc__chip--dark">× HEAT GEEK</span>
+            <div class="dkc__img" data-img><ProductImage src={startK.img ?? m.img} alt={m.imgAlt} loading="eager" /></div>
+          </figure>
+          <dl class="dkc__facts">
+            {m.quickFacts.map((f) => <div><dd>{f.value}</dd><dt>{f.label}</dt></div>)}
+          </dl>
+        </div>
+
+        <div class="dkc__price">
+          <div class="dkc__price-top">
+            <div>
+              <span class="dk-kicker dk-kicker--light">Jouw samenstelling</span>
+              <p class="dkc__sum" data-sum></p>
+            </div>
+            <div class="dkc__total">
+              <span data-lead>Totaal v.a.</span>
+              <strong data-total aria-live="polite">–</strong>
+            </div>
+          </div>
+          <div class="dkc__btns">
+            <a class="dk-btn dk-btn--red" data-cta href={`/offerte/?model=${m.slug}`}>Vraag offerte aan →</a>
+            <a class="dk-btn dkc__btn-soft" href="/#besparingscheck">Doe de besparingscheck</a>
+          </div>
+          <a class="dkc__netline" href="#dkc-besparing" data-netline>
+            <span><span data-netlabel>Nog te verdienen na 3 jaar</span>, incl. ISDE <b data-netshort></b></span>
+            <span class="dkc__netlink">Bekijk berekening ↓</span>
+          </a>
+          <p class="dkc__note">Indicatieve v.a.-prijs incl. montage. Je krijgt altijd een offerte op maat.</p>
+        </div>
+      </aside>
+
+      <!-- RECHTS: keuzes -->
+      <div class="dkc__main">
+        <header class="dkc__intro">
+          <span class="dk-kicker">{wp?.merk ?? 'Warmtepomp'} · stel samen</span>
+          <h1>{m.short}</h1>
+          <p>{m.lead}</p>
+        </header>
+
+        <fieldset class="dkc__step">
+          <legend><span class="dkc__n">{nr()}</span>Kies je uitvoering</legend>
+          <div class:list={['dkc__grid', { 'dkc__grid--2': m.uitvoeringen.length > 1 }]}>
+            {m.uitvoeringen.map((u) => (
+              <label class="dkc__opt">
+                <input class="dkc__sr" type="radio" name={`${uid}-u`} value={u.id} data-price={u.price ?? ''} data-boiler={u.needsBoiler ? '1' : '0'} data-name={u.name} checked={u.id === startU.id} />
+                <span class="dkc__opt-body">
+                  <span class="dkc__opt-head"><span class="dkc__opt-name">{u.name}</span><span class:list={['dkc__badge', { 'is-green': u.needsBoiler }]}>{u.badge}</span></span>
+                  <span class="dkc__opt-text">{u.text}</span>
+                  {m.vermogens ? null : <span class="dkc__opt-price">{u.price != null ? `v.a. ${euro(u.price)}${u.needsBoiler ? ' + boilervat' : ''}` : 'Prijs op aanvraag'}</span>}
+                </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        {m.vermogens && startV && (
+          <fieldset class="dkc__step">
+            <legend><span class="dkc__n">{nr()}</span>Kies het vermogen</legend>
+            <p class="dkc__sub">Twijfel je? Het juiste vermogen berekenen we bij de installatiecheck.</p>
+            <div class="dkc__grid dkc__grid--3">
+              {m.vermogens.map((v) => (
+                <label class="dkc__opt">
+                  <input class="dkc__sr" type="radio" name={`${uid}-v`} value={v.id} data-name={v.label} data-prijs={JSON.stringify(v.prijs ?? {})} checked={v.id === startV.id} />
+                  <span class="dkc__opt-body">
+                    <span class="dkc__opt-name">{v.label}</span>
+                    <span class="dkc__opt-text">{v.sub}</span>
+                    <span class="dkc__opt-price" data-vprijs></span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        <fieldset class="dkc__step">
+          <legend><span class="dkc__n">{nr()}</span>Kies de afwerking</legend>
+          <div class:list={['dkc__grid', { 'dkc__grid--2': m.kleuren.length === 2, 'dkc__grid--3': m.kleuren.length > 2 }]}>
+            {m.kleuren.map((k) => (
+              <label class="dkc__opt">
+                <input class="dkc__sr" type="radio" name={`${uid}-k`} value={k.id} data-name={k.name} data-img={k.img ?? ''} checked={k.id === startK.id} />
+                <span class="dkc__opt-body dkc__opt-body--row">
+                  <span class="dkc__swatch" style={`--sw:${k.hex}`} aria-hidden="true"></span>
+                  <span><span class="dkc__opt-name">{k.name}</span>{k.note && <span class="dkc__opt-text">{k.note}</span>}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+          {single && m.kleurNote && <p class="dkc__after">{m.kleurNote}</p>}
+        </fieldset>
+
+        {m.bediening && (
+          <fieldset class="dkc__step">
+            <legend><span class="dkc__n">{nr()}</span>{m.bediening.titel}</legend>
+            <p class="dkc__sub">{m.bediening.sub}</p>
+            <div class="dkc__grid dkc__grid--3">
+              {m.bediening.opties.map((o, i) => (
+                <label class="dkc__opt">
+                  <input class="dkc__sr" type="radio" name={`${uid}-c`} value={o.id} data-name={`Madoka ${o.naam.toLowerCase()}`} checked={i === 0} />
+                  <span class="dkc__opt-body dkc__opt-body--tile">
+                    <img src={o.img} alt={`Daikin Madoka ${o.naam.toLowerCase()}`} width="300" height="300" loading="lazy" />
+                    <span class="dkc__opt-name">{o.naam}</span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        {toonBoiler && (
+          <fieldset class="dkc__step" data-boiler-step>
+            <legend><span class="dkc__n" data-boiler-n>{nr()}</span>{m.boilers.some((b) => b.naam) ? 'Kies je buffer' : 'Kies je boilervat'}</legend>
+            <p class="dkc__sub" data-boiler-sub>Voor je warme tapwater. Kies op basis van je huishouden.</p>
+            <div class="dkc__grid dkc__grid--3">
+              {m.boilers.map((b) => {
+                const h = b.liters ? Math.min(58, 34 + b.liters / 12) : 46;
+                return (
+                  <label class="dkc__opt">
+                    <input class="dkc__sr" type="radio" name={`${uid}-b`} value={b.id} data-price={b.price ?? ''} data-name={bNaam(b)} checked={b.id === startB.id} />
+                    <span class="dkc__opt-body dkc__opt-body--row">
+                      {b.recommended && <span class="dkc__rec">Aanbevolen</span>}
+                      <svg class="dkc__vat" width="34" height="64" viewBox="0 0 34 64" aria-hidden="true"><rect x="2" y={62 - h} width="30" height={h} rx="13" fill="#fff" stroke="#141A2E" stroke-width="2"></rect><rect class="dkc__water" x="5" y={59 - (h - 6) * 0.85} width="24" height={(h - 6) * 0.85} rx="10" fill="#CFE0F5" style={`--lo:${(h - 6) * 0.65}px`}></rect></svg>
+                      <span>
+                        <span class="dkc__opt-name">{bTitel(b)}</span>
+                        <span class="dkc__opt-text">{b.persons}</span>
+                        <span class="dkc__opt-price">{b.price == null ? 'Op aanvraag' : `+ ${euro(b.price)}`}</span>
+                      </span>
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+        )}
+
+        <!-- Wat levert het op? -->
+        <section id="dkc-besparing" class="dkc__bes" aria-labelledby="dkc-bes-h">
+          <div class="dkc__bes-head">
+            <div>
+              <span class="dk-kicker">Wat levert het op?</span>
+              <h2 id="dkc-bes-h">Aanschaf min subsidie en besparing</h2>
+            </div>
+            <div class="dkc__jaren" role="group" aria-label="Periode">
+              {JAREN.map((y) => <button type="button" data-jaar={y} aria-pressed={y === 3 ? 'true' : 'false'}>{y} jaar</button>)}
+            </div>
+          </div>
+          <div data-bes-on>
+            <dl class="dkc__cijfers">
+              <div><dt>Aanschaf v.a.</dt><dd data-b="prijs"></dd></div>
+              <div><dt>ISDE-subsidie</dt><dd class="is-green" data-b="isde"></dd></div>
+              <div><dt>Gasbesparing <span data-b="jl"></span></dt><dd class="is-green" data-b="gas"></dd></div>
+              <div><dt data-b="restlabel">Nog te verdienen</dt><dd class="is-strong" data-b="rest"></dd></div>
+            </dl>
+            <div class="dkc__balk" aria-hidden="true"><span class="is-isde" data-b="bisde"></span><span class="is-gas" data-b="bgas"></span></div>
+            <div class="dkc__legenda" aria-hidden="true"><span><i class="is-isde"></i>ISDE-subsidie</span><span><i class="is-gas"></i>Gasbesparing <span data-b="jl2"></span></span><span><i class="is-rest"></i>Nog te verdienen</span></div>
+            <p class="dkc__uitkomst" data-b="uitkomst"></p>
+            <p class="dkc__voetnoot">
+              Indicatief. Netto besparing = minder gas min extra stroom, voor een {REF.label} met {REF.gasM3.toLocaleString('nl-NL')} m³ gas per jaar en {REF.personen} personen,
+              gas € {AANNAMES.gasprijs.toFixed(2).replace('.', ',')}/m³ en stroom € {AANNAMES.stroomprijs.toFixed(2).replace('.', ',')}/kWh (zelfde rekenmodel als de besparingscheck).
+              Hybride ± {euro(SCEN.hybride.euro)} per jaar, all-electric ± {euro(SCEN['all-electric'].euro)} per jaar. Energieprijzen gelijk gehouden; onderhoud niet meegerekend.
+              {isde != null ? ' ISDE is het maximale bedrag volgens de RVO-lijst.' : ''} Je eigen besparing zie je in de besparingscheck.
+            </p>
+          </div>
+          <p class="dkc__opaanvraag" data-bes-off hidden>Bij deze keuze is de prijs op aanvraag. Je besparing en terugverdientijd rekenen we voor je uit in de offerte.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODELINFORMATIE -->
+  <div class="dkc__info">
+    <div class="dk-wrap dkc__info-wrap">
+      {m.waarom.length > 0 && (
+        <section aria-labelledby="dkc-w-h">
+          <span class="dk-kicker">Waarom deze?</span>
+          <h2 id="dkc-w-h" class="dkc__h2">Waarom kiezen voor de {m.short}?</h2>
+          <div class:list={['dkc__waarom', `is-${Math.min(4, m.waarom.length)}`]}>
+            {m.waarom.map((w) => (
+              <div class="dkc__wcard">
+                <h3>{w.title}</h3>
+                <p>{w.text}</p>
+                {w.check && <span class="dkc__check">✓ {w.check}</span>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {db && (
+        <section class="dkc__geluid" aria-labelledby="dkc-g-h">
+          <div class="dkc__geluid-head">
+            <div><span class="dk-kicker">Geluid</span><h2 id="dkc-g-h" class="dkc__h2 dkc__h2--s">Stiller dan je denkt</h2></div>
+            <p>Een goede plek en een stevige ondergrond maken het verschil. Waar hij het best kan staan, bekijken we samen bij de installatiecheck.</p>
+          </div>
+          <div class="dkc__schaal">
+            <div class="dkc__marker" style={`left:${dbPos}%`}><span>{m.short} · {dbTekst}</span><i aria-hidden="true"></i></div>
+            <div class="dkc__schaal-balk" aria-hidden="true"></div>
+            <ul>{schaal.map((s) => <li><b>{s.db} dB</b>{s.t}</li>)}</ul>
+          </div>
+        </section>
+      )}
+
+      {m.specs.length > 0 && (
+        <section class="dkc__2col" aria-labelledby="dkc-s-h">
+          <div>
+            <span class="dk-kicker">Specificaties</span>
+            <h2 id="dkc-s-h" class="dkc__h2">Technische gegevens</h2>
+            <p class="dkc__lead">De belangrijkste cijfers van de {m.short} op een rij. Of hij past bij jouw huis, rekenen we bij de installatiecheck voor je uit.</p>
+          </div>
+          <div class="dkc__specs" data-specs>
+            <dl>
+              {m.specs.map((s, i) => <div class:list={{ 'is-extra': i >= specsKort }}><dt>{s.label}</dt><dd>{s.value}</dd></div>)}
+            </dl>
+            {m.specs.length > specsKort && <button type="button" data-specs-btn aria-expanded="false">Toon alle {m.specs.length} specificaties ↓</button>}
+          </div>
+        </section>
+      )}
+
+      <section class="dkc__inbegrepen" aria-labelledby="dkc-i-h">
+        <div>
+          <span class="dk-kicker dk-kicker--light">De Klimaatheld × Heat Geek</span>
+          <h2 id="dkc-i-h" class="dkc__h2">Inbegrepen in de offerte</h2>
+          <p>Geen losse posten achteraf. Dit zit standaard in je offerte.</p>
+        </div>
+        <ul>
+          {m.inbegrepen.map((f) => <li><b>{f.value}</b><span>{f.label}</span></li>)}
+        </ul>
+      </section>
+
+      <section aria-labelledby="dkc-z-h">
+        <span class="dk-kicker">Zo werkt het</span>
+        <h2 id="dkc-z-h" class="dkc__h2">Van aanvraag tot warm huis</h2>
+        <ol class="dkc__stappen">
+          {stappen.map((s, i) => <li class:list={{ 'is-first': i === 0 }}><span>0{i + 1}</span><h3>{s.t}</h3><p>{s.d}</p></li>)}
+        </ol>
+      </section>
+
+      {m.faq.length > 0 && (
+        <section class="dkc__2col" aria-labelledby="dkc-f-h">
+          <div>
+            <span class="dk-kicker">Veelgestelde vragen</span>
+            <h2 id="dkc-f-h" class="dkc__h2">Vragen over de {m.short}</h2>
+            <p class="dkc__lead">Staat je vraag er niet bij? <a href="/offerte/">Stel hem bij je aanvraag</a>, we denken graag mee.</p>
+          </div>
+          <div class="dkc__faq">
+            {m.faq.map((f, i) => (
+              <details open={i === 0}>
+                <summary><span>{f.q}</span><i aria-hidden="true"></i></summary>
+                <p>{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+
+    <section class="dkc__cta" aria-labelledby="dkc-cta-h">
+      <div class="dk-wrap dkc__cta-wrap">
+        <div>
+          <span class="dk-kicker dk-kicker--light">Besparingscheck</span>
+          <h2 id="dkc-cta-h" class="dkc__h2">Hoeveel kan jij besparen?</h2>
+          <p>Vul je gasverbruik en huistype in en zie wat de {m.short} voor jou betekent. Of vraag direct een offerte aan.</p>
+        </div>
+        <div class="dkc__cta-btns">
+          <a class="dk-btn dkc__btn-soft" href="/#besparingscheck">Doe de besparingscheck</a>
+          <a class="dk-btn dk-btn--red" data-cta href={`/offerte/?model=${m.slug}`}>Vraag offerte aan →</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<DkFooter />
+
+<script>
+  const eur = (n: number) => '€ ' + Math.round(n).toLocaleString('nl-NL');
+  const komma = (n: number) => n.toLocaleString('nl-NL', { maximumFractionDigits: 1 });
+  document.querySelectorAll<HTMLElement>('[data-dkc]').forEach((root) => {
+    const q = <T extends Element = HTMLElement>(s: string) => root.querySelector<T>(s);
+    const checked = (suffix: string) => q<HTMLInputElement>(`input[name$="-${suffix}"]:checked`);
+    const b = (k: string) => q(`[data-b="${k}"]`)!;
+    const isde = root.dataset.isde ? Number(root.dataset.isde) : 0;
+    const jaarBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-jaar]')];
+    let jaar = 3;
+
+    const update = () => {
+      const u = checked('u')!, k = checked('k')!, bo = checked('b'), v = checked('v'), c = checked('c');
+      const needsBoiler = u.dataset.boiler === '1';
+      let base: number | null = u.dataset.price === '' ? null : Number(u.dataset.price);
+      if (v) {
+        base = JSON.parse(v.dataset.prijs || '{}')[u.value] ?? null;
+        root.querySelectorAll<HTMLInputElement>('input[name$="-v"]').forEach((i) => {
+          const p = JSON.parse(i.dataset.prijs || '{}')[u.value];
+          i.closest('label')!.querySelector('[data-vprijs]')!.textContent = p == null ? 'Op aanvraag' : 'v.a. ' + eur(p);
+        });
+      }
+      const bPrice = needsBoiler && bo ? (bo.dataset.price === '' ? null : Number(bo.dataset.price)) : 0;
+      const total = base == null || bPrice == null ? null : base + bPrice;
+
+      // Boilerstap aan/uit
+      const step = q<HTMLFieldSetElement>('[data-boiler-step]');
+      if (step) {
+        step.disabled = !needsBoiler;
+        step.classList.toggle('is-off', !needsBoiler);
+        q('[data-boiler-sub]')!.textContent = needsBoiler ? 'Voor je warme tapwater. Kies op basis van je huishouden.' : 'Niet nodig bij hybride: je cv-ketel levert het warme tapwater.';
+      }
+
+      // Foto wisselt mee met de kleur (korte fade)
+      const holder = q('[data-img]');
+      const img = holder?.querySelector('img');
+      if (img && k.dataset.img && !img.src.endsWith(k.dataset.img)) {
+        holder!.classList.add('is-fade');
+        setTimeout(() => { img.src = k.dataset.img!; img.onload = () => holder!.classList.remove('is-fade'); }, 160);
+      }
+      if (k.dataset.img) q('[data-shown]')!.textContent = `Getoonde kleur: ${k.dataset.name!.toLowerCase()}`;
+
+      // Samenvatting, prijs, offertelink
+      const parts = [root.dataset.short, u.dataset.name, v?.dataset.name, k.dataset.name, c?.dataset.name];
+      if (needsBoiler && bo) parts.push(bo.dataset.name!);
+      q('[data-sum]')!.textContent = parts.filter(Boolean).join(' · ');
+      q('[data-lead]')!.textContent = total == null ? 'Prijs' : 'Totaal v.a.';
+      q('[data-total]')!.textContent = total == null ? 'Op aanvraag' : eur(total);
+      const params = new URLSearchParams({ model: root.dataset.model!, uitvoering: u.value });
+      if (v) params.set('vermogen', v.dataset.name!);
+      params.set('kleur', k.value);
+      if (c) params.set('bediening', c.dataset.name!);
+      if (needsBoiler && bo) params.set('boiler', bo.value);
+      root.querySelectorAll<HTMLAnchorElement>('[data-cta]').forEach((a) => (a.href = `/offerte/?${params}`));
+
+      // Besparing: aanschaf − ISDE − gasbesparing over de gekozen periode
+      const ae = u.value === 'all-electric';
+      const pj = Number(ae ? root.dataset.pjAe : root.dataset.pjHybride);
+      const on = total != null && pj > 0;
+      q('[data-bes-on]')!.hidden = !on;
+      q('[data-bes-off]')!.hidden = on;
+      q('[data-netline]')!.hidden = !on;
+      if (!on) return;
+      const sub = Math.min(isde, total!);
+      const gas = pj * jaar;
+      const rest = total! - sub - gas;
+      const terug = Math.max(0, (total! - sub) / pj);
+      const jl = jaar + ' jaar';
+      b('prijs').textContent = eur(total!);
+      b('isde').textContent = isde ? '− ' + eur(sub) : 'n.v.t.';
+      b('gas').textContent = '− ' + eur(gas);
+      b('jl').textContent = jl; b('jl2').textContent = jl;
+      b('restlabel').textContent = rest > 0 ? 'Nog te verdienen' : 'Terugverdiend';
+      b('rest').textContent = rest > 0 ? eur(rest) : '+ ' + eur(-rest);
+      b('bisde').style.width = ((sub / total!) * 100).toFixed(1) + '%';
+      b('bgas').style.width = ((Math.min(gas, total! - sub) / total!) * 100).toFixed(1) + '%';
+      b('uitkomst').textContent = rest > 0
+        ? `Met ISDE en ${jl} gasbesparing staat er nog ± ${eur(rest)} open. Terugverdiend na ± ${komma(terug)} jaar.`
+        : `Na ${jl} is hij terugverdiend (na ± ${komma(terug)} jaar) en houd je ± ${eur(-rest)} over.`;
+      q('[data-netlabel]')!.textContent = (rest > 0 ? 'Nog te verdienen na ' : 'Terugverdiend na ') + jl;
+      q('[data-netshort]')!.textContent = rest > 0 ? eur(rest) : '+ ' + eur(-rest);
+    };
+
+    jaarBtns.forEach((btn) => btn.addEventListener('click', () => {
+      jaar = Number(btn.dataset.jaar);
+      jaarBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === btn)));
+      update();
+    }));
+    root.querySelectorAll<HTMLInputElement>('input[data-img]').forEach((i) => { if (i.dataset.img) new Image().src = i.dataset.img; });
+    root.addEventListener('change', update);
+    update();
+
+    // Specificaties uitklappen
+    const sb = q<HTMLButtonElement>('[data-specs-btn]');
+    const sbLabel = sb?.textContent ?? '';
+    sb?.addEventListener('click', () => {
+      const open = q('[data-specs]')!.classList.toggle('is-open');
+      sb.setAttribute('aria-expanded', String(open));
+      sb.textContent = open ? 'Toon minder ↑' : sbLabel;
+    });
+  });
+</script>
+
+<style>
+  .dkc { background: var(--dk-bg); color: var(--dk-navy); padding-top: 20px; }
+  .dkc__crumbs { display: flex; gap: 8px; font-size: 13px; color: var(--dk-muted); margin-bottom: 18px; }
+  .dkc__crumbs a { color: inherit; text-decoration: none; }
+  .dkc__crumbs a:hover { color: var(--dk-red); }
+  .dkc__crumbs span:last-child { color: var(--dk-navy); font-weight: 600; }
+
+  .dkc__split { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: 40px; align-items: start; padding-bottom: 72px; }
+  @media (max-width: 1180px) { .dkc__split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; } }
+
+  /* Links */
+  .dkc__side { position: sticky; top: 104px; display: flex; flex-direction: column; gap: 14px; }
+  .dkc__card { background: #fff; border: 1px solid var(--dk-line); border-radius: 18px; overflow: hidden; }
+  .dkc__photo { position: relative; margin: 0; height: clamp(280px, 38vh, 360px); display: flex; align-items: center; justify-content: center; background: linear-gradient(180deg, #EEF1F6, #E4E8EF); clip-path: polygon(0 0, 100% 0, 100% 86%, 0 100%); padding: 36px 48px 56px; }
+  .dkc__img { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; transition: opacity .18s; filter: drop-shadow(0 16px 16px rgba(20,26,46,.22)); }
+  .dkc__img :global(.pi) { width: auto; height: 100%; max-width: 82%; }
+  .dkc__img :global(.pi-box) { width: 82%; height: 100%; }
+  .dkc__img.is-fade { opacity: 0; }
+  .dkc__chip { position: absolute; top: 16px; left: 16px; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--dk-line); z-index: 1; }
+  .dkc__chip--dark { left: auto; right: 16px; background: var(--dk-navy); color: #fff; border-color: var(--dk-navy); font-weight: 800; letter-spacing: .08em; font-size: 11px; }
+  .dkc__facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--dk-line); }
+  .dkc__facts > div { padding: 14px 18px; }
+  .dkc__facts > div + div { border-left: 1px solid var(--dk-line); }
+  .dkc__facts > div { display: flex; flex-direction: column; }
+  .dkc__facts dt { margin-top: 2px; font-size: 12px; font-weight: 600; color: var(--dk-muted); }
+  .dkc__facts dd { margin: 0; font-size: 22px; font-weight: 900; font-stretch: 75%; }
+
+  .dkc__price { background: var(--dk-navy); color: #fff; border-radius: 18px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+  .dkc__price-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .dkc__sum { margin-top: 6px !important; font-size: 15px; color: rgba(255,255,255,.85); }
+  .dkc__total { text-align: right; flex: none; }
+  .dkc__total span { display: block; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+  .dkc__total strong { display: block; font-size: 40px; line-height: 1; font-weight: 900; font-stretch: 72%; white-space: nowrap; }
+  .dkc__btns { display: flex; gap: 10px; }
+  .dkc__btns .dk-btn { flex: 1 1 0; padding: 15px 14px; white-space: nowrap; }
+  .dkc__btns .dk-btn--red { flex-grow: 1.4; }
+  .dkc__btn-soft { background: rgba(255,138,149,.12); border: 1.5px solid var(--dk-pink); color: #fff; font-weight: 700; }
+  .dkc__btn-soft:hover { background: rgba(255,138,149,.22); }
+  .dkc__netline { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 14px; border-radius: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.75); text-decoration: none; font-size: 14px; }
+  .dkc__netline b { color: #fff; font-size: 16px; margin-left: 4px; }
+  .dkc__netline[hidden] { display: none; }
+  .dkc__netlink { color: var(--dk-pink); font-weight: 700; font-size: 13px; white-space: nowrap; }
+  .dkc__note { font-size: 12px; color: rgba(255,255,255,.65); }
+
+  /* Rechts */
+  .dkc__main { display: flex; flex-direction: column; gap: 36px; padding-top: 6px; min-width: 0; }
+  .dkc__intro h1 { margin-top: 6px; font-size: clamp(56px, 5vw, 72px); line-height: .9; font-weight: 900; font-stretch: 64%; text-transform: uppercase; }
+  .dkc__intro p { margin-top: 12px; font-size: 17px; line-height: 1.55; color: var(--dk-muted); max-width: 560px; }
+
+  .dkc__step { border: 0; margin: 0; padding: 0; min-width: 0; transition: opacity .25s; }
+  .dkc__step legend { display: flex; align-items: center; gap: 12px; padding: 0; margin-bottom: 14px; font-size: 24px; font-weight: 900; font-stretch: 72%; text-transform: uppercase; }
+  .dkc__n { width: 30px; height: 30px; border-radius: 50%; background: var(--dk-navy); color: #fff; font-size: 14px; display: grid; place-items: center; font-stretch: 100%; flex: none; }
+  .dkc__step.is-off { opacity: .5; }
+  .dkc__step.is-off legend { color: var(--dk-muted); }
+  .dkc__step.is-off .dkc__n { background: var(--dk-line); color: var(--dk-muted); }
+  .dkc__after { font-size: 14px; color: var(--dk-muted); margin-top: 10px !important; }
+  .dkc__sub { font-size: 14px; color: var(--dk-muted); margin: -6px 0 14px 42px !important; }
+
+  .dkc__grid { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+  .dkc__grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dkc__grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .dkc__sr { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .dkc__opt { position: relative; display: block; cursor: pointer; }
+  .dkc__opt-body { position: relative; height: 100%; display: flex; flex-direction: column; gap: 8px; padding: 18px; background: #fff; border: 2px solid var(--dk-line); border-radius: 14px; transition: border-color .15s, box-shadow .15s; }
+  .dkc__opt:hover .dkc__opt-body { border-color: #C9CFDA; }
+  .dkc__sr:checked + .dkc__opt-body { border-color: var(--dk-red); box-shadow: 0 0 0 4px #FBE3E5; }
+  .dkc__sr:focus-visible + .dkc__opt-body { outline: 3px solid #FFB020; outline-offset: 2px; }
+  .dkc__sr:disabled + .dkc__opt-body { cursor: not-allowed; }
+  .dkc__opt-body--row { flex-direction: row; align-items: center; gap: 14px; }
+  .dkc__opt-body--tile { align-items: center; text-align: center; }
+  .dkc__opt-body--tile img { width: 100%; max-width: 120px; height: auto; }
+  .dkc__opt-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .dkc__opt-name { display: block; font-size: 19px; font-weight: 900; font-stretch: 75%; text-transform: uppercase; }
+  .dkc__opt-text { display: block; font-size: 14px; line-height: 1.45; color: var(--dk-muted); }
+  .dkc__opt-price { display: block; font-size: 15px; font-weight: 800; margin-top: auto; }
+  .dkc__badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: #EEF1F6; color: var(--dk-navy); white-space: nowrap; }
+  .dkc__badge.is-green { background: #E3F4EC; color: #13744C; }
+  .dkc__swatch { width: 48px; height: 48px; flex: none; border-radius: 12px; background: var(--sw); box-shadow: inset 0 0 0 1px rgba(0,0,0,.1); }
+  .dkc__rec { position: absolute; top: -10px; left: 14px; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: #E3F4EC; color: #13744C; }
+  .dkc__vat { flex: none; }
+  .dkc__water { transition: height .5s, y .5s; }
+  .dkc__sr:not(:checked) + .dkc__opt-body .dkc__water { height: 10px; y: 49px; }
+
+  /* Besparing */
+  .dkc__bes { background: #fff; border: 1px solid var(--dk-line); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 18px; scroll-margin-top: 110px; }
+  .dkc__bes-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .dkc__bes h2 { margin-top: 4px; font-size: 22px; font-weight: 900; font-stretch: 72%; text-transform: uppercase; }
+  .dkc__jaren { display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--dk-bg); }
+  .dkc__jaren button { font: inherit; font-size: 13px; font-weight: 700; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 0; background: transparent; color: var(--dk-navy); cursor: pointer; }
+  .dkc__jaren button[aria-pressed="true"] { background: var(--dk-navy); color: #fff; }
+  [data-bes-on] { display: flex; flex-direction: column; gap: 14px; }
+  [data-bes-on][hidden] { display: none; }
+  .dkc__cijfers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; }
+  .dkc__cijfers > div { padding: 0 12px; }
+  .dkc__cijfers > div:first-child { padding-left: 0; }
+  .dkc__cijfers > div + div { border-left: 1px solid var(--dk-line); }
+  .dkc__cijfers dt { font-size: 13px; color: var(--dk-muted); }
+  .dkc__cijfers dd { margin: 4px 0 0; font-size: 20px; font-weight: 800; white-space: nowrap; }
+  .dkc__cijfers dd.is-green { color: #13744C; }
+  .dkc__cijfers dd.is-strong { font-weight: 900; }
+  .dkc__balk { display: flex; gap: 2px; height: 10px; border-radius: 999px; overflow: hidden; background: #FBE3E5; }
+  .dkc__balk span { height: 100%; transition: width .6s ease; }
+  .dkc__legenda { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: var(--dk-muted); margin-top: -6px; }
+  .dkc__legenda span { display: flex; align-items: center; gap: 6px; }
+  .dkc__legenda i { width: 10px; height: 10px; border-radius: 3px; }
+  .is-isde { background: var(--dk-green); }
+  .is-gas { background: #9ED9BC; }
+  .dkc__legenda i.is-rest { background: #FBE3E5; box-shadow: inset 0 0 0 1px #F2B8BE; }
+  .dkc__uitkomst { font-size: 15px; font-weight: 600; }
+  .dkc__voetnoot { font-size: 12px; line-height: 1.5; color: var(--dk-muted); }
+  .dkc__opaanvraag { font-size: 15px; color: var(--dk-muted); }
+
+  /* Modelinformatie */
+  .dkc__info { background: #fff; border-radius: 32px 32px 0 0; padding-top: 88px; }
+  .dkc__info-wrap { display: flex; flex-direction: column; gap: 96px; padding-bottom: 96px; }
+  .dkc__h2 { margin-top: 6px !important; font-size: clamp(44px, 4vw, 56px); line-height: .92; font-weight: 900; font-stretch: 64%; text-transform: uppercase; }
+  .dkc__h2--s { font-size: 40px; }
+  .dkc__lead { margin-top: 14px !important; font-size: 15px; line-height: 1.55; color: var(--dk-muted); max-width: 360px; }
+  .dkc__lead a { color: var(--dk-red); font-weight: 700; }
+
+  .dkc__waarom { display: grid; gap: 16px; margin-top: 28px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .dkc__waarom.is-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .dkc__waarom.is-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dkc__wcard { background: var(--dk-bg); border-radius: 16px; padding: 26px; display: flex; flex-direction: column; gap: 10px; }
+  .dkc__wcard h3 { font-size: 22px; font-weight: 900; font-stretch: 75%; text-transform: uppercase; }
+  .dkc__wcard p { font-size: 15px; line-height: 1.55; color: var(--dk-muted); }
+  .dkc__check { margin-top: auto; font-size: 13px; font-weight: 700; color: #13744C; }
+
+  .dkc__geluid { background: var(--dk-bg); border-radius: 18px; padding: 40px 44px; }
+  .dkc__geluid-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 36px; }
+  .dkc__geluid-head p { max-width: 440px; font-size: 15px; line-height: 1.55; color: var(--dk-muted); }
+  .dkc__schaal { position: relative; padding-top: 52px; }
+  .dkc__marker { position: absolute; top: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .dkc__marker span { font-size: 13px; font-weight: 800; padding: 6px 12px; border-radius: 999px; background: var(--dk-navy); color: #fff; white-space: nowrap; }
+  .dkc__marker i { width: 2px; height: 16px; background: var(--dk-navy); }
+  .dkc__schaal-balk { height: 10px; border-radius: 999px; background: linear-gradient(90deg, #CDEBDD, #E3E7ED 45%, #FBE3E5); }
+  .dkc__schaal ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); font-size: 13px; color: var(--dk-muted); }
+  .dkc__schaal li b { display: block; color: var(--dk-navy); }
+
+  .dkc__2col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 48px; align-items: start; }
+  .dkc__specs { border: 1px solid var(--dk-line); border-radius: 16px; overflow: hidden; }
+  .dkc__specs dl { margin: 0; }
+  .dkc__specs dl > div { display: grid; grid-template-columns: 1fr 1fr; padding: 15px 24px; font-size: 15px; }
+  .dkc__specs dl > div + div { border-top: 1px solid var(--dk-line); }
+  .dkc__specs dt { color: var(--dk-muted); }
+  .dkc__specs dd { margin: 0; font-weight: 700; }
+  .dkc__specs .is-extra { display: none; }
+  .dkc__specs.is-open .is-extra { display: grid; }
+  .dkc__specs button { width: 100%; min-height: 52px; border: 0; border-top: 1px solid var(--dk-line); background: #fff; color: var(--dk-red-dark); font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; }
+
+  .dkc__inbegrepen { background: var(--dk-navy); color: #fff; border-radius: 18px; padding: 44px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 48px; align-items: center; }
+  .dkc__inbegrepen p { margin-top: 12px; font-size: 15px; color: rgba(255,255,255,.75); }
+  .dkc__inbegrepen ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .dkc__inbegrepen li { padding: 18px 20px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); }
+  .dkc__inbegrepen li b { display: block; font-size: 16px; margin-bottom: 4px; }
+  .dkc__inbegrepen li span { font-size: 14px; color: rgba(255,255,255,.72); }
+
+  .dkc__stappen { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .dkc__stappen li { padding-top: 22px; border-top: 3px solid var(--dk-line); }
+  .dkc__stappen li.is-first { border-top-color: var(--dk-navy); }
+  .dkc__stappen span { font-size: 13px; font-weight: 900; color: var(--dk-red); }
+  .dkc__stappen h3 { margin: 6px 0 !important; font-size: 18px; font-weight: 800; }
+  .dkc__stappen p { font-size: 15px; line-height: 1.55; color: var(--dk-muted); }
+
+  .dkc__faq { display: flex; flex-direction: column; gap: 10px; }
+  .dkc__faq details { background: #fff; border: 1px solid var(--dk-line); border-radius: 14px; }
+  .dkc__faq summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 60px; padding: 0 22px; font-size: 17px; font-weight: 800; cursor: pointer; }
+  .dkc__faq summary::-webkit-details-marker { display: none; }
+  .dkc__faq summary i { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--dk-bg); position: relative; }
+  .dkc__faq summary i::before, .dkc__faq summary i::after { content: ''; position: absolute; left: 50%; top: 50%; width: 12px; height: 2px; background: var(--dk-navy); transform: translate(-50%, -50%); }
+  .dkc__faq summary i::after { transform: translate(-50%, -50%) rotate(90deg); transition: transform .2s; }
+  .dkc__faq details[open] summary i { background: var(--dk-red); }
+  .dkc__faq details[open] summary i::before { background: #fff; }
+  .dkc__faq details[open] summary i::after { transform: translate(-50%, -50%) rotate(0deg); background: #fff; }
+  .dkc__faq details p { padding: 0 22px 20px; font-size: 15px; line-height: 1.6; color: var(--dk-muted); max-width: 680px; }
+
+  .dkc__cta { background: var(--dk-deep); color: #fff; }
+  .dkc__cta-wrap { padding-top: 72px; padding-bottom: 72px; display: flex; justify-content: space-between; align-items: center; gap: 40px; }
+  .dkc__cta-wrap > div:first-child { max-width: 620px; }
+  .dkc__cta p { margin-top: 12px; font-size: 16px; line-height: 1.55; color: rgba(255,255,255,.75); }
+  .dkc__cta-btns { display: flex; gap: 12px; flex: none; }
+</style>
