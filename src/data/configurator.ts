@@ -626,8 +626,11 @@ export const configurators: Record<string, ConfigModel> = {
       { id: '125', label: 'VWL 125', sub: '10,1 kW bij -7 °C · 400 V · 1.480 mm hoog', prijs: { hybride: 7195, 'all-electric': 8900 } },
     ],
     defaultVermogen: '35',
-    kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3A3F44', img: '/img/vaillant-arotherm-plus.webp' }],
-    kleurNote: 'De aroTHERM plus is alleen leverbaar in antraciet. Optioneel met designplint.',
+    kleuren: [
+      { id: 'antraciet', name: 'Antraciet', hex: '#3A3F44', img: '/img/vaillant-arotherm-plus.webp' },
+      { id: 'wit', name: 'Wit', hex: '#ECEDEA', img: '/img/vaillant-arotherm-plus-wit.webp' },
+    ],
+    kleurNote: 'Leverbaar in antraciet en wit. Optioneel met designplint.',
     boilers: boilers.map((b) => ({ ...b, price: b.price == null ? null : Math.round(b.price * 0.92) })), // 8% lager, zoals de rest van de aroTHERM plus
     defaultBoiler: '200',
     specs: [
@@ -651,7 +654,7 @@ export const configurators: Record<string, ConfigModel> = {
     faq: [
       { q: 'Welk vermogen heb ik nodig?', a: 'Dat hangt af van je woning, isolatie en gasverbruik. Doe de besparingscheck voor een eerste indicatie; het exacte vermogen berekenen we tijdens de installatiecheck.' },
       { q: 'Kan de aroTHERM plus hybride met mijn cv-ketel?', a: 'Ja. Hij kan samenwerken met je bestaande cv-ketel, of volledig gasvrij met een boilervat.' },
-      { q: 'Is de aroTHERM plus in andere kleuren leverbaar?', a: 'Nee, Vaillant levert de aroTHERM plus in antraciet. Zoek je een compactere instap, kijk dan naar de aroTHERM pro.' },
+      { q: 'Is de aroTHERM plus in andere kleuren leverbaar?', a: 'Ja, de aroTHERM plus is leverbaar in antraciet en in wit. Je kiest de kleur hierboven in de configurator.' },
       { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag hangt af van het vermogen: tot € 3.925 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag.' },
     ],
   },
@@ -677,8 +680,11 @@ export const configurators: Record<string, ConfigModel> = {
       { id: '115', label: 'VWL 115', sub: '10,5 kW bij -7 °C · 230 of 400 V · 1.103 mm hoog', prijs: { hybride: 7295, 'all-electric': 9150 } },
     ],
     defaultVermogen: '55',
-    kleuren: [{ id: 'antraciet', name: 'Antraciet', hex: '#3A3F44', img: '/img/vaillant-arotherm-plus.webp' }],
-    kleurNote: 'De aroTHERM pro is alleen leverbaar in antraciet.',
+    kleuren: [
+      { id: 'antraciet', name: 'Antraciet', hex: '#3A3F44', img: '/img/vaillant-arotherm-plus.webp' },
+      { id: 'wit', name: 'Wit', hex: '#ECEDEA', img: '/img/vaillant-arotherm-plus-wit.webp' },
+    ],
+    kleurNote: 'Leverbaar in antraciet en wit.',
     boilers,
     defaultBoiler: '200',
     specs: [
@@ -699,7 +705,7 @@ export const configurators: Record<string, ConfigModel> = {
     ],
     inbegrepen,
     faq: [
-      { q: 'Wat is het verschil met de aroTHERM plus?', a: 'Beide zijn monoblocks met R290 in antraciet. De plus is stiller, gaat tot 75 °C en heeft meer vermogens. De pro is compacter en voordeliger, tot 70 °C.' },
+      { q: 'Wat is het verschil met de aroTHERM plus?', a: 'Beide zijn monoblocks met R290, leverbaar in antraciet of wit. De plus is stiller, gaat tot 75 °C en heeft meer vermogens. De pro is compacter en voordeliger, tot 70 °C.' },
       { q: 'Welk vermogen heb ik nodig?', a: 'Doe de besparingscheck voor een eerste indicatie. Het exacte vermogen berekenen we tijdens de installatiecheck.' },
       { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag hangt af van het vermogen: tot € 3.700 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag.' },
     ],
