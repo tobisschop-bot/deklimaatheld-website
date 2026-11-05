@@ -1,13 +1,17 @@
 ---
 import '../styles/global.css';
-// DESKTOP: zet de volgende regel aan wanneer het desktopontwerp klaar is
-// import '../styles/desktop.css';
+// Desktop (vanaf 1024 px). Alles in deze bestanden staat binnen @media (min-width: 1024px),
+// zodat de mobiele site (en tablet 600–1023 px) exact blijft zoals hij is.
+import '../styles/desktop-home.css';
+import '../styles/desktop.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import DkHeader from '../components/desktop/DkHeader.astro';
+import DkFooter from '../components/desktop/DkFooter.astro';
 interface Props { title: string; description?: string }
 const { title, description = 'De Klimaatheld – warmtepompen, airco en duurzaam verwarmen in Den Haag en omstreken.' } = Astro.props;
-// Pagina's met een eigen desktopontwerp vullen de slot "desktop".
-// Vanaf 1024 px tonen we dan de desktopversie; daaronder blijft de mobiele site exact zoals hij is.
+// Pagina's met een eigen desktopontwerp (de homepage) vullen de slot "desktop".
+// Alle andere pagina's krijgen op desktop de desktop-header/-footer en de stijlen uit desktop.css.
 const hasDesktop = Astro.slots.has('desktop');
 ---
 <!doctype html>
@@ -31,22 +35,27 @@ const hasDesktop = Astro.slots.has('desktop');
       <div class="dk-site"><slot name="desktop" /></div>
     </body>
   ) : (
-    <body>
+    <body class="dk-std">
+      <DkHeader />
       <Header />
       <main><slot /></main>
       <Footer />
+      <DkFooter />
     </body>
   )}
 </html>
 
 <style is:global>
-  /* Schakelaar mobiel ↔ desktop (alleen actief op pagina's met body.dk-page).
-     Onder 1024 px verandert er niets aan de mobiele site. */
+  /* Schakelaar mobiel ↔ desktop. Onder 1024 px verandert er niets aan de mobiele site. */
   .dk-site { display: none; }
+  @media (max-width: 1023.98px) { body.dk-std > .dkh, body.dk-std > .dkf { display: none !important; } }
   @media (min-width: 1024px) {
     html:has(body.dk-page) { background: #0B132B; }
     body.dk-page { max-width: none; margin: 0; box-shadow: none; background: #0B132B; }
     body.dk-page .mb-site { display: none; }
     body.dk-page .dk-site { display: block; }
+    html:has(body.dk-std) { background: #F4F6F9; }
+    body.dk-std { max-width: none; margin: 0; box-shadow: none; min-height: 0; }
+    body.dk-std > header.header, body.dk-std > footer.footer { display: none; }
   }
 </style>

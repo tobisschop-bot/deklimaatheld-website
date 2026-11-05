@@ -2,10 +2,12 @@
    DESKTOP – HOMEPAGE (alleen zichtbaar vanaf 1024 px, binnen .dk-site)
    Alle klassen beginnen met dk- zodat de mobiele site er nooit last van heeft.
    ===================================================================== */
-.dk-site {
+:root {
   --dk-navy: #141A2E; --dk-deep: #0B132B; --dk-red: #D6283A; --dk-red-dark: #B01F2F;
   --dk-pink: #FF8A95; --dk-green: #1E9E6A; --dk-green-l: #4CC38A; --dk-blue: #2F6FA8;
   --dk-bg: #F4F6F9; --dk-line: #E3E7ED; --dk-muted: #5A6475; --dk-soft: #C9CFDA; --dk-grey: #9AA3B2;
+}
+.dk-site {
   font-family: 'Archivo', system-ui, sans-serif; color: #fff; overflow-x: clip;
 }
 .dk-site *, .dk-site *::before, .dk-site *::after { box-sizing: border-box; }
