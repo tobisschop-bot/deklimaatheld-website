@@ -101,7 +101,7 @@ const cfg = { gasprijs: AANNAMES.gasprijs, jaren: JAREN, startJaar: 3 };
         <button type="button" data-i={i} aria-label={p.name} aria-pressed={i === start ? 'true' : 'false'} class:list={['dksp__thumb', { 'is-on': i === start }]}>
           <span class="dksp__thumb-img"><img src={p.kleuren[0].img} alt="" loading="lazy" /></span>
           <span class="dksp__thumb-naam">{p.short}</span>
-          <span class="dksp__thumb-sub">{terug(p) == null ? 'op aanvraag' : '± ' + jr(terug(p)!) + ' jaar'}</span>
+          <span class="dksp__thumb-sub">{p.from == null ? 'op aanvraag' : 'v.a. ' + euro(p.from)}</span>
         </button>
       ))}
     </div>
