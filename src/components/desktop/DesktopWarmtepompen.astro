@@ -1,0 +1,421 @@
+---
+// Desktopversie van /warmtepompen/ (≥ 1024 px), variant C "Merkschap & collage".
+// Staat volledig los van de mobiele pagina: wijzigingen hier raken mobiel niet.
+import '../../styles/desktop-home.css';
+import DkHeader from './DkHeader.astro';
+import DkFooter from './DkFooter.astro';
+import ProductImage from '../ProductImage.astro';
+import { warmtepompen, euro, kaartLink } from '../../data/warmtepompen';
+
+const notes: Record<string, string> = {
+  Alle: 'vaste prijs inclusief montage, ontworpen volgens de Heat Geek-methode.',
+  Weheat: 'Nederlands ontwerp, van compact tot dakintegratie.',
+  Vaillant: 'Stil en betrouwbaar, op R290.',
+  Daikin: 'Van hybride tot krachtig all-electric.',
+  Haier: 'Scherp geprijsd, ook op R290.',
+  Quatt: 'Slimme hybride, ook all-electric.',
+};
+const startMerk = 'Weheat';
+const merkNamen = [...new Set(warmtepompen.map((w) => w.merk))];
+const merken = [...merkNamen, 'Alle'].map((m) => ({
+  id: m,
+  n: m === 'Alle' ? warmtepompen.length : warmtepompen.filter((w) => w.merk === m).length,
+  note: notes[m] ?? '',
+}));
+const types = [
+  { id: 'alle', label: 'Alle types' },
+  { id: 'hybride', label: 'Hybride' },
+  { id: 'all-electric', label: 'All-electric' },
+  { id: 'dakmontage', label: 'Dakmontage' },
+];
+const telTekst = (merk: string, n: number) => (merk === 'Alle' ? `${merkNamen.length} merken, ` : `${merk}: `) + n + (n === 1 ? ' model' : ' modellen');
+const startAantal = warmtepompen.filter((w) => w.merk === startMerk).length;
+
+const link = (slug: string) => kaartLink(warmtepompen.find((w) => w.slug === slug)!).href;
+const keuzehulp = [
+  { gas: 'Tot ca. 1.200 m³', woning: 'Kleine woning / app.', model: 'Flint P40', href: link('flint') },
+  { gas: '1.200 – 2.000 m³', woning: 'Rijtjeshuis', model: 'Sparrow P60', href: link('sparrow') },
+  { gas: 'Vanaf 2.000 m³', woning: 'Vrijstaand / 2-onder-1-kap', model: 'Blackbird P80', href: link('blackbird') },
+];
+
+const stappen = [
+  { n: '01', icon: '/icons/01-besparingscheck.svg', t: 'Besparingscheck', d: 'Vrijblijvende online berekening van je gasverbruik en besparing.' },
+  { n: '02', icon: '/icons/02-installatiecheck.svg', t: 'Installatiecheck', d: 'Grondige schouw van leidingen, meterkast en afgiftesysteem.' },
+  { n: '03', icon: '/icons/03-installatieplan.svg', t: 'Installatieplan op maat', d: 'Technisch plan en offerte op maat, via videocall of bij je thuis.' },
+  { n: '04', icon: '/icons/04-installatie.svg', t: 'Vakkundige installatie', d: 'Vakkundig geplaatst, meestal binnen één tot twee dagen.' },
+  { n: '05', icon: '/icons/05-subsidie-nazorg.svg', t: 'Subsidie & nazorg', d: 'Wij regelen de ISDE-aanvraag en blijven bereikbaar voor onderhoud en service.' },
+];
+
+const collage = [
+  { cls: 'c1', img: '/img/case-dordrecht-dak.webp?v=2', alt: 'Weheat-warmtepompen op het platte dak van een woonblok in Dordrecht', cap: 'Dordrecht · 34 warmtepompen' },
+  { cls: 'c2', img: '/img/case-delft-dak.webp', alt: 'Weheat Blackbird op het platte dak in Delft', cap: 'Delft · hybride met Blackbird' },
+  { cls: 'c3', img: '/img/case-leidschendam-binnen.webp', alt: 'Weheat boiler en buffervat in de berging in Leidschendam', cap: 'Leidschendam · van het gas af' },
+  { cls: 'c4', img: '/img/case-sassenheim-binnen.webp', alt: 'Hybride opstelling met open verdeler in Sassenheim', cap: 'Sassenheim · open verdeler' },
+  { cls: 'c5', img: '/img/case-vloer-woonkamer.webp', alt: 'Woonkamer met nieuw gelegde vloerverwarming in Nootdorp', cap: 'Nootdorp · vloerverwarming' },
+];
+
+const faq = [
+  { q: 'Wat is een warmtepomp?', a: 'Een warmtepomp haalt energie uit de buitenlucht en zet die efficiënt om in warmte voor je centrale verwarming en tapwater. Ook als het buiten koud is, haalt hij nog warmte uit de lucht.' },
+  { q: 'Hybride of all-electric?', a: 'Een hybride warmtepomp werkt samen met je huidige cv-ketel en neemt het grootste deel van de verwarming over, zodat je direct minder gas verbruikt. All-electric verwarmt je woning en tapwater volledig zonder gasaansluiting.' },
+  { q: 'Hoeveel subsidie krijg ik?', a: 'Via de ISDE-regeling van de Rijksoverheid krijg je subsidie op een warmtepomp; het bedrag hangt af van het type en vermogen, van ongeveer € 1.700 (hybride) tot € 4.375 (groot all-electric). Indicatief, zie de RVO-lijst voor actuele bedragen. De Klimaatheld verzorgt de aanvraag voor je.' },
+  { q: 'Hoe lang duurt de installatie?', a: 'Een hybride warmtepomp plaatsen we meestal in één dag. Een all-electric systeem met buffervat en aanpassingen duurt meestal één tot twee dagen.' },
+  { q: 'Is mijn woning geschikt?', a: 'Veel woningen met dak-, gevel- of glasisolatie zijn geschikt voor een hybride warmtepomp. Vul de postcodecheck hieronder in, dan kijken we samen naar jouw situatie.' },
+];
+---
+<DkHeader />
+<main class="dkw">
+
+  <!-- HERO (later: video op de plek van de foto) -->
+  <section class="dkw-hero">
+    <img class="dkw-hero__bg" src="/img/case-dordrecht-dak.webp?v=2" alt="" aria-hidden="true" />
+    <div class="dk-wrap dkw-hero__grid">
+      <div>
+        <nav class="dkw-kruimel" aria-label="Kruimelpad"><a href="/">Home</a> / <span aria-current="page">Warmtepompen</span></nav>
+        <span class="dk-kicker dk-kicker--light">Warmtepompen</span>
+        <h1>Slimme warmtepompen,<br /><span class="dk-red-l">vakkundig</span> geplaatst</h1>
+        <p class="dkw-hero__lead">Hybride of volledig gasvrij. Wij adviseren, installeren en regelen je ISDE-subsidie.</p>
+        <div class="dkw-hero__knoppen">
+          <a class="dk-btn dk-btn--red" href="#dkw-modellen">Bekijk de modellen ↓</a>
+          <a class="dk-btn dk-btn--white" href="/#dk-besparingscheck">Doe de besparingscheck</a>
+        </div>
+      </div>
+      <ul class="dkw-hero__checks">
+        <li><span class="dkw-vink" aria-hidden="true">✓</span><span><strong>Inclusief installatie</strong>Vaste prijs, inclusief montage</span></li>
+        <li><span class="dkw-vink" aria-hidden="true">✓</span><span><strong>Subsidie geregeld</strong>Wij doen de ISDE-aanvraag</span></li>
+        <li><img src="/img/heatgeek-logo.png" alt="Heat Geek" width="360" height="149" /><span><strong>Ontwerp volgens Heat Geek-methode</strong></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- MERKSCHAP -->
+  <section class="dkw-schap" id="dkw-modellen">
+    <div class="dk-wrap">
+      <span class="dk-kicker dk-kicker--light">De showroom · kies een merk</span>
+      <div class="dkw-merken" role="group" aria-label="Kies een merk" data-dkw-merken>
+        {merken.map((m) => (
+          <button type="button" data-merk={m.id} data-note={m.note} aria-pressed={m.id === startMerk ? 'true' : 'false'}>
+            <span class="dkw-merk__naam">{m.id}</span><span class="dkw-merk__tel">{m.n}</span>
+          </button>
+        ))}
+      </div>
+      <div class="dkw-balk">
+        <p data-dkw-info><strong data-dkw-titel>{telTekst(startMerk, startAantal)}</strong> — <span data-dkw-note>{notes[startMerk]}</span></p>
+        <div class="dkw-types" role="group" aria-label="Filter op type" data-dkw-types>
+          {types.map((t, i) => <button type="button" data-type={t.id} aria-pressed={i === 0 ? 'true' : 'false'}>{t.label}</button>)}
+        </div>
+      </div>
+
+      <div class="dkw-grid" data-dkw-grid>
+        {warmtepompen.map((w) => (
+          <article class="dkw-kaart" data-merk={w.merk} data-types={w.types.join(' ')} hidden={w.merk !== startMerk}>
+            <div class="dkw-kaart__kop">
+              <span class="dkw-kaart__merk">{w.merk}</span>
+              <span class="dkw-kaart__badge">{w.badge}</span>
+            </div>
+            <div class="dkw-plank">
+              <span class="dkw-plank__gloed" aria-hidden="true"></span>
+              {w.photo
+                ? <div class="dkw-foto"><ProductImage src={w.img} alt={`${w.name} warmtepomp`} /></div>
+                : <div class="dkw-foto dkw-foto--ph">[Productfoto {w.name}]</div>}
+            </div>
+            <h3>{w.name.replace(new RegExp('^' + w.merk + ' '), '')}</h3>
+            <p class="dkw-kaart__tag">{w.tag}</p>
+            <div class="dkw-kaart__voet">
+              <div>
+                <p class="dkw-kaart__prijs">{w.from == null ? 'Prijs op aanvraag' : <>v.a. {euro(w.from)},-</>}</p>
+                <p class="dkw-kaart__isde">{w.isde == null ? 'ISDE-subsidie mogelijk*' : `Tot ${euro(w.isde)} ISDE-subsidie*`}</p>
+              </div>
+              <a class="dkw-kaart__knop" href={kaartLink(w).href}>{kaartLink(w).label}</a>
+            </div>
+          </article>
+        ))}
+      </div>
+      <p class="dkw-leeg" data-dkw-leeg hidden>Geen modellen in deze combinatie. Kies een ander merk of type.</p>
+      <p class="dkw-noot">Prijzen zijn indicatief en afhankelijk van je woning en installatie, inclusief montage. *Subsidiebedrag indicatief, zie de RVO-lijst.</p>
+    </div>
+  </section>
+
+  <!-- COLLAGE -->
+  <section class="dkw-werk">
+    <div class="dk-wrap dkw-werk__grid">
+      <div>
+        <span class="dk-kicker">Ons werk</span>
+        <h2 class="dk-h2">Echt werk, geen stockfoto's</h2>
+        <p class="dkw-werk__lead">Van één hybride warmtepomp in Delft tot 34 warmtepompen voor een woningcorporatie in Dordrecht. Netjes geplaatst door onze eigen monteurs.</p>
+        <figure class="dkw-quote">
+          <blockquote>“Tijdens de verbouwing waren jullie ontzettend fijn in de omgang. Alles was netjes ingepland en het liep gewoon heel strak.”</blockquote>
+          <figcaption>Klant uit Leidschendam</figcaption>
+        </figure>
+        <a class="dk-btn dk-btn--dark" href="/verduurzamen/">Alle projecten →</a>
+      </div>
+      <div class="dkw-collage">
+        {collage.map((c) => (
+          <figure class:list={['dkw-polaroid', c.cls]}>
+            <img src={c.img} alt={c.alt} loading="lazy" />
+            <figcaption>{c.cap}</figcaption>
+          </figure>
+        ))}
+        <span class="dkw-stempel" aria-hidden="true">Eigen<br />monteurs</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAPPEN + KEUZEHULP -->
+  <section class="dkw-stappen">
+    <div class="dk-wrap">
+      <div class="dkw-stappen__kop">
+        <div>
+          <span class="dk-kicker">Helder &amp; transparant</span>
+          <h2 class="dk-h2">In vijf stappen gasvrij(er)</h2>
+        </div>
+        <ul class="dkw-pillen">
+          <li><span aria-hidden="true">✓</span> Garantie blijft geldig</li>
+          <li><span aria-hidden="true">✓</span> Advies op maat</li>
+          <li><span aria-hidden="true">✓</span> ISDE-subsidie geregeld</li>
+        </ul>
+      </div>
+      <ol class="dkw-stappen__lijst">
+        {stappen.map((s) => (
+          <li>
+            <span class="dkw-stap__n">{s.n}</span>
+            <img src={s.icon} alt="" width="52" height="52" loading="lazy" />
+            <h3>{s.t}</h3>
+            <p>{s.d}</p>
+          </li>
+        ))}
+      </ol>
+
+      <div class="dkw-hulp">
+        <div>
+          <span class="dk-kicker">Keuzehulp</span>
+          <h3>Welke past bij jouw woning?</h3>
+          <p>Indicatief. Het juiste vermogen berekenen we tijdens de installatiecheck.</p>
+        </div>
+        <div class="dkw-hulp__opties">
+          {keuzehulp.map((k) => (
+            <a href={k.href}><span>{k.gas} gasverbruik</span><strong>{k.woning}</strong><em>{k.model} →</em></a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="dkw-faq">
+    <div class="dk-wrap">
+      <span class="dk-kicker">Antwoord op je vragen</span>
+      <h2 class="dk-h2">Veelgestelde vragen</h2>
+      <div class="dkw-faq__grid">
+        {faq.map((f, i) => (
+          <details open={i === 0}>
+            <summary>{f.q}<span aria-hidden="true"></span></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SLOT-CTA -->
+  <section class="dkw-cta">
+    <img class="dkw-cta__held dk-zweef" src="/img/mascotte-vliegend.webp" alt="" aria-hidden="true" />
+    <div class="dk-wrap dkw-cta__grid">
+      <div>
+        <span class="dk-kicker" style="color:#FFE3E6">Klaar voor de volgende stap?</span>
+        <h2 class="dk-h2">Hoeveel kan jij besparen?</h2>
+        <ul class="dkw-cta__checks">
+          <li>✓ Gratis advies van specialisten</li>
+          <li>✓ Fabrieksgarantie veilig met een servicecontract</li>
+          <li>✓ ISDE-subsidie voor je geregeld</li>
+        </ul>
+      </div>
+      <form class="dkw-form" action="/offerte/" method="get">
+        <label class="dkw-form__pc"><span>Postcode</span><input name="postcode" placeholder="2511 AB" autocomplete="postal-code" required /></label>
+        <label><span>Huisnr.</span><input name="huisnummer" inputmode="numeric" placeholder="12" required /></label>
+        <label><span>Toev.</span><input name="toevoeging" placeholder="A" /></label>
+        <button type="submit">Bereken besparing →</button>
+      </form>
+    </div>
+  </section>
+</main>
+<DkFooter />
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-dkw-grid]');
+  if (root) {
+    const merkBtns = document.querySelectorAll<HTMLButtonElement>('[data-dkw-merken] [data-merk]');
+    const typeBtns = document.querySelectorAll<HTMLButtonElement>('[data-dkw-types] [data-type]');
+    const kaarten = root.querySelectorAll<HTMLElement>('.dkw-kaart');
+    const titel = document.querySelector<HTMLElement>('[data-dkw-titel]');
+    const note = document.querySelector<HTMLElement>('[data-dkw-note]');
+    const leeg = document.querySelector<HTMLElement>('[data-dkw-leeg]');
+    const aantalMerken = merkBtns.length - 1;
+    let merk = 'Weheat';
+    let type = 'alle';
+    const toon = () => {
+      let n = 0;
+      kaarten.forEach((k) => {
+        const ok = (merk === 'Alle' || k.dataset.merk === merk) && (type === 'alle' || (k.dataset.types || '').split(' ').includes(type));
+        k.hidden = !ok;
+        if (ok) n++;
+      });
+      merkBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.merk === merk)));
+      typeBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.type === type)));
+      const knop = [...merkBtns].find((b) => b.dataset.merk === merk);
+      if (titel) titel.textContent = (merk === 'Alle' ? `${aantalMerken} merken, ` : `${merk}: `) + n + (n === 1 ? ' model' : ' modellen');
+      if (note && knop) note.textContent = knop.dataset.note || '';
+      if (leeg) leeg.hidden = n > 0;
+    };
+    merkBtns.forEach((b) => b.addEventListener('click', () => { merk = b.dataset.merk!; toon(); }));
+    typeBtns.forEach((b) => b.addEventListener('click', () => { type = b.dataset.type!; toon(); }));
+  }
+</script>
+
+<style>
+  .dkw { color: #141A2E; }
+
+  /* HERO */
+  .dkw-hero { position: relative; overflow: hidden; color: #fff; background: #0B132B; }
+  .dkw-hero__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .dkw-hero::before { content: ''; position: absolute; inset: 0; z-index: 1; background: radial-gradient(50% 60% at 100% 100%, rgba(214,40,58,.35), rgba(214,40,58,0) 70%), linear-gradient(90deg, rgba(11,19,43,.96) 0%, rgba(11,19,43,.82) 45%, rgba(11,19,43,.35) 100%); }
+  .dkw-hero__grid { position: relative; z-index: 2; padding-top: 72px; padding-bottom: 104px; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 56px; align-items: end; }
+  .dkw-kruimel { margin-bottom: 22px; font-size: 13px; color: #C9CFDA; }
+  .dkw-kruimel a { color: inherit; text-decoration: none; }
+  .dkw-kruimel a:hover { color: #fff; }
+  .dkw-kruimel span { color: #fff; }
+  .dkw-hero h1 { margin-top: 14px; font-size: clamp(72px, 6.4vw, 96px); overflow-wrap: normal; word-break: keep-all; line-height: .86; font-weight: 900; font-stretch: 62%; text-transform: uppercase; }
+  .dkw-hero__lead { margin-top: 24px !important; max-width: 520px; font-size: 19px; line-height: 1.55; color: #E3E7ED; }
+  .dkw-hero__knoppen { margin-top: 32px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .dkw-hero__checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .dkw-hero__checks li { display: flex; align-items: center; gap: 14px; background: rgba(11,19,43,.7); border: 1px solid rgba(255,255,255,.16); border-radius: 18px; padding: 18px 22px; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .dkw-hero__checks strong { display: block; font-size: 18px; }
+  .dkw-hero__checks li > span:last-child { font-size: 14px; color: #C9CFDA; }
+  .dkw-hero__checks img { flex: none; height: 30px; width: auto; background: #fff; padding: 4px 8px; border-radius: 8px; }
+  .dkw-vink { flex: none; width: 36px; height: 36px; border-radius: 50%; background: #1E9E6A; display: grid; place-items: center; font-weight: 900; }
+
+  /* MERKSCHAP */
+  .dkw-schap { background: linear-gradient(180deg, #141A2E 0%, #0B132B 100%); color: #fff; padding: 96px 0 112px; scroll-margin-top: 90px; }
+  .dkw-merken { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 40px; border-bottom: 1px solid rgba(255,255,255,.14); padding-bottom: 26px; }
+  .dkw-merken button { font: inherit; background: none; border: 0; padding: 0; cursor: pointer; display: flex; align-items: flex-start; gap: 6px; color: rgba(255,255,255,.38); transition: color .15s; }
+  .dkw-merken button:hover { color: rgba(255,255,255,.7); }
+  .dkw-merk__naam { font-size: clamp(60px, 5.4vw, 76px); line-height: .9; font-weight: 900; font-stretch: 62%; text-transform: uppercase; text-decoration: none; text-decoration-color: #D6283A; text-decoration-thickness: 5px; text-underline-offset: 10px; }
+  .dkw-merk__tel { font-size: 15px; font-weight: 800; }
+  .dkw-merken button[aria-pressed='true'] { color: #fff; }
+  .dkw-merken button[aria-pressed='true'] .dkw-merk__naam { text-decoration-line: underline; }
+  .dkw-merken button[aria-pressed='true'] .dkw-merk__tel { color: #FF8A95; }
+  .dkw-balk { margin-top: 26px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .dkw-balk p { font-size: 17px; color: #C9CFDA; }
+  .dkw-balk strong { color: #fff; }
+  .dkw-types { display: flex; gap: 8px; flex-wrap: wrap; }
+  .dkw-types button { font: inherit; font-weight: 700; font-size: 14px; min-height: 44px; padding: 0 18px; border-radius: 999px; cursor: pointer; background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.3); }
+  .dkw-types button:hover { border-color: #fff; }
+  .dkw-types button[aria-pressed='true'] { background: #fff; color: #141A2E; border-color: #fff; }
+
+  .dkw-grid { margin-top: 36px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .dkw-kaart { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 24px; padding: 26px 26px 24px; display: flex; flex-direction: column; min-width: 0; }
+  .dkw-kaart[hidden] { display: none; }
+  .dkw-kaart__kop { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .dkw-kaart__merk { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #FF8A95; }
+  .dkw-kaart__badge { font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #C9CFDA; border: 1px solid rgba(255,255,255,.2); padding: 4px 9px; border-radius: 999px; text-align: right; }
+  .dkw-plank { position: relative; height: 220px; margin-top: 12px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 16px; border-bottom: 3px solid rgba(255,255,255,.18); }
+  .dkw-plank__gloed { position: absolute; left: 12%; right: 12%; bottom: -12px; height: 28px; border-radius: 50%; background: radial-gradient(closest-side, rgba(214,40,58,.55), rgba(214,40,58,0)); filter: blur(3px); }
+  .dkw-foto { position: relative; width: 76%; height: 180px; display: flex; align-items: flex-end; justify-content: center; filter: drop-shadow(0 14px 14px rgba(0,0,0,.5)); }
+  .dkw-foto :global(.pi) { max-height: 180px; }
+  .dkw-foto :global(.pi-box) { width: 100%; height: 100%; }
+  .dkw-foto--ph { height: 150px; filter: none; border: 2px dashed rgba(255,255,255,.3); border-radius: 14px; align-items: center; text-align: center; padding: 12px; font-size: 14px; font-weight: 700; color: #C9CFDA; }
+  .dkw-kaart h3 { margin-top: 22px; font-size: 36px; line-height: .92; font-weight: 900; font-stretch: 64%; text-transform: uppercase; }
+  .dkw-kaart__tag { margin-top: 6px !important; font-size: 14px; color: #9AA3B2; }
+  .dkw-kaart__voet { margin-top: auto; padding-top: 22px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+  .dkw-kaart__prijs { font-size: 22px; font-weight: 900; white-space: nowrap; }
+  .dkw-kaart__isde { margin-top: 3px !important; font-size: 13px; font-weight: 700; color: #4CC38A; }
+  .dkw-kaart__knop { flex: none; background: #fff; color: #141A2E; font-weight: 800; font-size: 14px; text-decoration: none; padding: 12px 18px; border-radius: 999px; }
+  .dkw-kaart__knop:hover { background: #FFE3E6; }
+  .dkw-leeg { margin-top: 24px !important; font-size: 16px; color: #C9CFDA; }
+  .dkw-noot { margin-top: 22px !important; font-size: 13px; color: #9AA3B2; }
+
+  /* COLLAGE */
+  .dkw-werk { background: #fff; border-radius: 32px 32px 0 0; margin-top: -32px; position: relative; padding: 112px 0 120px; }
+  .dkw-werk__grid { display: grid; grid-template-columns: minmax(320px, 400px) minmax(0, 1fr); gap: 56px; align-items: center; }
+  .dkw-werk .dk-h2 { margin: 10px 0 18px; font-size: clamp(54px, 4.8vw, 72px); overflow-wrap: normal; }
+  .dkw-werk__lead { font-size: 17px; line-height: 1.65; color: #5A6475; }
+  .dkw-quote { margin: 28px 0 26px; background: #F4F6F9; border-radius: 20px; padding: 22px 24px; }
+  .dkw-quote blockquote { margin: 0; font-size: 17px; line-height: 1.5; font-weight: 600; }
+  .dkw-quote figcaption { margin-top: 10px; font-size: 14px; font-weight: 800; color: #D6283A; }
+  .dkw-collage { position: relative; height: 680px; }
+  .dkw-polaroid { position: absolute; margin: 0; background: #fff; padding: 10px; border-radius: 20px; box-shadow: 0 24px 50px rgba(20,26,46,.18); transition: transform .3s; }
+  .dkw-polaroid:hover { z-index: 4; }
+  .dkw-polaroid img { width: 100%; object-fit: cover; border-radius: 12px; }
+  .dkw-polaroid figcaption { padding: 10px 6px 4px; font-size: 14px; font-weight: 800; }
+  .dkw-polaroid.c1 { left: 0; top: 30px; width: 46%; transform: rotate(-2deg); }
+  .dkw-polaroid.c1 img { height: 380px; }
+  .dkw-polaroid.c2 { right: 2%; top: 0; width: 40%; transform: rotate(2.5deg); }
+  .dkw-polaroid.c2 img { height: 240px; }
+  .dkw-polaroid.c3 { left: 40%; top: 250px; width: 30%; z-index: 2; transform: rotate(-1deg); box-shadow: 0 24px 50px rgba(20,26,46,.24); }
+  .dkw-polaroid.c3 img { height: 300px; }
+  .dkw-polaroid.c4 { right: 0; top: 330px; width: 30%; transform: rotate(3deg); }
+  .dkw-polaroid.c4 img { height: 260px; }
+  .dkw-polaroid.c5 { left: 6%; top: 470px; width: 32%; transform: rotate(1.5deg); }
+  .dkw-polaroid.c5 img { height: 150px; }
+  .dkw-stempel { position: absolute; left: 47%; top: 0; z-index: 3; background: #D6283A; color: #fff; width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; text-align: center; font-size: 15px; line-height: 1; font-weight: 900; font-stretch: 70%; text-transform: uppercase; transform: rotate(-8deg); }
+
+  /* STAPPEN + KEUZEHULP */
+  .dkw-stappen { background: #F4F6F9; padding: 104px 0; }
+  .dkw-stappen__kop { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap; }
+  .dkw-stappen .dk-h2 { margin-top: 10px; }
+  .dkw-pillen { list-style: none; margin: 0; padding: 0; display: flex; gap: 10px; flex-wrap: wrap; }
+  .dkw-pillen li { background: #fff; border-radius: 999px; padding: 10px 16px; font-weight: 800; font-size: 14px; }
+  .dkw-pillen span { color: #1E9E6A; }
+  .dkw-stappen__lijst { list-style: none; padding: 0; margin: 48px 0 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 3px solid #141A2E; }
+  .dkw-stappen__lijst li { padding: 24px 20px 0 0; display: flex; flex-direction: column; gap: 10px; }
+  .dkw-stap__n { font-size: 64px; line-height: .85; font-weight: 900; font-stretch: 62%; color: #D6283A; }
+  .dkw-stappen__lijst img { width: 52px; height: 52px; }
+  .dkw-stappen__lijst h3 { font-size: 22px; line-height: 1; font-weight: 900; font-stretch: 75%; text-transform: uppercase; }
+  .dkw-stappen__lijst p { font-size: 14px; line-height: 1.5; color: #5A6475; }
+  .dkw-hulp { margin-top: 72px; background: #fff; border-radius: 28px; padding: 36px 40px; display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 40px; align-items: center; }
+  .dkw-hulp h3 { margin: 8px 0 8px; font-size: 44px; line-height: .9; font-weight: 900; font-stretch: 62%; text-transform: uppercase; }
+  .dkw-hulp p { font-size: 13px; color: #5A6475; }
+  .dkw-hulp__opties { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .dkw-hulp__opties a { text-decoration: none; color: #141A2E; background: #F4F6F9; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 4px; border: 1px solid transparent; transition: border-color .15s; }
+  .dkw-hulp__opties a:hover { border-color: #D6283A; }
+  .dkw-hulp__opties span { font-size: 12px; font-weight: 800; color: #5A6475; }
+  .dkw-hulp__opties strong { font-size: 18px; }
+  .dkw-hulp__opties em { margin-top: 10px; font-style: normal; font-weight: 800; color: #D6283A; }
+
+  /* FAQ */
+  .dkw-faq { background: #fff; padding: 104px 0; }
+  .dkw-faq .dk-h2 { margin: 10px 0 40px; }
+  .dkw-faq__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 40px; align-items: start; }
+  .dkw-faq details { border-top: 2px solid #141A2E; }
+  .dkw-faq summary { list-style: none; cursor: pointer; padding: 18px 0; display: flex; justify-content: space-between; gap: 16px; font-size: 24px; line-height: 1; font-weight: 900; font-stretch: 75%; text-transform: uppercase; }
+  .dkw-faq summary::-webkit-details-marker { display: none; }
+  .dkw-faq summary span::before { content: '+'; color: #D6283A; }
+  .dkw-faq details[open] summary span::before { content: '–'; }
+  .dkw-faq details p { padding: 0 0 20px; font-size: 15px; line-height: 1.6; color: #5A6475; }
+
+  /* CTA */
+  .dkw-cta { position: relative; overflow: hidden; background: #D6283A; color: #fff; padding: 88px 0; }
+  .dkw-cta__held { position: absolute; right: 4%; top: 22px; width: 150px; height: auto; }
+  .dkw-cta__grid { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 48px; align-items: center; }
+  .dkw-cta .dk-h2 { margin: 10px 0 14px; }
+  .dkw-cta__checks { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 15px; font-weight: 700; color: #FFE3E6; }
+  .dkw-form { background: #0B132B; border-radius: 999px; padding: 10px; display: flex; gap: 0; align-items: center; }
+  .dkw-form label { flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 4px 18px; font-size: 12px; font-weight: 700; color: #9AA3B2; }
+  .dkw-form label + label { border-left: 1px solid rgba(255,255,255,.15); }
+  .dkw-form .dkw-form__pc { flex: 1.5; }
+  .dkw-form input { font: inherit; font-size: 17px; font-weight: 700; color: #fff; background: none; border: 0; padding: 4px 0; width: 100%; min-width: 0; }
+  .dkw-form input::placeholder { color: #5A6475; }
+  .dkw-form input:focus-visible { outline: 2px solid #FFB020; outline-offset: 4px; border-radius: 4px; }
+  .dkw-form button { flex: none; font: inherit; background: #fff; color: #141A2E; border: 0; font-weight: 800; font-size: 16px; padding: 18px 26px; border-radius: 999px; cursor: pointer; margin-left: 8px; }
+  .dkw-form button:hover { background: #FFE3E6; }
+
+  @media (max-width: 1240px) {
+    .dkw-hero__grid { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 36px; }
+    .dkw-cta__held { display: none; }
+    .dkw-cta__grid { grid-template-columns: minmax(0, 1fr); }
+    .dkw-werk__grid { grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); gap: 40px; }
+    .dkw-polaroid figcaption { font-size: 13px; }
+    .dkw-hulp { grid-template-columns: minmax(0, 1fr); }
+    .dkw-kaart { padding: 22px 20px 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .dkw-polaroid { transition: none; } }
+</style>

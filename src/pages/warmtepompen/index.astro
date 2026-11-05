@@ -5,6 +5,7 @@ import Button from '../../components/Button.astro';
 import PageHero from '../../components/PageHero.astro';
 import PostcodeForm from '../../components/PostcodeForm.astro';
 import Faq from '../../components/Faq.astro';
+import DesktopWarmtepompen from '../../components/desktop/DesktopWarmtepompen.astro';
 import { warmtepompen, euro, kaartLink } from '../../data/warmtepompen';
 
 const filters = [
@@ -42,6 +43,7 @@ const faq = [
 ];
 ---
 <Base title="Warmtepompen – De Klimaatheld" description="Warmtepompen van Weheat, Vaillant, Daikin en Haier, hybride of all-electric, vakkundig geplaatst in Den Haag en omstreken. Inclusief installatie en ISDE-subsidieaanvraag.">
+  <DesktopWarmtepompen slot="desktop" />
   <PageHero
     label="Warmtepompen"
     title="Slimme warmtepompen, vakkundig geplaatst"
