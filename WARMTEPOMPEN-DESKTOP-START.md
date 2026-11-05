@@ -9,7 +9,7 @@ Zeg in een nieuwe chat: **"Lees WARMTEPOMPEN-DESKTOP-START.md (en OVERDRACHT.md)
 - **Mobiel blijft precies zoals het is.**
 
 ## Wat blijft staan
-- De huidige desktoplaag (branch `desktop-home`, commit `4df9bcc`, tag `desktop-v1`) blijft staan als basis/terugvaloptie. Niet verwijderen.
+- De huidige desktoplaag (branch `desktop-home`, commit `4df9bcc`, bewaar-branch `bewaar/desktop-v1`) blijft staan als basis/terugvaloptie. Niet verwijderen.
 - Die laag regelt: de schakeling mobiel ↔ desktop in `src/layouts/Base.astro`, de desktop-header en -footer (`src/components/desktop/DkHeader.astro`, `DkFooter.astro`) en algemene desktopregels in `src/styles/desktop.css`.
 - Het nieuwe ontwerp **vervangt** de regels voor deze pagina (in `desktop.css` onder "Warmtepompen-overzicht"), of wordt een eigen desktopcomponent zoals bij de homepage (`<slot name="desktop">`, zie hieronder).
 
