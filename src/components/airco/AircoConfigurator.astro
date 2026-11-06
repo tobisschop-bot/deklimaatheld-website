@@ -6,6 +6,7 @@ import Faq from '../Faq.astro';
 import CtaCard from '../CtaCard.astro';
 import { euro } from '../../data/warmtepompen';
 import type { AircoSerie } from '../../data/aircos';
+import DkAirco from '../desktop/DkAirco.astro';
 
 interface Props { serie: AircoSerie }
 const { serie: s } = Astro.props;
@@ -138,6 +139,7 @@ const prijsTekst = (p: number | null) => (p == null ? 'Op aanvraag' : euro(p));
       </div>
     </div>
   </div>
+  <DkAirco slot="desktop" serie={s} />
 </Base>
 
 <script>

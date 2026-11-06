@@ -1,0 +1,726 @@
+---
+// Desktopversie (≥ 1024 px) van de airco-samenstelpagina (/airco/<serie>/).
+// Ontwerp "Live offertebon": links de keuzes, rechts een bon die zich live opbouwt.
+// Stap 1 kiest tussen één ruimte (single-split) en meerdere ruimtes (multi-split).
+// Bij meerdere ruimtes rekent de module per buitenunit: het gekoppelde binnenvermogen mag
+// maximaal MARGE boven het nominale koelvermogen van de buitenunit uitkomen; anders komt er een
+// tweede buitenunit bij. Inhoud komt uit src/data/aircos.ts; de mobiele configurator blijft ongewijzigd.
+import '../../styles/desktop-home.css';
+import DkHeader from './DkHeader.astro';
+import DkFooter from './DkFooter.astro';
+import { euro } from '../../data/warmtepompen';
+import type { AircoSerie } from '../../data/aircos';
+
+interface Props { serie: AircoSerie }
+const { serie: s } = Astro.props;
+
+// Rekenregel multi-split: max. 10% boven het nominale koelvermogen van de buitenunit.
+const MARGE = 0.1;
+// Multi-split buitenunits per merk: [model, nominaal koelvermogen kW, max. aantal binnenunits].
+// Daikin MXM-reeks. TE CONTROLEREN met de actuele productbladen. Andere merken: nog geen tabel,
+// dan kiezen we de buitenunit bij de opname (geen vermogenscheck online).
+const BUITENUNITS: Record<string, [string, number, number][]> = {
+  Daikin: [['2MXM40', 4.0, 2], ['2MXM50', 5.0, 2], ['3MXM40', 4.0, 3], ['3MXM52', 5.2, 3], ['3MXM68', 6.8, 3], ['4MXM68', 6.8, 4], ['4MXM80', 8.0, 4], ['5MXM90', 9.0, 5]],
+};
+const units = BUITENUNITS[s.merk] ?? [];
+
+const kwT = (n: number) => n.toFixed(1).replace('.', ',');
+const start = s.vermogens.find((x) => x.id === '25') ?? s.vermogens.find((x) => x.prijs != null) ?? s.vermogens[0];
+const startK = s.kleuren[0];
+const kort = s.naam.replace(s.merk + ' ', '').replace('Mitsubishi Heavy ', '');
+const imgVan = (k: (typeof s.kleuren)[number]) => k.img ?? s.img ?? '';
+const voorbeeld = (m2: string) => {
+  const n = Number(m2.replace(/[^0-9]/g, ''));
+  return n <= 25 ? 'slaap- of werkkamer' : n <= 35 ? 'grote slaapkamer' : n <= 45 ? 'woonkamer' : n <= 65 ? 'grote woonkamer' : 'woonkeuken';
+};
+
+const data = {
+  slug: s.slug, naam: s.naam, kort, merk: s.merk, marge: MARGE, units,
+  verm: s.vermogens.map((v) => ({ id: v.id, kw: v.kw, kwV: v.kwVerwarmen, m2: v.m2, prijs: v.prijs })),
+  kleuren: s.kleuren.map((k) => ({ id: k.id, naam: k.naam, hex: k.hex, toeslag: k.toeslag, img: imgVan(k) })),
+  startV: s.vermogens.indexOf(start),
+};
+
+const faq = [
+  ...s.faq,
+  {
+    q: 'Heb ik een vergunning nodig voor de buitenunit?',
+    a: 'Dat hangt af van je gemeente en situatie, bijvoorbeeld de plek van de buitenunit, of je woning een monument is of in een beschermd stadsgezicht ligt, en eventuele regels van je VvE. Er gelden ook regels voor geluid. Wij checken dit vooraf voor je.',
+  },
+  {
+    q: 'Hoe vaak moet een airco onderhouden worden?',
+    a: 'Filters van de binnenunit kun je zelf regelmatig schoonmaken. Daarnaast is periodiek onderhoud door een monteur verstandig; hoe vaak hangt af van het gebruik en de adviezen van de fabrikant. We bespreken dit bij de oplevering.',
+  },
+];
+---
+<DkHeader />
+<main class="dka" data-dka>
+  <script type="application/json" data-dka-data set:html={JSON.stringify(data)}></script>
+
+  <section class="dka-top">
+    <div class="dk-wrap">
+      <nav class="dka-crumbs" aria-label="Kruimelpad"><a href="/">Home</a> / <a href="/airco/">Airco</a> / <span>{s.naam}</span></nav>
+      <div class="dka-grid">
+
+        <!-- links: product en keuzes -->
+        <div class="dka-left">
+          <div>
+            <span class="dk-kicker">{s.merk} · {s.positionering}</span>
+            <h1 class="dka-h1">Stel jouw {kort} samen</h1>
+          </div>
+
+          <div class="dka-stage">
+            <div class="dka-stage__vloer" aria-hidden="true"></div>
+            {s.img
+              ? <img class="dka-stage__img" data-dka-img src={imgVan(startK)} alt={`${s.naam} binnenunit in ${startK.naam.toLowerCase()}`} width="1200" height="520" />
+              : <div class="dka-stage__ph">[Productfoto {s.naam}]</div>}
+            <ul class="dka-stage__kern">
+              {s.kenmerken.map((k) => <li><strong>{k.value}</strong> <span>{k.label}</span></li>)}
+            </ul>
+          </div>
+
+          <!-- stap 1 -->
+          <div>
+            <h2 class="dka-step">1 · Hoeveel ruimtes wil je koelen?</h2>
+            <div class="dka-modes">
+              <button type="button" class="dka-mode dka-mode--single is-on" data-mode="single" aria-pressed="true">
+                <svg width="52" height="40" viewBox="0 0 52 40" fill="none" aria-hidden="true"><rect x="2" y="2" width="48" height="36" rx="4" stroke="#141A2E" stroke-width="2.5"/><rect x="14" y="8" width="24" height="6" rx="2" fill="#D6283A"/></svg>
+                <span class="dka-mode__t"><strong>Eén ruimte</strong><span>Single-split · 1 binnen- en 1 buitenunit</span></span>
+                <span class="dka-mode__ok" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+              </button>
+              <button type="button" class="dka-mode dka-mode--multi" data-mode="multi" aria-pressed="false">
+                <svg width="52" height="40" viewBox="0 0 52 40" fill="none" aria-hidden="true"><rect x="2" y="2" width="22" height="16" rx="3" stroke="#fff" stroke-width="2"/><rect x="28" y="2" width="22" height="16" rx="3" stroke="#fff" stroke-width="2"/><rect x="2" y="22" width="22" height="16" rx="3" stroke="#fff" stroke-width="2"/><rect x="8" y="6" width="10" height="3" rx="1" fill="#FF8A95"/><rect x="34" y="6" width="10" height="3" rx="1" fill="#FF8A95"/><rect x="8" y="26" width="10" height="3" rx="1" fill="#FF8A95"/><rect x="30" y="24" width="18" height="12" rx="2" fill="#D6283A"/></svg>
+                <span class="dka-mode__t"><strong>Meerdere ruimtes</strong><span>Multi-split · tot 5 kamers op 1 buitenunit</span></span>
+                <span class="dka-mode__go" aria-hidden="true" data-mode-icon>→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- één ruimte -->
+          <div class="dka-single" data-single>
+            <fieldset class="dka-fs">
+              <legend class="dka-step">2 · Hoe groot is de ruimte?</legend>
+              <div class="dka-sizes" style={`--n:${s.vermogens.length}`}>
+                {s.vermogens.map((v, i) => (
+                  <label class="dka-size">
+                    <input class="dka-sr" type="radio" name={`dka-${s.slug}-v`} value={i} checked={v.id === start.id} />
+                    <span class="dka-size__box">
+                      <strong>{v.m2}</strong>
+                      <span>{voorbeeld(v.m2)}</span>
+                      <b>{kwT(v.kw)} kW</b>
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <button type="button" class="dka-more" data-mode="multi"><span>+</span>Nog een ruimte erbij? Maak er een multi-split van</button>
+            </fieldset>
+
+            <fieldset class="dka-fs">
+              <legend class="dka-step">3 · Welke kleur?</legend>
+              <div class="dka-colors">
+                {s.kleuren.map((k, i) => (
+                  <label class="dka-color">
+                    <input class="dka-sr" type="radio" name={`dka-${s.slug}-k`} value={i} checked={i === 0} />
+                    <span class="dka-color__dot" style={`background:${k.hex}`}></span>
+                    <span class="dka-color__t"><strong>{k.naam}</strong><span>{s.kleuren.length === 1 ? 'enige kleur' : k.toeslag == null ? 'toeslag op aanvraag' : k.toeslag ? '+ ' + euro(k.toeslag) : 'standaard'}</span></span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          </div>
+
+          <!-- meerdere ruimtes (wordt door het script gevuld) -->
+          <div class="dka-multi" data-multi hidden>
+            <h2 class="dka-step">2 · Jouw ruimtes <span data-systeemnaam></span></h2>
+            <div data-systemen></div>
+            <div class="dka-add-row">
+              <span aria-hidden="true"></span>
+              <button type="button" class="dka-add" data-add>+ Ruimte toevoegen <span data-addhint></span></button>
+            </div>
+            <p class="dka-vol" data-vol hidden>Meer dan 8 ruimtes? Dan komen we graag langs voor advies op maat.</p>
+          </div>
+        </div>
+
+        <!-- rechts: de bon -->
+        <aside class="dka-bon" aria-label="Jouw indicatieve offerte">
+          <div class="dka-bon__papier">
+            <div class="dka-bon__kop"><img src="/img/logo-de-klimaatheld.png" alt="De Klimaatheld" width="1400" height="127" /><span>Concept</span></div>
+            <h2 class="dka-bon__titel">Jouw indicatieve offerte</h2>
+            <p class="dka-bon__sub">Wordt live bijgewerkt terwijl je kiest.</p>
+
+            <ul class="dka-bon__regels" data-bon-single>
+              <li class="dka-bon__hl" data-hl="v"><span><strong>{s.naam}</strong><br /><small data-b-verm></small></span><strong data-b-basis></strong></li>
+              <li class="dka-bon__hl" data-hl="k"><span data-b-kleurnaam></span><strong data-b-kleur></strong></li>
+              <li class="dka-bon__incl dka-bon__sep"><span>Advies aan huis</span><span>inbegrepen</span></li>
+              <li class="dka-bon__incl"><span>Montage en leidingwerk</span><span>inbegrepen</span></li>
+              <li class="dka-bon__incl"><span>Inbedrijfstelling en uitleg app</span><span>inbegrepen</span></li>
+              <li class="dka-bon__incl"><span>Nazorg en service</span><span>inbegrepen</span></li>
+            </ul>
+            <ul class="dka-bon__regels" data-bon-multi hidden></ul>
+
+            <div class="dka-bon__totaal"><span data-b-label>Totaal v.a.</span><strong data-b-totaal aria-live="polite">–</strong></div>
+            <p class="dka-bon__noot" data-b-noot></p>
+            <a class="dk-btn dk-btn--red dka-bon__cta" data-b-cta href={`/offerte/?dienst=Airco&model=${s.slug}`}>Maak hier een echte offerte van →</a>
+            <p class="dka-bon__voet">Vrijblijvend · <span data-b-systeem>Single-split</span></p>
+          </div>
+          <div class="dka-bon__rand" aria-hidden="true"></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Richtleiding ===== -->
+  <section class="dka-uitleg">
+    <div class="dk-wrap">
+      <div class="dka-tussenkop">
+        <img src="/img/kh-held.webp" alt="" aria-hidden="true" width="520" height="484" />
+        <div><span class="dk-kicker">Voordat je aanvraagt</span><h2 class="dka-h2">Weet wat je koopt</h2></div>
+        <p>Een airco is meer dan een apparaat aan de muur. Hieronder lees je wat er bij je {kort} hoort, hoe het traject loopt en wat er nog vastgesteld wordt.</p>
+      </div>
+
+      <!-- 1. wat je koopt -->
+      <div class="dka-card dka-koop">
+        <div class="dka-koop__tekst">
+          <span class="dk-kicker">1 · Wat je koopt</span>
+          <h3 class="dka-h3">Een compleet systeem, geplaatst en werkend</h3>
+          <p class="dka-muted">Een airco is een lucht-lucht warmtepomp. Hij verplaatst warmte: in de zomer van binnen naar buiten, in de winter van buiten naar binnen. Daarvoor heb je vier onderdelen nodig.</p>
+          <ol class="dka-delen">
+            <li><b>A</b><div><strong>Binnenunit</strong><span>De {s.naam} die je hierboven kiest, aan de muur van je ruimte.</span></div></li>
+            <li><b>B</b><div><strong>Buitenunit</strong><span>Haalt warmte uit of brengt warmte naar de buitenlucht. Aan de gevel, op het dak of op de grond.</span></div></li>
+            <li><b>C</b><div><strong>Leidingwerk</strong><span>Koudemiddelleidingen, condensafvoer en voeding tussen binnen en buiten, netjes in een leidinggoot.</span></div></li>
+            <li><b>D</b><div><strong>Bediening</strong><span>Afstandsbediening en, bij de meeste modellen, een app. We koppelen hem bij de oplevering.</span></div></li>
+          </ol>
+        </div>
+        <div class="dka-koop__schema">
+          <svg viewBox="0 0 440 300" fill="none" role="img" aria-label="Schema: binnenunit binnen, leidingen door de muur, buitenunit buiten">
+            <rect x="20" y="20" width="230" height="250" rx="6" fill="#fff" stroke="#E3E7ED" stroke-width="2"/>
+            <text x="36" y="48" font-family="Archivo, sans-serif" font-size="12" font-weight="700" fill="#5A6475" letter-spacing="1">BINNEN</text>
+            <text x="282" y="48" font-family="Archivo, sans-serif" font-size="12" font-weight="700" fill="#5A6475" letter-spacing="1">BUITEN</text>
+            <rect x="246" y="20" width="10" height="250" fill="#141A2E"/>
+            <rect x="60" y="70" width="150" height="40" rx="8" fill="#141A2E"/>
+            <circle cx="76" cy="90" r="11" fill="#D6283A"/><text x="72" y="95" font-family="Archivo, sans-serif" font-size="13" font-weight="800" fill="#fff">A</text>
+            <path d="M210 90 H236 V196 H300" stroke="#D6283A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M210 100 H230 V204 H300" stroke="#141A2E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="5 5"/>
+            <circle cx="236" cy="150" r="11" fill="#D6283A"/><text x="232" y="155" font-family="Archivo, sans-serif" font-size="13" font-weight="800" fill="#fff">C</text>
+            <rect x="300" y="170" width="110" height="80" rx="8" fill="#fff" stroke="#141A2E" stroke-width="3"/>
+            <circle cx="340" cy="210" r="22" stroke="#141A2E" stroke-width="3"/>
+            <path d="M380 186 v48" stroke="#141A2E" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="396" cy="182" r="11" fill="#D6283A"/><text x="392" y="187" font-family="Archivo, sans-serif" font-size="13" font-weight="800" fill="#fff">B</text>
+            <rect x="70" y="190" width="40" height="58" rx="8" stroke="#141A2E" stroke-width="2.5"/>
+            <circle cx="90" cy="206" r="5" fill="#141A2E"/>
+            <circle cx="124" cy="196" r="11" fill="#D6283A"/><text x="120" y="201" font-family="Archivo, sans-serif" font-size="13" font-weight="800" fill="#fff">D</text>
+            <path d="M80 128 c10 10 10 22 0 32 M120 128 c10 10 10 22 0 32 M160 128 c10 10 10 22 0 32" stroke="#D6283A" stroke-width="2" stroke-linecap="round" opacity=".45"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 2. traject -->
+      <div class="dka-blok">
+        <div class="dka-blok__kop">
+          <div><span class="dk-kicker">2 · Zo gaat het verder</span><h3 class="dka-h3">Van deze bon naar een koele kamer</h3></div>
+          <p class="dka-muted">Per stap zie je wat wij doen en wat er van jou gevraagd wordt. Je zit nergens aan vast tot je de definitieve offerte tekent.</p>
+        </div>
+        <ol class="dka-traject">
+          <li class="is-hier"><div class="dka-traject__n"><b>1</b><span>Je bent hier</span></div><strong>Aanvraag</strong><p><b>Jij</b> verstuurt deze bon met je keuze.</p><p><b>Wij</b> nemen contact op om de opname in te plannen.</p></li>
+          <li><div class="dka-traject__n"><b>2</b></div><strong>Opname aan huis</strong><p><b>Wij</b> bekijken de ruimte, de plek voor de buitenunit, de leidingroute en je meterkast, en rekenen het vermogen uit.</p><p><b>Jij</b> laat zien waar je de units het liefst wilt.</p></li>
+          <li><div class="dka-traject__n"><b>3</b></div><strong>Definitieve offerte</strong><p><b>Wij</b> sturen een offerte met een vaste prijs voor jouw situatie.</p><p><b>Jij</b> beslist rustig. Pas als je tekent, plannen we de installatie.</p></li>
+          <li><div class="dka-traject__n"><b>4</b></div><strong>Installatie</strong><p><b>Wij</b> monteren binnen- en buitenunit, leggen het leidingwerk aan en werken alles netjes af.</p><p><b>Jij</b> zorgt dat de plekken vrij en bereikbaar zijn.</p></li>
+          <li><div class="dka-traject__n dka-traject__n--groen"><b>5</b></div><strong>Uitleg en nazorg</strong><p><b>Wij</b> stellen het systeem in, leggen de bediening en app uit en blijven bereikbaar voor service.</p><p><b>Jij</b> maakt de filters af en toe schoon.</p></li>
+        </ol>
+      </div>
+
+      <!-- 3. prijs -->
+      <div class="dka-blok">
+        <span class="dk-kicker">3 · Over de prijs</span>
+        <h3 class="dka-h3">Waarom de prijs nog indicatief is</h3>
+        <div class="dka-prijs">
+          <div class="dka-card dka-prijs__in">
+            <strong>Al in de prijs op je bon</strong>
+            <ul>
+              <li>De {s.naam} en een passende buitenunit</li>
+              <li>Advies en opname aan huis</li>
+              <li>Vakkundige montage, leidingwerk en afwerking</li>
+              <li>Inbedrijfstelling en uitleg, ook van de app</li>
+              <li>Btw</li>
+            </ul>
+          </div>
+          <div class="dka-card dka-prijs__later">
+            <strong>Stellen we vast bij de opname</strong>
+            <ul>
+              <li>Het juiste vermogen voor jouw ruimte en isolatie</li>
+              <li>De leidingroute tussen binnen en buiten</li>
+              <li>De plek en bevestiging van de buitenunit</li>
+              <li>Of je meterkast een extra groep nodig heeft</li>
+              <li>Regels van gemeente of VvE voor de buitenunit</li>
+            </ul>
+            <p class="dka-muted">Wijkt jouw situatie af, dan zie je dat terug in de definitieve offerte, voordat je iets tekent.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. specs + waarom -->
+      <div class="dka-blok dka-twee">
+        <div>
+          <span class="dk-kicker">4 · De {kort} in het kort</span>
+          <h3 class="dka-h3">Specificaties</h3>
+          <dl class="dka-card dka-specs">
+            {s.specs.map((x) => <div><dd>{x.label}</dd><dt>{x.value}</dt></div>)}
+          </dl>
+          <p class="dka-bron">Bron: <a href={s.bron} target="_blank" rel="noopener">{s.merk}</a>. Waarden kunnen per vermogen verschillen.</p>
+        </div>
+        <div>
+          <span class="dk-kicker">Waarom deze airco</span>
+          <h3 class="dka-h3">Daarom kies je de {kort}</h3>
+          <div class="dka-waarom">
+            {s.waarom.map((w) => <div class="dka-card"><strong>{w.title}</strong><span>{w.text}</span></div>)}
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. faq -->
+      <div class="dka-blok dka-faq">
+        <div><span class="dk-kicker">5 · Goed om te weten</span><h3 class="dka-h3">Vragen die we vaak krijgen</h3></div>
+        <div class="dka-faq__lijst">
+          {faq.map((f, i) => <details class="dka-card" open={i === 0}><summary>{f.q}</summary><p>{f.a}</p></details>)}
+        </div>
+      </div>
+
+      <!-- slot -->
+      <div class="dka-slot">
+        <div><h3 class="dka-h3">Alles duidelijk?</h3><p data-b-samenvatting></p></div>
+        <div class="dka-slot__prijs"><span data-b-label2>Totaal v.a.</span><strong data-b-totaal2>–</strong></div>
+        <a class="dk-btn dk-btn--white" data-b-cta2 href={`/offerte/?dienst=Airco&model=${s.slug}`}>Maak hier een echte offerte van →</a>
+      </div>
+    </div>
+  </section>
+</main>
+<DkFooter />
+
+<script>
+  type V = { id: string; kw: number; kwV: number | null; m2: string; prijs: number | null };
+  type K = { id: string; naam: string; hex: string; toeslag: number | null; img: string };
+  type D = { slug: string; naam: string; kort: string; merk: string; marge: number; units: [string, number, number][]; verm: V[]; kleuren: K[]; startV: number };
+  type Room = { type: number; vi: number; ki: number };
+
+  const TYPES: [string, number][] = [['Slaapkamer', 0], ['Werkkamer', 0], ['Kinderkamer', 0], ['Zolder', 1], ['Woonkamer', 2]];
+  const MAX_TOTAAL = 8, MAX_GENERIEK = 5;
+  const euro = (n: number) => '€ ' + Math.round(n).toLocaleString('nl-NL');
+  const kwT = (n: number) => n.toFixed(1).replace('.', ',');
+  const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+
+  document.querySelectorAll<HTMLElement>('[data-dka]').forEach((root) => {
+    const d: D = JSON.parse(root.querySelector('[data-dka-data]')!.textContent!);
+    const $ = <T extends Element = HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+    const img = root.querySelector<HTMLImageElement>('[data-dka-img]');
+    const vInputs = [...root.querySelectorAll<HTMLInputElement>(`input[name="dka-${d.slug}-v"]`)];
+    const kInputs = [...root.querySelectorAll<HTMLInputElement>(`input[name="dka-${d.slug}-k"]`)];
+    const maxVi = d.verm.length - 1;
+
+    let mode: 'single' | 'multi' = 'single';
+    let rooms: Room[] = [];
+    let open = -1;
+    let laatst: 'v' | 'k' | null = null;
+
+    d.kleuren.forEach((k) => { if (k.img) { const p = new Image(); p.src = k.img; } });
+
+    const vi = () => Number(vInputs.find((i) => i.checked)?.value ?? d.startV);
+    const ki = () => Number(kInputs.find((i) => i.checked)?.value ?? 0);
+
+    const setImg = (k: K) => {
+      if (!img || !k.img) return;
+      if (img.getAttribute('src') === k.img) return;
+      img.style.opacity = '0';
+      setTimeout(() => { img.src = k.img; img.alt = `${d.naam} binnenunit in ${k.naam.toLowerCase()}`; img.style.opacity = '1'; }, 160);
+    };
+
+    // ---------- multi-split: indelen per buitenunit ----------
+    const fit = (cnt: number, kw: number) => d.units.find((u) => u[2] >= cnt && u[1] * (1 + d.marge) >= kw - 1e-9);
+    const groepen = () => {
+      const gr: { idx: number[]; kw: number }[] = [];
+      let cur = { idx: [] as number[], kw: 0 };
+      rooms.forEach((r, i) => {
+        const kw = d.verm[r.vi].kw;
+        const past = d.units.length ? !!fit(cur.idx.length + 1, cur.kw + kw) : cur.idx.length < MAX_GENERIEK;
+        if (cur.idx.length && !past) { gr.push(cur); cur = { idx: [], kw: 0 }; }
+        cur.idx.push(i); cur.kw += kw;
+      });
+      gr.push(cur);
+      return gr;
+    };
+    const systeemNaam = (gr: ReturnType<typeof groepen>) => {
+      if (mode === 'single') return 'Single-split';
+      const n = rooms.length;
+      return gr.length > 1 ? `${gr.length} buitenunits · ${n} ruimtes` : n === 2 ? 'Dual-split' : `Multi-split · ${n} ruimtes`;
+    };
+
+    const roomHtml = (i: number) => {
+      const r = rooms[i]; const v = d.verm[r.vi]; const k = d.kleuren[r.ki]; const isOpen = i === open;
+      const node = `<div class="dka-pijp" aria-hidden="true"><span class="dka-pijp__lijn"></span><span class="dka-pijp__node${isOpen ? ' is-open' : ''}">${i + 1}</span></div>`;
+      if (!isOpen) {
+        return `<div class="dka-room">${node}<div class="dka-room__body"><button type="button" class="dka-room__dicht" data-open="${i}" aria-expanded="false">
+          ${k.img ? `<img src="${esc(k.img)}" alt="" />` : ''}<strong>${TYPES[r.type][0]}</strong>
+          <span class="dka-room__kort">${esc(v.m2)} · ${kwT(v.kw)} kW · ${esc(k.naam)}</span><span class="dka-room__wijzig">Wijzig</span></button></div></div>`;
+      }
+      const opties = TYPES.map((t, ti) => `<option value="${ti}"${ti === r.type ? ' selected' : ''}>${t[0]}</option>`).join('');
+      const stalen = d.kleuren.map((c, ci) => `<button type="button" class="dka-staal${ci === r.ki ? ' is-on' : ''}" data-kleur="${i}:${ci}" role="radio" aria-checked="${ci === r.ki}" aria-label="${esc(c.naam)}" title="${esc(c.naam)}" style="background:${esc(c.hex)}"></button>`).join('');
+      return `<div class="dka-room">${node}<div class="dka-room__body"><div class="dka-room__open">
+        <div class="dka-room__kop"><strong>${TYPES[r.type][0]}</strong>
+          ${rooms.length > 1 ? `<button type="button" class="dka-link" data-remove="${i}">Verwijderen</button>` : ''}
+          <button type="button" class="dka-klaar" data-close>Klaar ✓</button></div>
+        <label class="dka-veld">Soort ruimte<select data-type="${i}">${opties}</select></label>
+        <div class="dka-veld"><span>Grootte</span><div class="dka-stepper">
+          <button type="button" data-step="${i}:-1" aria-label="Kleinere ruimte"${r.vi === 0 ? ' disabled' : ''}>−</button>
+          <span aria-live="polite"><b>${esc(v.m2)}</b> · ${kwT(v.kw)} kW</span>
+          <button type="button" data-step="${i}:1" aria-label="Grotere ruimte"${r.vi === maxVi ? ' disabled' : ''}>+</button></div></div>
+        <div class="dka-veld"><span>Kleur · ${esc(k.naam)}</span><div class="dka-stalen" role="radiogroup" aria-label="Kleur">${stalen}</div></div>
+      </div></div></div>`;
+    };
+
+    const unitHtml = (gr: { idx: number[]; kw: number }, si: number) => {
+      const melding = si > 0 ? `<div class="dka-melding" role="status"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B07A12" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg><span><strong>Past niet meer op buitenunit ${si}.</strong> ${d.units.length ? `Samen zou het vermogen boven de ${Math.round(d.marge * 100)}%-marge uitkomen.` : `Eén buitenunit heeft maximaal ${MAX_GENERIEK} aansluitingen.`} Deze ruimtes krijgen daarom een eigen buitenunit.</span></div>` : '';
+      const kamers = gr.idx.map(roomHtml).join('');
+      let box: string;
+      if (d.units.length) {
+        const u = fit(gr.idx.length, gr.kw) ?? d.units[d.units.length - 1];
+        const max = u[1] * (1 + d.marge); const over = (gr.kw - u[1]) / u[1]; const inMarge = over > 0;
+        const nom = 100 / (1 + d.marge); const fill = Math.min(100, (gr.kw / max) * 100);
+        box = `<div class="dka-unit__kop"><svg width="40" height="32" viewBox="0 0 34 28" fill="none" aria-hidden="true"><rect x="1" y="1" width="32" height="26" rx="4" stroke="#fff" stroke-width="2"/><circle cx="13" cy="14" r="7" stroke="#FF8A95" stroke-width="2"/><path d="M26 7v14" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          <div><strong>Buitenunit ${si + 1} · ${esc(d.merk)} ${u[0]}</strong><span>${kwT(u[1])} kW nominaal · ${u[2]} aansluitingen · ${gr.idx.length} in gebruik</span></div>
+          <span class="dka-badge${inMarge ? ' dka-badge--marge' : ''}">${inMarge ? `+${Math.round(over * 100)}% · binnen marge` : 'Past'}</span></div>
+          <div class="dka-balk" role="img" aria-label="Binnenunits samen ${kwT(gr.kw)} kW van ${kwT(u[1])} kW nominaal">
+            <span class="dka-balk__marge" style="left:${nom}%"></span><span class="dka-balk__vul${inMarge ? ' is-marge' : ''}" style="width:${fill}%"></span><span class="dka-balk__nom" style="left:${nom}%"></span></div>
+          <div class="dka-balk__tekst"><span>Binnenunits samen ${kwT(gr.kw)} kW van ${kwT(u[1])} kW</span><span>nominaal | +${Math.round(d.marge * 100)}%</span></div>`;
+      } else {
+        box = `<div class="dka-unit__kop"><svg width="40" height="32" viewBox="0 0 34 28" fill="none" aria-hidden="true"><rect x="1" y="1" width="32" height="26" rx="4" stroke="#fff" stroke-width="2"/><circle cx="13" cy="14" r="7" stroke="#FF8A95" stroke-width="2"/><path d="M26 7v14" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+          <div><strong>Buitenunit ${si + 1} · multi-split</strong><span>Binnenunits samen ${kwT(gr.kw)} kW. Het juiste model kiezen we bij de opname.</span></div></div>`;
+      }
+      return `<div class="dka-systeem">${melding}${kamers}<div class="dka-room"><div class="dka-pijp" aria-hidden="true"><span class="dka-pijp__lijn dka-pijp__lijn--eind"></span></div><div class="dka-unit">${box}</div></div></div>`;
+    };
+
+    const unitModel = (gr: { idx: number[]; kw: number }) => {
+      if (!d.units.length) return 'model bij opname';
+      const u = fit(gr.idx.length, gr.kw) ?? d.units[d.units.length - 1];
+      return `${d.merk} ${u[0]} · ${kwT(u[1])} kW`;
+    };
+
+    // ---------- alles bijwerken ----------
+    const render = () => {
+      const multi = mode === 'multi';
+      root.querySelectorAll<HTMLButtonElement>('.dka-mode').forEach((b) => {
+        const on = b.dataset.mode === mode; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on));
+      });
+      $('[data-mode-icon]').textContent = multi ? '✓' : '→';
+      $('[data-single]').hidden = multi;
+      $('[data-multi]').hidden = !multi;
+      $('[data-bon-single]').hidden = multi;
+      $('[data-bon-multi]').hidden = !multi;
+
+      const gr = groepen();
+      const naam = systeemNaam(gr);
+      $('[data-b-systeem]').textContent = naam;
+      const cta = $<HTMLAnchorElement>('[data-b-cta]'); const cta2 = $<HTMLAnchorElement>('[data-b-cta2]');
+      let totaal: string, label: string, noot: string, samen: string, href: string;
+
+      if (!multi) {
+        const v = d.verm[vi()]; const k = d.kleuren[ki()];
+        const prijs = v.prijs; const tot = prijs == null || k.toeslag == null ? null : prijs + k.toeslag;
+        $('[data-b-verm]').textContent = `${kwT(v.kw)} kW · ${v.m2} · binnen- en buitenunit`;
+        $('[data-b-basis]').textContent = prijs == null ? 'op aanvraag' : euro(prijs);
+        $('[data-b-kleurnaam]').textContent = `Kleur ${k.naam.toLowerCase()}`;
+        $('[data-b-kleur]').textContent = k.toeslag == null ? 'op aanvraag' : k.toeslag ? '+ ' + euro(k.toeslag) : 'standaard';
+        root.querySelectorAll<HTMLElement>('[data-hl]').forEach((li) => li.classList.toggle('is-nieuw', li.dataset.hl === laatst));
+        totaal = tot == null ? 'Op aanvraag' : euro(tot);
+        label = tot == null ? 'Prijs' : 'Totaal v.a.';
+        noot = tot == null ? 'Prijs op maat na een korte opname' : 'Incl. btw · indicatief · definitief na opname';
+        samen = `${d.naam} · ${k.naam} · ${kwT(v.kw)} kW · ${v.m2}`;
+        const q = new URLSearchParams({ dienst: 'Airco', model: d.slug, uitvoering: 'Single-split', vermogen: `${kwT(v.kw)} kW`, kleur: k.id, ruimtes: '1' });
+        href = `/offerte/?${q}`;
+        cta.textContent = tot == null ? 'Vraag prijs en offerte aan →' : 'Maak hier een echte offerte van →';
+        setImg(k);
+      } else {
+        $('[data-systeemnaam]').textContent = `· ${naam}`;
+        $('[data-systemen]').innerHTML = gr.map(unitHtml).join('');
+        const last = gr[gr.length - 1];
+        const past = d.units.length ? !!fit(last.idx.length + 1, last.kw + d.verm[0].kw) : last.idx.length < MAX_GENERIEK;
+        $('[data-addhint]').textContent = `· ${past ? `past nog op buitenunit ${gr.length}` : 'komt op een nieuwe buitenunit'}`;
+        $('[data-add]').hidden = rooms.length >= MAX_TOTAAL;
+        $('[data-vol]').hidden = rooms.length < MAX_TOTAAL;
+        $('[data-bon-multi]').innerHTML = gr.map((g, si) => `<li class="dka-bon__unit"><div><span><strong>Buitenunit ${si + 1}</strong><br /><small>${esc(unitModel(g))}</small></span><em>op maat</em></div><ul>${g.idx.map((i) => {
+          const r = rooms[i]; const v = d.verm[r.vi]; const k = d.kleuren[r.ki];
+          return `<li class="${i === open ? 'is-nieuw' : ''}"><span>${i + 1}. ${TYPES[r.type][0]} <small>· ${esc(d.kort)} ${kwT(v.kw)} kW · ${esc(k.naam)}</small></span><em>op maat</em></li>`;
+        }).join('')}</ul></li>`).join('') +
+          `<li class="dka-bon__incl dka-bon__sep"><span>Advies, montage en leidingwerk</span><span>inbegrepen</span></li><li class="dka-bon__incl"><span>Inbedrijfstelling en nazorg</span><span>inbegrepen</span></li>`;
+        totaal = 'Op maat'; label = 'Totaal';
+        noot = 'Voor een multi-split maken we de prijs op maat, na de opname.';
+        samen = `${d.naam} · ${naam}`;
+        const kamerTekst = rooms.map((r, i) => `${i + 1}. ${TYPES[r.type][0]} ${kwT(d.verm[r.vi].kw)} kW ${d.kleuren[r.ki].naam.toLowerCase()}`).join('; ');
+        const units = gr.map((g, si) => `buitenunit ${si + 1}: ${unitModel(g)}`).join('; ');
+        const q = new URLSearchParams({ dienst: 'Airco', model: d.slug, uitvoering: gr.length > 1 ? `Multi-split (${gr.length} buitenunits)` : rooms.length === 2 ? 'Dual-split' : 'Multi-split', ruimtes: `${rooms.length} (${kamerTekst}) · ${units}` });
+        href = `/offerte/?${q}`;
+        cta.textContent = 'Maak hier een echte offerte van →';
+        const r0 = rooms[Math.max(0, Math.min(open, rooms.length - 1))];
+        if (r0) setImg(d.kleuren[r0.ki]);
+      }
+      $('[data-b-totaal]').textContent = totaal; $('[data-b-totaal2]').textContent = totaal;
+      $('[data-b-label]').textContent = label; $('[data-b-label2]').textContent = label;
+      $('[data-b-noot]').textContent = noot;
+      $('[data-b-samenvatting]').textContent = samen;
+      cta.href = href; cta2.href = href; cta2.textContent = cta.textContent;
+    };
+
+    // ---------- events ----------
+    vInputs.forEach((i) => i.addEventListener('change', () => { laatst = 'v'; render(); }));
+    kInputs.forEach((i) => i.addEventListener('change', () => { laatst = 'k'; render(); }));
+    root.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach((b) => b.addEventListener('click', () => {
+      const naar = b.dataset.mode as 'single' | 'multi';
+      if (naar === 'multi' && mode !== 'multi') {
+        if (!rooms.length) rooms = [{ type: 4, vi: vi(), ki: ki() }, { type: 0, vi: 0, ki: 0 }];
+        open = rooms.length - 1;
+      }
+      mode = naar; render();
+    }));
+    $('[data-add]').addEventListener('click', () => {
+      if (rooms.length >= MAX_TOTAAL) return;
+      rooms.push({ type: 0, vi: 0, ki: 0 }); open = rooms.length - 1; render();
+    });
+    const multiBox = $('[data-multi]');
+    multiBox.addEventListener('click', (e) => {
+      const t = (e.target as HTMLElement).closest<HTMLElement>('button');
+      if (!t) return;
+      if (t.dataset.open != null) { open = Number(t.dataset.open); render(); }
+      else if (t.dataset.close != null) { open = -1; render(); }
+      else if (t.dataset.remove != null) { rooms.splice(Number(t.dataset.remove), 1); open = -1; render(); }
+      else if (t.dataset.step) { const [i, dir] = t.dataset.step.split(':').map(Number); rooms[i].vi = Math.max(0, Math.min(maxVi, rooms[i].vi + dir)); render(); }
+      else if (t.dataset.kleur) { const [i, c] = t.dataset.kleur.split(':').map(Number); rooms[i].ki = c; render(); }
+    });
+    multiBox.addEventListener('change', (e) => {
+      const sel = e.target as HTMLSelectElement;
+      if (sel.dataset.type == null) return;
+      const i = Number(sel.dataset.type); const ti = Number(sel.value);
+      rooms[i].type = ti; rooms[i].vi = Math.min(TYPES[ti][1], maxVi); render();
+    });
+
+    // kleur uit de link van het overzicht (?kleur=…)
+    const kp = new URLSearchParams(location.search).get('kleur');
+    const ix = d.kleuren.findIndex((k) => k.id === kp);
+    if (ix > 0 && kInputs[ix]) kInputs[ix].checked = true;
+    render();
+  });
+</script>
+
+<style is:global>
+  @media (min-width: 1024px) { body.dk-page:has(.dka) { padding-bottom: 0; background: #F4F6F9; } html:has(.dka) { background: #F4F6F9; } }
+  .dka { background: #F4F6F9; color: #141A2E; font-size: 16px; line-height: 1.5; padding-bottom: 96px; }
+  .dka a { color: #D6283A; }
+  .dka button { font-family: inherit; }
+  .dka button:focus-visible, .dka a:focus-visible, .dka input:focus-visible + *, .dka select:focus-visible, .dka summary:focus-visible { outline: 3px solid #D6283A; outline-offset: 3px; }
+  .dka-sr { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .dka-muted { color: #5A6475; }
+  .dka-top { padding: 28px 0 0; }
+  .dka-crumbs { font-size: 13px; color: #5A6475; margin-bottom: 12px; }
+  .dka-crumbs a { color: #5A6475; }
+  .dka-grid { display: flex; gap: 32px; align-items: flex-start; }
+  .dka-left { flex: 1.7 1 0; min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+  .dka-h1 { font-size: 64px; line-height: .95; font-weight: 900; font-stretch: 65%; text-transform: uppercase; margin-top: 6px !important; }
+  .dka-h2 { font-size: 56px; line-height: .95; font-weight: 900; font-stretch: 65%; text-transform: uppercase; }
+  .dka-h3 { font-size: 34px; line-height: 1; font-weight: 900; font-stretch: 65%; text-transform: uppercase; margin: 6px 0 14px !important; }
+  .dka-step { font-size: 24px; font-weight: 900; font-stretch: 70%; text-transform: uppercase; margin: 0 0 10px; padding: 0; }
+  .dka-step span { font-size: 16px; font-weight: 600; font-stretch: 100%; text-transform: none; color: #5A6475; }
+  .dka-fs { border: 0; margin: 0 0 24px; padding: 0; min-width: 0; }
+
+  /* podium */
+  .dka-stage { position: relative; height: 360px; background: #fff; border: 1px solid #E3E7ED; border-radius: 24px; overflow: hidden; }
+  .dka-stage__vloer { position: absolute; inset: auto 0 0 0; height: 110px; background: #EEF1F5; clip-path: polygon(0 50%, 100% 0, 100% 100%, 0 100%); }
+  .dka-stage__img { position: absolute; left: 9%; top: 40px; width: 82%; height: auto; filter: drop-shadow(0 24px 22px rgba(20,26,46,.2)); transition: opacity .16s; }
+  .dka-stage__ph { position: absolute; inset: 24px; border: 2px dashed #E3E7ED; border-radius: 16px; display: grid; place-items: center; color: #5A6475; }
+  .dka-stage__kern { position: absolute; left: 20px; bottom: 18px; list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+  .dka-stage__kern li { background: #fff; border: 1px solid #E3E7ED; border-radius: 999px; padding: 5px 12px; font-size: 13px; }
+  .dka-stage__kern span { color: #5A6475; }
+
+  /* stap 1 */
+  .dka-modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .dka-mode { cursor: pointer; text-align: left; border-radius: 16px; padding: 16px 18px; display: flex; gap: 14px; align-items: center; font-size: 16px; }
+  .dka-mode__t { flex: 1; display: flex; flex-direction: column; }
+  .dka-mode__t strong { font-size: 18px; }
+  .dka-mode__t span { font-size: 14px; }
+  .dka-mode--single { background: #fff; border: 2px solid #E3E7ED; color: #141A2E; }
+  .dka-mode--single .dka-mode__t span { color: #5A6475; }
+  .dka-mode--single.is-on { border-color: #D6283A; }
+  .dka-mode__ok { width: 26px; height: 26px; border-radius: 50%; background: #D6283A; display: none; place-items: center; }
+  .dka-mode--single.is-on .dka-mode__ok { display: grid; }
+  .dka-mode--multi { background: #141A2E; border: 2px solid #141A2E; color: #fff; }
+  .dka-mode--multi .dka-mode__t span { color: rgba(255,255,255,.75); }
+  .dka-mode--multi.is-on { border-color: #D6283A; box-shadow: 0 0 0 4px rgba(214,40,58,.35); }
+  .dka-mode__go { width: 34px; height: 34px; border-radius: 50%; background: #D6283A; display: grid; place-items: center; font-weight: 800; }
+
+  /* één ruimte */
+  .dka-sizes { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 8px; }
+  .dka-size { cursor: pointer; }
+  .dka-size__box { display: flex; flex-direction: column; gap: 2px; border-radius: 14px; padding: 14px 10px; background: #fff; border: 1px solid #E3E7ED; }
+  .dka-size__box strong { font-size: 22px; font-weight: 900; font-stretch: 70%; line-height: 1; }
+  .dka-size__box span { font-size: 12px; color: #5A6475; }
+  .dka-size__box b { font-size: 12px; margin-top: 4px; }
+  .dka-size input:checked + .dka-size__box { background: #141A2E; border-color: #141A2E; color: #fff; }
+  .dka-size input:checked + .dka-size__box span { color: rgba(255,255,255,.8); }
+  .dka-more { cursor: pointer; margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; background: transparent; color: #141A2E; font-weight: 700; font-size: 15px; border: 2px dashed #CBD2DB; border-radius: 999px; padding: 8px 16px; }
+  .dka-more span { color: #D6283A; font-size: 18px; line-height: 1; }
+  .dka-colors { display: flex; gap: 22px; flex-wrap: wrap; }
+  .dka-color { cursor: pointer; display: flex; align-items: center; gap: 10px; }
+  .dka-color__dot { width: 48px; height: 48px; border-radius: 50%; border: 1px solid #CBD2DB; box-shadow: 0 0 0 3px #fff inset; outline: 3px solid transparent; outline-offset: 3px; }
+  .dka-color input:checked + .dka-color__dot { outline-color: #D6283A; }
+  .dka-color__t { display: flex; flex-direction: column; }
+  .dka-color__t strong { font-size: 15px; }
+  .dka-color__t span { font-size: 12px; color: #5A6475; }
+
+  /* meerdere ruimtes */
+  .dka-systeem { margin-bottom: 22px; }
+  .dka-room { display: flex; gap: 14px; }
+  .dka-pijp { flex: 0 0 44px; position: relative; }
+  .dka-pijp__lijn { position: absolute; left: 20px; top: 0; bottom: 0; width: 4px; background: #D6283A; }
+  .dka-pijp__lijn--eind { bottom: auto; height: 24px; }
+  .dka-pijp__node { position: absolute; left: 6px; top: 14px; width: 32px; height: 32px; border-radius: 50%; background: #fff; color: #141A2E; border: 3px solid #D6283A; display: grid; place-items: center; font-weight: 800; font-size: 14px; }
+  .dka-pijp__node.is-open { background: #D6283A; color: #fff; }
+  .dka-room__body { flex: 1; min-width: 0; padding-bottom: 12px; }
+  .dka-room__dicht { cursor: pointer; width: 100%; display: flex; align-items: center; gap: 14px; text-align: left; background: #fff; border: 1px solid #E3E7ED; border-radius: 12px; padding: 12px 18px; color: #141A2E; font-size: 16px; }
+  .dka-room__dicht img { width: 70px; height: auto; }
+  .dka-room__dicht strong { font-size: 17px; }
+  .dka-room__kort { flex: 1; color: #5A6475; font-size: 15px; }
+  .dka-room__wijzig { font-size: 14px; font-weight: 700; color: #D6283A; }
+  .dka-room__open { background: #fff; border: 1px solid #E3E7ED; border-left: 4px solid #D6283A; border-radius: 12px; padding: 18px 20px; display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; box-shadow: 0 14px 30px rgba(20,26,46,.08); }
+  .dka-room__kop { flex: 1 1 100%; display: flex; align-items: center; gap: 12px; }
+  .dka-room__kop strong { flex: 1; font-size: 18px; }
+  .dka-link { cursor: pointer; background: none; border: 0; color: #5A6475; font-size: 14px; text-decoration: underline; }
+  .dka-klaar { cursor: pointer; background: #141A2E; color: #fff; border: 0; border-radius: 999px; padding: 8px 16px; font-weight: 700; font-size: 14px; }
+  .dka-veld { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #5A6475; }
+  .dka-veld select { font: inherit; font-size: 16px; font-weight: 700; color: #141A2E; text-transform: none; letter-spacing: 0; padding: 10px 14px; border: 1px solid #E3E7ED; border-radius: 10px; background: #F4F6F9; min-width: 170px; }
+  .dka-stepper { display: flex; align-items: center; border: 1px solid #E3E7ED; border-radius: 10px; overflow: hidden; text-transform: none; letter-spacing: 0; }
+  .dka-stepper button { cursor: pointer; width: 44px; height: 44px; border: 0; background: #F4F6F9; font-size: 22px; font-weight: 700; color: #141A2E; }
+  .dka-stepper button:disabled { cursor: not-allowed; opacity: .35; }
+  .dka-stepper span { min-width: 150px; text-align: center; font-size: 13px; font-weight: 600; color: #5A6475; }
+  .dka-stepper b { font-size: 20px; font-weight: 900; font-stretch: 70%; color: #141A2E; }
+  .dka-stalen { display: flex; gap: 10px; height: 44px; align-items: center; }
+  .dka-staal { cursor: pointer; width: 30px; height: 30px; border-radius: 50%; padding: 0; border: 1px solid #CBD2DB; outline: 2px solid transparent; outline-offset: 2px; }
+  .dka-staal.is-on { outline-color: #D6283A; }
+  .dka-melding { display: flex; gap: 12px; align-items: flex-start; background: #FFF6E3; border: 1px solid #F5B83D; border-radius: 12px; padding: 12px 16px; margin: 0 0 14px 58px; font-size: 14px; color: #5A4310; }
+  .dka-melding svg { flex: 0 0 20px; margin-top: 1px; }
+  .dka-unit { flex: 1; min-width: 0; background: #141A2E; color: #fff; border-radius: 14px; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .dka-unit__kop { display: flex; align-items: center; gap: 14px; }
+  .dka-unit__kop div { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .dka-unit__kop div span { font-size: 13px; color: rgba(255,255,255,.72); }
+  .dka-badge { font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 999px; background: #1E9E6A; color: #fff; white-space: nowrap; }
+  .dka-badge--marge { background: #F5B83D; color: #141A2E; }
+  .dka-balk { position: relative; height: 12px; border-radius: 6px; background: rgba(255,255,255,.12); overflow: hidden; }
+  .dka-balk__marge { position: absolute; top: 0; bottom: 0; right: 0; background: repeating-linear-gradient(135deg, rgba(245,184,61,.35) 0 4px, transparent 4px 8px); }
+  .dka-balk__vul { position: absolute; left: 0; top: 0; bottom: 0; background: #D6283A; border-radius: 6px; transition: width .35s; }
+  .dka-balk__vul.is-marge { background: #F5B83D; }
+  .dka-balk__nom { position: absolute; top: -2px; bottom: -2px; width: 2px; background: #fff; }
+  .dka-balk__tekst { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,.7); margin-top: -4px; }
+  .dka-add-row { display: flex; gap: 14px; }
+  .dka-add-row > span { flex: 0 0 44px; }
+  .dka-add { cursor: pointer; flex: 1; border: 2px dashed #CBD2DB; background: transparent; border-radius: 12px; padding: 14px 18px; font-size: 16px; font-weight: 800; color: #D6283A; text-align: left; }
+  .dka-add span { font-weight: 500; color: #5A6475; font-size: 14px; }
+  .dka-vol { margin: 0 0 0 58px; padding: 14px 18px; border-radius: 14px; background: #FBE3E5; color: #5A2A30; font-size: 15px; }
+
+  /* de bon */
+  .dka-bon { flex: 1 1 0; min-width: 360px; max-width: 440px; position: sticky; top: 108px; filter: drop-shadow(0 22px 34px rgba(20,26,46,.16)); }
+  .dka-bon__papier { background: #fff; border-radius: 18px 18px 0 0; padding: 28px 28px 20px; border-top: 6px solid #D6283A; }
+  .dka-bon__kop { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .dka-bon__kop img { width: 150px; height: auto; }
+  .dka-bon__kop span { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #5A6475; }
+  .dka-bon__titel { font-size: 28px; font-weight: 900; font-stretch: 65%; text-transform: uppercase; line-height: 1; margin: 14px 0 2px !important; }
+  .dka-bon__sub { font-size: 13px; color: #5A6475; margin: 0 0 16px !important; }
+  .dka-bon__regels { list-style: none; margin: 0; padding: 0; font-size: 14px; font-variant-numeric: tabular-nums; }
+  .dka-bon__regels > li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; }
+  .dka-bon__regels > li > strong { white-space: nowrap; }
+  .dka-bon__regels small { color: #5A6475; font-size: 13px; }
+  .dka-bon__hl { padding: 10px !important; margin: 0 -10px; border-radius: 8px; transition: background .4s; }
+  .dka-bon__hl.is-nieuw { background: #FBE3E5; }
+  .dka-bon__incl > span:first-child { color: #5A6475; }
+  .dka-bon__incl > span:last-child { color: #1E9E6A; font-weight: 700; }
+  .dka-bon__sep { border-top: 1px dashed #CBD2DB; margin-top: 6px; }
+  .dka-bon__unit { display: block !important; border-top: 1px dashed #CBD2DB; }
+  .dka-bon__unit > div { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+  .dka-bon__unit em, .dka-bon__unit li em { font-style: normal; font-size: 12px; font-weight: 700; color: #5A6475; border: 1px dashed #CBD2DB; border-radius: 6px; padding: 1px 8px; white-space: nowrap; }
+  .dka-bon__unit ul { list-style: none; margin: 6px 0 0; padding: 0 0 0 12px; border-left: 3px solid #FBE3E5; }
+  .dka-bon__unit li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; }
+  .dka-bon__unit li.is-nieuw { background: #FBE3E5; }
+  .dka-bon__totaal { border-top: 2px solid #141A2E; margin-top: 10px; padding-top: 14px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .dka-bon__totaal span { font-weight: 900; font-stretch: 70%; text-transform: uppercase; font-size: 20px; }
+  .dka-bon__totaal strong { font-weight: 900; font-stretch: 70%; font-size: 48px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .dka-bon__noot { font-size: 12px; color: #5A6475; text-align: right; margin: 6px 0 18px !important; }
+  .dka-bon__cta { display: flex; width: 100%; color: #fff !important; }
+  .dka-bon__voet { margin: 10px 0 0 !important; font-size: 13px; color: #5A6475; text-align: center; }
+  .dka-bon__rand { height: 16px; background: linear-gradient(135deg, #fff 50%, transparent 50%) 0 0 / 16px 16px repeat-x, linear-gradient(225deg, #fff 50%, transparent 50%) 0 0 / 16px 16px repeat-x; }
+
+  /* richtleiding */
+  .dka-uitleg { padding-top: 96px; }
+  .dka-card { background: #fff; border: 1px solid #E3E7ED; border-radius: 18px; }
+  .dka-tussenkop { display: flex; gap: 24px; align-items: center; margin-bottom: 32px; }
+  .dka-tussenkop img { width: 90px; height: auto; }
+  .dka-tussenkop > div { flex: 1 1 auto; }
+  .dka-tussenkop p { flex: 0 1 420px; color: #5A6475; font-size: 17px; }
+  .dka-koop { display: flex; overflow: hidden; border-radius: 24px; }
+  .dka-koop__tekst { flex: 1.2 1 0; padding: 44px; }
+  .dka-koop__schema { flex: 1 1 0; background: #F4F6F9; display: grid; place-items: center; padding: 32px; clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%); }
+  .dka-koop__schema svg { width: 100%; max-width: 440px; height: auto; }
+  .dka-delen { list-style: none; margin: 22px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .dka-delen li { display: flex; gap: 12px; }
+  .dka-delen b { flex: 0 0 30px; height: 30px; border-radius: 50%; background: #141A2E; color: #fff; display: grid; place-items: center; font-size: 14px; }
+  .dka-delen div { display: flex; flex-direction: column; }
+  .dka-delen span { color: #5A6475; font-size: 15px; }
+  .dka-blok { margin-top: 56px; }
+  .dka-blok__kop { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 20px; }
+  .dka-blok__kop .dka-h3 { margin-bottom: 0 !important; }
+  .dka-blok__kop p { max-width: 440px; }
+  .dka-traject { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+  .dka-traject li { background: #fff; border: 1px solid #E3E7ED; border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+  .dka-traject li > strong { font-size: 22px; font-weight: 900; font-stretch: 70%; text-transform: uppercase; line-height: 1.05; }
+  .dka-traject li p { font-size: 14px; color: #5A6475; }
+  .dka-traject li p b { color: #141A2E; }
+  .dka-traject__n { display: flex; align-items: center; gap: 10px; }
+  .dka-traject__n b { width: 34px; height: 34px; border-radius: 50%; background: #141A2E; color: #fff; display: grid; place-items: center; }
+  .dka-traject__n--groen b { background: #1E9E6A; }
+  .dka-traject__n span { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #FF8A95; }
+  .dka-traject li.is-hier { background: #141A2E; border-color: #141A2E; color: #fff; }
+  .dka-traject li.is-hier .dka-traject__n b { background: #D6283A; }
+  .dka-traject li.is-hier p { color: rgba(255,255,255,.8); }
+  .dka-traject li.is-hier p b { color: #fff; }
+  .dka-prijs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .dka-prijs > div { padding: 26px 28px; }
+  .dka-prijs > div > strong { display: block; font-size: 18px; margin-bottom: 10px; }
+  .dka-prijs ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .dka-prijs li { display: flex; gap: 10px; }
+  .dka-prijs__in { border-top: 4px solid #1E9E6A !important; }
+  .dka-prijs__in li::before { content: '✓'; color: #1E9E6A; font-weight: 800; }
+  .dka-prijs__later { border-top: 4px solid #D6283A !important; }
+  .dka-prijs__later li::before { content: '→'; color: #D6283A; font-weight: 800; }
+  .dka-prijs__later p { margin-top: 14px !important; font-size: 14px; }
+  .dka-twee { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+  .dka-specs { margin: 0; padding: 4px 24px; }
+  .dka-specs div { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid #E3E7ED; }
+  .dka-specs div:last-child { border-bottom: 0; }
+  .dka-specs dd { margin: 0; color: #5A6475; font-size: 15px; }
+  .dka-specs dt { font-weight: 800; text-align: right; }
+  .dka-bron { font-size: 13px; color: #5A6475; margin-top: 8px !important; }
+  .dka-waarom { display: grid; gap: 10px; }
+  .dka-waarom > div { padding: 18px 22px; display: flex; flex-direction: column; }
+  .dka-waarom span { color: #5A6475; font-size: 15px; }
+  .dka-faq { display: flex; gap: 32px; }
+  .dka-faq > div:first-child { flex: 1 1 0; }
+  .dka-faq__lijst { flex: 2 1 0; display: grid; gap: 10px; }
+  .dka-faq details { padding: 0; }
+  .dka-faq summary { cursor: pointer; list-style: none; padding: 18px 22px; display: flex; justify-content: space-between; gap: 16px; font-size: 17px; font-weight: 700; }
+  .dka-faq summary::-webkit-details-marker { display: none; }
+  .dka-faq summary::after { content: '+'; color: #D6283A; font-size: 22px; line-height: 1; }
+  .dka-faq details[open] summary::after { content: '−'; }
+  .dka-faq details p { padding: 0 22px 18px; color: #5A6475; }
+  .dka-slot { margin-top: 56px; background: linear-gradient(118deg, #B01F2F 0%, #141A2E 60%); color: #fff; border-radius: 24px; padding: 40px 48px; display: flex; gap: 24px; align-items: center; }
+  .dka-slot > div:first-child { flex: 1; min-width: 0; }
+  .dka-slot .dka-h3 { margin: 0 0 6px !important; }
+  .dka-slot p { color: rgba(255,255,255,.85); }
+  .dka-slot__prijs { text-align: right; display: flex; flex-direction: column; }
+  .dka-slot__prijs span { font-size: 12px; color: rgba(255,255,255,.75); }
+  .dka-slot__prijs strong { font-weight: 900; font-stretch: 70%; font-size: 40px; line-height: 1; }
+  .dka-slot .dk-btn--white { color: #B01F2F; }
+  @media (max-width: 1180px) { .dka-modes { grid-template-columns: 1fr; } .dka-h1 { font-size: 52px; } .dka-traject { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+</style>
