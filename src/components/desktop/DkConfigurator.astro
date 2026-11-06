@@ -10,6 +10,8 @@ import ProductImage from '../ProductImage.astro';
 import { euro, warmtepompen } from '../../data/warmtepompen';
 import type { ConfigModel } from '../../data/configurator';
 import { AANNAMES, bereken } from '../../lib/rekenmodel';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 interface Props { model: ConfigModel }
 const { model: m } = Astro.props;
@@ -45,6 +47,13 @@ const schaal = [
   { db: 50, t: 'Koelkast' }, { db: 60, t: 'Gesprek' }, { db: 70, t: 'Stofzuiger' }, { db: 80, t: 'Druk verkeer' },
 ];
 
+// Foto's die (nog) niet in public/ staan, tonen we niet. In een Netlify-preview of lokaal tonen we een placeholder.
+const heeft = (src?: string) => !!src && existsSync(join(process.cwd(), 'public', src));
+const isPreview = process.env.CONTEXT !== 'production';
+const galerij = (m.galerij ?? []).filter((f) => heeft(f.src));
+const sfeer = m.sfeer && (heeft(m.sfeer.src) || isPreview) ? { ...m.sfeer, ok: heeft(m.sfeer.src) } : null;
+const opbouw = m.opbouw && (heeft(m.opbouw.img) || isPreview) ? { ...m.opbouw, ok: heeft(m.opbouw.img) } : null;
+
 const specsKort = 8;
 const stappen = [
   { t: 'Offerte aanvragen', d: 'Je keuzes uit deze pagina gaan mee in je aanvraag.' },
@@ -70,6 +79,15 @@ const stappen = [
             <span class="dkc__chip" data-shown>Getoonde kleur: {startK.img ? startK.name.toLowerCase() : m.photoColor}</span>
             <span class="dkc__chip dkc__chip--dark">× HEAT GEEK</span>
             <div class="dkc__img" data-img><ProductImage src={startK.img ?? m.img} alt={m.imgAlt} loading="eager" /></div>
+            {galerij.length > 0 && (
+              <>
+                <img class="dkc__alt" data-alt hidden src={galerij[0].src} alt="" />
+                <div class="dkc__thumbs" role="group" aria-label="Foto's">
+                  <button type="button" class="dkc__thumb is-on" data-thumb="" aria-label="Productfoto in gekozen kleur" aria-pressed="true"><img data-thumb-kleur src={startK.img ?? m.img} alt="" /></button>
+                  {galerij.map((f) => <button type="button" class="dkc__thumb" data-thumb={f.src} data-thumb-alt={f.alt} aria-label={f.alt} aria-pressed="false"><img src={f.src} alt="" loading="lazy" /></button>)}
+                </div>
+              </>
+            )}
           </figure>
           <dl class="dkc__facts">
             {m.quickFacts.map((f) => <div><dd>{f.value}</dd><dt>{f.label}</dt></div>)}
@@ -255,6 +273,39 @@ const stappen = [
         </section>
       )}
 
+      {opbouw && (
+        <section class="dkc__opbouw" aria-labelledby="dkc-o-h" data-opbouw>
+          <div>
+            <span class="dk-kicker">Binnenkant</span>
+            <h2 id="dkc-o-h" class="dkc__h2">Zo is de {m.short} opgebouwd</h2>
+          </div>
+          <div class="dkc__opbouw-grid">
+            <div class="dkc__opbouw-beeld">
+              {opbouw.ok
+                ? <img src={opbouw.img} alt={opbouw.alt} loading="lazy" />
+                : <div class="dkc__placeholder">Foto volgt: {opbouw.img.split('/').pop()}<br /><small>(alleen zichtbaar in de preview)</small></div>}
+              {opbouw.onderdelen.map((o, i) => (
+                <button type="button" class="dkc__dot" style={`left:${o.x}%;top:${o.y}%`} data-dot={i} aria-label={`${i + 1}. ${o.titel}`}>{i + 1}</button>
+              ))}
+            </div>
+            <ol class="dkc__onderdelen">
+              {opbouw.onderdelen.map((o, i) => (
+                <li data-part={i} class:list={{ 'is-on': i === 0 }}><h3>{i + 1}. {o.titel}</h3><p>{o.tekst}</p></li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )}
+
+      {sfeer && (
+        <figure class="dkc__sfeer">
+          {sfeer.ok
+            ? <img src={sfeer.src} alt={sfeer.alt} loading="lazy" />
+            : <div class="dkc__placeholder">Foto volgt: {sfeer.src.split('/').pop()}<br /><small>(alleen zichtbaar in de preview)</small></div>}
+          {sfeer.caption && <figcaption>{sfeer.caption}</figcaption>}
+        </figure>
+      )}
+
       {db && (
         <section class="dkc__geluid" aria-labelledby="dkc-g-h">
           <div class="dkc__geluid-head">
@@ -351,7 +402,33 @@ const stappen = [
     const jaarBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-jaar]')];
     let jaar = 3;
 
-    const update = () => {
+    const alt = q<HTMLImageElement>('[data-alt]');
+    const toonFoto = (src: string) => {
+      if (!alt) return;
+      alt.hidden = !src;
+      if (src) alt.src = src;
+      q('[data-img]')!.style.visibility = src ? 'hidden' : '';
+      q('[data-shown]')!.style.visibility = src ? 'hidden' : '';
+      root.querySelectorAll<HTMLButtonElement>('[data-thumb]').forEach((t) => {
+        const on = t.dataset.thumb === src;
+        t.classList.toggle('is-on', on);
+        t.setAttribute('aria-pressed', String(on));
+      });
+    };
+    root.querySelectorAll<HTMLButtonElement>('[data-thumb]').forEach((t) => t.addEventListener('click', () => toonFoto(t.dataset.thumb!)));
+
+    // Opbouw: stip en kaart lichten samen op
+    const parts = [...root.querySelectorAll<HTMLElement>('[data-part]')];
+    const dots = [...root.querySelectorAll<HTMLButtonElement>('[data-dot]')];
+    const kies = (i: number) => {
+      parts.forEach((p, j) => p.classList.toggle('is-on', i === j));
+      dots.forEach((d, j) => { d.classList.toggle('is-on', i === j); d.setAttribute('aria-pressed', String(i === j)); });
+    };
+    dots.forEach((d, i) => { d.addEventListener('mouseenter', () => kies(i)); d.addEventListener('focus', () => kies(i)); d.addEventListener('click', () => kies(i)); });
+    parts.forEach((p, i) => p.addEventListener('mouseenter', () => kies(i)));
+    if (dots.length) kies(0);
+
+    const update = (e?: Event) => {
       const u = checked('u')!, k = checked('k')!, bo = checked('b'), v = checked('v'), c = checked('c');
       const needsBoiler = u.dataset.boiler === '1';
       let base: number | null = u.dataset.price === '' ? null : Number(u.dataset.price);
@@ -380,6 +457,9 @@ const stappen = [
         holder!.classList.add('is-fade');
         setTimeout(() => { img.src = k.dataset.img!; img.onload = () => holder!.classList.remove('is-fade'); }, 160);
       }
+      const tk = q<HTMLImageElement>('[data-thumb-kleur]');
+      if (tk && k.dataset.img) tk.src = k.dataset.img;
+      if (e?.target instanceof HTMLInputElement && e.target.name.endsWith('-k')) toonFoto('');
       if (k.dataset.img) q('[data-shown]')!.textContent = `Getoonde kleur: ${k.dataset.name!.toLowerCase()}`;
 
       // Samenvatting, prijs, offertelink
@@ -429,7 +509,7 @@ const stappen = [
       update();
     }));
     root.querySelectorAll<HTMLInputElement>('input[data-img]').forEach((i) => { if (i.dataset.img) new Image().src = i.dataset.img; });
-    root.addEventListener('change', update);
+    root.addEventListener('change', (e) => update(e));
     update();
 
     // Specificaties uitklappen
@@ -461,6 +541,11 @@ const stappen = [
   .dkc__img :global(.pi) { width: auto; height: 100%; max-width: 82%; }
   .dkc__img :global(.pi-box) { width: 82%; height: 100%; }
   .dkc__img.is-fade { opacity: 0; }
+  .dkc__alt { position: absolute; inset: 24px 48px 56px; width: calc(100% - 96px); height: calc(100% - 80px); object-fit: contain; }
+  .dkc__thumbs { position: absolute; left: 16px; bottom: 16px; display: flex; gap: 6px; z-index: 1; }
+  .dkc__thumb { width: 52px; height: 52px; padding: 4px; border-radius: 10px; border: 2px solid var(--dk-line); background: #fff; cursor: pointer; }
+  .dkc__thumb img { width: 100%; height: 100%; object-fit: contain; }
+  .dkc__thumb.is-on { border-color: var(--dk-red); }
   .dkc__chip { position: absolute; top: 16px; left: 16px; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--dk-line); z-index: 1; }
   .dkc__chip--dark { left: auto; right: 16px; background: var(--dk-navy); color: #fff; border-color: var(--dk-navy); font-weight: 800; letter-spacing: .08em; font-size: 11px; }
   .dkc__facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--dk-line); }
@@ -571,6 +656,21 @@ const stappen = [
   .dkc__wcard p { font-size: 15px; line-height: 1.55; color: var(--dk-muted); }
   .dkc__check { margin-top: auto; font-size: 13px; font-weight: 700; color: #13744C; }
 
+  .dkc__opbouw-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; align-items: center; margin-top: 28px; }
+  .dkc__opbouw-beeld { position: relative; background: var(--dk-bg); border-radius: 18px; padding: 32px; min-height: 520px; display: flex; align-items: center; justify-content: center; }
+  .dkc__opbouw-beeld img { width: 100%; height: auto; display: block; }
+  .dkc__dot { position: absolute; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff; background: var(--dk-navy); color: #fff; font: inherit; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: 0 4px 12px rgba(20,26,46,.25); transition: background .15s, transform .15s; }
+  .dkc__dot.is-on { background: var(--dk-red); transform: translate(-50%, -50%) scale(1.12); }
+  .dkc__onderdelen { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .dkc__onderdelen li { padding: 18px 22px; border-radius: 14px; border: 2px solid var(--dk-line); background: #fff; transition: border-color .15s, box-shadow .15s; }
+  .dkc__onderdelen li.is-on { border-color: var(--dk-red); box-shadow: 0 0 0 4px #FBE3E5; }
+  .dkc__onderdelen h3 { font-size: 18px; font-weight: 800; }
+  .dkc__onderdelen p { margin-top: 4px !important; font-size: 15px; line-height: 1.55; color: var(--dk-muted); }
+  .dkc__sfeer { margin: 0; }
+  .dkc__sfeer img, .dkc__sfeer .dkc__placeholder { width: 100%; height: 460px; object-fit: cover; border-radius: 18px; display: block; }
+  .dkc__sfeer figcaption { margin-top: 10px; font-size: 13px; color: var(--dk-muted); }
+  .dkc__placeholder { width: 100%; min-height: 440px; border: 2px dashed #C9CFDA; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--dk-muted); font-weight: 700; background: repeating-linear-gradient(45deg, #F4F6F9 0 12px, #EEF1F6 12px 24px); }
+  .dkc__placeholder small { font-weight: 500; }
   .dkc__geluid { background: var(--dk-bg); border-radius: 18px; padding: 40px 44px; }
   .dkc__geluid-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 36px; }
   .dkc__geluid-head p { max-width: 440px; font-size: 15px; line-height: 1.55; color: var(--dk-muted); }

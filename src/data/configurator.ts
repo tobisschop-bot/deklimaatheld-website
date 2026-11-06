@@ -47,7 +47,15 @@ export interface ConfigModel {
   waarom: Waarom[];
   inbegrepen: Fact[];
   faq: FaqItem[];
+  /** optioneel (desktop): extra productfoto's, bijv. de unit zonder front */
+  galerij?: Foto[];
+  /** optioneel (desktop): brede sfeerfoto onder 'Waarom' */
+  sfeer?: Foto & { caption?: string };
+  /** optioneel (desktop): 'Zo is hij opgebouwd', explodeview met genummerde onderdelen (x/y in % van de foto) */
+  opbouw?: { img: string; alt: string; onderdelen: { x: number; y: number; titel: string; tekst: string }[] };
 }
+
+export interface Foto { src: string; alt: string }
 
 // ---- Gedeelde onderdelen ----
 export const boilers: Boiler[] = [
@@ -89,6 +97,23 @@ const madoka: NonNullable<ConfigModel['bediening']> = {
 // ---- Modellen ----
 export const configurators: Record<string, ConfigModel> = {
   sparrow: {
+    // Foto's van Weheat; leg ze in public/img/ onder deze namen, dan verschijnen ze vanzelf op desktop.
+    galerij: [
+      { src: '/img/weheat-sparrow-kaal-1.webp', alt: 'Weheat Sparrow P60 zonder designfront' },
+      { src: '/img/weheat-sparrow-kaal-2.webp', alt: 'Weheat Sparrow P60 zonder designfront, van opzij' },
+    ],
+    sfeer: { src: '/img/weheat-sparrow-buiten.webp', alt: 'Weheat Sparrow P60 buiten aan de gevel', caption: 'De Sparrow aan de gevel: compact en stil.' },
+    opbouw: {
+      img: '/img/weheat-sparrow-explodeview.webp',
+      alt: 'Explodeview van de Weheat Sparrow P60 met de losse onderdelen',
+      onderdelen: [
+        { x: 35, y: 26, titel: 'Designfront', tekst: 'De metalen voorkant in koper, grijs of groen. Dit is wat je van de Sparrow ziet aan je gevel.' },
+        { x: 51, y: 19, titel: 'Slimme besturing met 4G', tekst: 'Een eigen 4G-verbinding, los van je wifi. Zo krijgt hij updates en bedien je hem via de app.' },
+        { x: 76, y: 41, titel: 'EPP-behuizing', tekst: 'Licht en isolerend schuimmateriaal dat geluid en trillingen dempt. Daardoor is de Sparrow zo stil.' },
+        { x: 38, y: 61, titel: 'Ventilator', tekst: 'Een grote ventilator die rustig draait: veel lucht verplaatsen met weinig geluid.' },
+        { x: 65, y: 68, titel: 'Propaan-circuit (R290)', tekst: 'Het koelcircuit werkt met propaan, een natuurlijk koudemiddel met een zeer lage klimaatimpact.' },
+      ],
+    },
     slug: 'sparrow',
     name: 'Weheat Sparrow P60',
     short: 'Sparrow P60',
