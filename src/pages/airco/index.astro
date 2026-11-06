@@ -2,7 +2,9 @@
 import DienstPagina from '../../components/dienst/DienstPagina.astro';
 import AircoAssortiment from '../../components/airco/AircoAssortiment.astro';
 import { airco } from '../../data/diensten';
+import DkAircoOverzicht from '../../components/desktop/DkAircoOverzicht.astro';
 ---
 <DienstPagina data={airco}>
   <AircoAssortiment slot="producten" />
+  <DkAircoOverzicht slot="desktop" />
 </DienstPagina>

@@ -12,7 +12,9 @@ interface Props { title: string; description?: string }
 const { title, description = 'De Klimaatheld – warmtepompen, airco en duurzaam verwarmen in Den Haag en omstreken.' } = Astro.props;
 // Pagina's met een eigen desktopontwerp (de homepage) vullen de slot "desktop".
 // Alle andere pagina's krijgen op desktop de desktop-header/-footer en de stijlen uit desktop.css.
-const hasDesktop = Astro.slots.has('desktop');
+// Een lege desktop-slot (bijv. doorgegeven door DienstPagina zonder inhoud) telt niet mee.
+const dkHtml = Astro.slots.has('desktop') ? await Astro.slots.render('desktop') : '';
+const hasDesktop = dkHtml.trim().length > 0;
 ---
 <!doctype html>
 <html lang="nl">
@@ -32,7 +34,7 @@ const hasDesktop = Astro.slots.has('desktop');
         <main><slot /></main>
         <Footer />
       </div>
-      <div class="dk-site"><slot name="desktop" /></div>
+      <div class="dk-site"><Fragment set:html={dkHtml} /></div>
     </body>
   ) : (
     <body class="dk-std">

@@ -1,0 +1,314 @@
+---
+// Desktopversie (≥ 1024 px) van /airco/. Ontwerp "B · Licht en strak": hero met schuine fotorand,
+// merkfilter, per merk een rij seriekaarten (kleurstalen wisselen de foto), multi-split als tweede route,
+// uitleg, stappen, FAQ en slot-CTA. Inhoud uit src/data/aircos.ts en diensten.ts (object airco).
+import '../../styles/desktop-home.css';
+import DkHeader from './DkHeader.astro';
+import DkFooter from './DkFooter.astro';
+import { aircos, vanafPrijs } from '../../data/aircos';
+import { airco } from '../../data/diensten';
+import { euro } from '../../data/warmtepompen';
+
+const merken = [...new Set(aircos.map((a) => a.merk))];
+const kort = (m: string) => m.replace('Mitsubishi Heavy Industries', 'Mitsubishi Heavy');
+const single = airco.keuze.kaarten[0];
+const multi = airco.keuze.kaarten[1];
+const minVan = (lijst: typeof aircos) => {
+  const p = lijst.map(vanafPrijs).filter((x): x is number => x != null);
+  return p.length ? Math.min(...p) : null;
+};
+---
+<DkHeader />
+<main class="dko" data-dko>
+  <!-- hero -->
+  <section class="dko-hero">
+    <div class="dk-wrap">
+      <div class="dko-hero__kaart">
+        <div class="dko-hero__tekst">
+          <nav class="dko-crumbs" aria-label="Kruimelpad"><a href="/">Home</a> / <span>Airco</span></nav>
+          <span class="dk-kicker">{airco.hero.label}</span>
+          <h1 class="dko-h1">{airco.hero.title}</h1>
+          <p class="dko-lead">{airco.hero.lead}</p>
+          <div class="dko-knoppen">
+            <a class="dk-btn dk-btn--red" href={airco.hero.cta.href}>{airco.hero.cta.label}</a>
+            <a class="dko-btn-soft" href="#assortiment">Bekijk de {aircos.length} series ↓</a>
+          </div>
+        </div>
+        <div class="dko-hero__foto">
+          <img src="/img/case-amsterdam-airco.webp" alt="Door De Klimaatheld geplaatste airco" />
+          <span>Eigen werk · airco in Amsterdam</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- assortiment -->
+  <section class="dko-assortiment" id="assortiment">
+    <div class="dk-wrap">
+      <div class="dko-kop">
+        <div>
+          <span class="dk-kicker">Ons assortiment</span>
+          <h2 class="dko-h2">Onze airco's</h2>
+          <p class="dko-muted">Wijs een kleur aan om hem te zien. Kies een model en stel hem samen.</p>
+        </div>
+        <div class="dko-filter" role="group" aria-label="Filter op merk">
+          <button type="button" class="is-on" aria-pressed="true" data-merk="">Alle</button>
+          {merken.map((m) => <button type="button" aria-pressed="false" data-merk={m}>{kort(m)}</button>)}
+        </div>
+      </div>
+
+      {merken.map((m) => {
+        const lijst = aircos.filter((a) => a.merk === m);
+        const v = minVan(lijst);
+        return (
+          <div class="dko-merk" data-groep={m}>
+            <div class="dko-merk__kop">
+              <h3>{m}</h3>
+              <span>{lijst.length} series</span>
+              {v != null && <span class="dko-merk__va">v.a. <strong>{euro(v)}</strong></span>}
+            </div>
+            <div class="dko-kaarten">
+              {lijst.map((a) => {
+                const p = vanafPrijs(a);
+                const k0 = a.kleuren[0];
+                const een = a.kleuren.length === 1;
+                return (
+                  <article class="dko-kaart" data-kaart data-href={`/airco/${a.slug}/`}>
+                    <a class="dko-kaart__foto" href={`/airco/${a.slug}/`} data-link>
+                      {a.img
+                        ? <img data-img src={k0.img ?? a.img} alt={`${a.naam} binnenunit in ${k0.naam.toLowerCase()}`} width="1200" height="520" loading="lazy" />
+                        : <span class="dko-kaart__ph">[Productfoto {a.naam}]</span>}
+                      {!een && <span class="dko-kaart__chip" data-chip>{k0.naam}</span>}
+                    </a>
+                    <div class="dko-kaart__body">
+                      <span class="dko-kaart__tag">{a.positionering}</span>
+                      <h4>{a.naam}</h4>
+                      <div class="dko-stalen" role="group" aria-label={`Kleuren ${a.naam}`}>
+                        {a.kleuren.map((k, i) => (
+                          <button type="button" class:list={['dko-staal', { 'is-on': i === 0 && !een }]} style={`background:${k.hex}`} title={k.naam} aria-label={k.naam}
+                            aria-pressed={i === 0 ? 'true' : 'false'} data-kleur={k.id} data-naam={k.naam} data-src={k.img ?? a.img ?? ''} disabled={een}></button>
+                        ))}
+                        <span>{een ? `Alleen ${k0.naam.toLowerCase()}` : `${a.kleuren.length} kleuren`}</span>
+                      </div>
+                      <ul class="dko-kern">{a.kenmerken.map((x) => <li><strong>{x.value}</strong> {x.label}</li>)}</ul>
+                      <div class="dko-kaart__voet">
+                        <div>{p == null ? <strong>Prijs op aanvraag</strong> : <>v.a. <strong>{euro(p)}</strong></>}<small>incl. montage · indicatief</small></div>
+                        <a class="dko-kaart__btn" href={`/airco/${a.slug}/`} data-link>Stel samen →</a>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- tweede route: multi-split -->
+  <section class="dko-sectie">
+    <div class="dk-wrap">
+      <div class="dko-multi">
+        <div class="dko-multi__tekst">
+          <span class="dk-kicker dk-kicker--light">Tweede route</span>
+          <h2 class="dko-h2">Meerdere ruimtes? Kies multi-split</h2>
+          <p>{multi.tekst} Minder op de gevel, comfort in het hele huis. In elke configurator kies je bij stap 1 voor meerdere ruimtes.</p>
+          <div class="dko-knoppen">
+            <a class="dk-btn dk-btn--red" href="/airco/daikin-perfera/">Stel je multi-split samen →</a>
+            <span class="dko-multi__prijs">{multi.prijs} <small>{multi.prijsNoot}</small></span>
+          </div>
+        </div>
+        <div class="dko-multi__schema">
+          <svg viewBox="0 0 300 200" fill="none" role="img" aria-label="Schema: drie binnenunits op één buitenunit">
+            <rect x="20" y="20" width="80" height="18" rx="4" fill="#fff"/><rect x="110" y="20" width="80" height="18" rx="4" fill="#fff"/><rect x="200" y="20" width="80" height="18" rx="4" fill="#fff"/>
+            <path d="M60 38v90h90M150 38v90M240 38v90h-90" stroke="#FF8A95" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 6"/>
+            <rect x="105" y="128" width="90" height="60" rx="6" fill="#D6283A"/><circle cx="135" cy="158" r="18" stroke="#fff" stroke-width="2.5"/><path d="M175 142v32" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- uitleg: koelen + verwarmen, single -->
+  <section class="dko-sectie">
+    <div class="dk-wrap dko-drie">
+      <div class="dko-card">
+        <span class="dko-kaart__tag">Koelen én verwarmen</span>
+        <h3>Comfort in elk seizoen</h3>
+        <p>{airco.hero.lead} In de zomer haalt hij warmte uit je kamer, in de winter haalt hij warmte uit de buitenlucht naar binnen.</p>
+      </div>
+      <div class="dko-card">
+        <span class="dko-kaart__tag">{single.tag}</span>
+        <h3>{single.title}</h3>
+        <p>{single.tekst}</p>
+        <p class="dko-card__prijs"><strong>{single.prijs}</strong> <small>{single.prijsNoot}</small></p>
+      </div>
+      <div class="dko-card">
+        <span class="dko-kaart__tag">Inbegrepen</span>
+        <h3>{airco.prijs.title}</h3>
+        <ul>{airco.prijs.items.map((x) => <li>{x.title}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- stappen + faq -->
+  <section class="dko-sectie">
+    <div class="dk-wrap">
+      <span class="dk-kicker">In {airco.stappen.items.length} stappen</span>
+      <h2 class="dko-h2">{airco.stappen.title}</h2>
+      <ol class="dko-stappen">
+        {airco.stappen.items.map((x, i) => <li><b>{i + 1}</b><strong>{x.title}</strong><span>{x.tekst}</span></li>)}
+      </ol>
+      <div class="dko-faq">
+        <div><span class="dk-kicker">Veelgestelde vragen</span><h2 class="dko-h2">Goed om te weten</h2></div>
+        <div class="dko-faq__lijst">
+          {airco.faq.map((f, i) => <details open={i === 0}><summary>{f.q}</summary><p>{f.a}</p></details>)}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- slot -->
+  <section class="dko-sectie dko-sectie--laatst">
+    <div class="dk-wrap">
+      <div class="dko-slot">
+        <img src="/img/kh-held.webp" alt="" aria-hidden="true" width="520" height="484" />
+        <div><h2 class="dko-h2">{airco.cta.title}</h2><p class="dko-muted">{airco.cta.text}</p></div>
+        <a class="dk-btn dk-btn--red" href={airco.cta.href ?? '/offerte/'}>{airco.cta.button}</a>
+      </div>
+    </div>
+  </section>
+</main>
+<DkFooter />
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-dko]').forEach((root) => {
+    // merkfilter
+    const knoppen = [...root.querySelectorAll<HTMLButtonElement>('.dko-filter button')];
+    knoppen.forEach((b) => b.addEventListener('click', () => {
+      knoppen.forEach((x) => { const on = x === b; x.classList.toggle('is-on', on); x.setAttribute('aria-pressed', String(on)); });
+      root.querySelectorAll<HTMLElement>('[data-groep]').forEach((g) => { g.hidden = !!b.dataset.merk && g.dataset.groep !== b.dataset.merk; });
+    }));
+    // kleurstalen: foto wisselen (ook bij aanwijzen) en kleur meegeven aan de configurator
+    root.querySelectorAll<HTMLElement>('[data-kaart]').forEach((kaart) => {
+      const img = kaart.querySelector<HTMLImageElement>('[data-img]');
+      const chip = kaart.querySelector<HTMLElement>('[data-chip]');
+      const links = [...kaart.querySelectorAll<HTMLAnchorElement>('[data-link]')];
+      const base = kaart.dataset.href!;
+      const kies = (b: HTMLButtonElement) => {
+        kaart.querySelectorAll<HTMLButtonElement>('.dko-staal').forEach((s) => { s.classList.toggle('is-on', s === b); s.setAttribute('aria-pressed', String(s === b)); });
+        if (img && b.dataset.src) { img.src = b.dataset.src; img.alt = img.alt.replace(/in .*$/, 'in ' + b.dataset.naam!.toLowerCase()); }
+        if (chip) chip.textContent = b.dataset.naam!;
+        links.forEach((l) => (l.href = `${base}?kleur=${b.dataset.kleur}`));
+      };
+      kaart.querySelectorAll<HTMLButtonElement>('.dko-staal:not([disabled])').forEach((b) => {
+        if (b.dataset.src) { const p = new Image(); p.src = b.dataset.src; }
+        b.addEventListener('click', () => kies(b));
+        b.addEventListener('mouseenter', () => kies(b));
+      });
+    });
+  });
+</script>
+
+<style is:global>
+  @media (min-width: 1024px) { body.dk-page:has(.dko) { background: #F4F6F9; } html:has(.dko) { background: #F4F6F9; } }
+  .dko { background: #F4F6F9; color: #141A2E; font-size: 16px; line-height: 1.5; }
+  .dko a { color: #D6283A; }
+  .dko button { font-family: inherit; }
+  .dko button:focus-visible, .dko a:focus-visible, .dko summary:focus-visible { outline: 3px solid #D6283A; outline-offset: 3px; }
+  .dko-muted { color: #5A6475; font-size: 17px; }
+  .dko-h1 { font-size: 72px; line-height: .92; font-weight: 900; font-stretch: 62%; text-transform: uppercase; margin: 8px 0 18px !important; }
+  .dko-h2 { font-size: 56px; line-height: .95; font-weight: 900; font-stretch: 62%; text-transform: uppercase; margin: 6px 0 10px !important; }
+  .dko-knoppen { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .dko-btn-soft { display: inline-flex; align-items: center; padding: 15px 26px; border-radius: 999px; background: #FBE3E5; color: #B01F2F !important; font-weight: 800; text-decoration: none; }
+  .dko-btn-soft:hover { background: #F8D2D6; }
+  .dko .dk-btn--red { color: #fff; }
+
+  /* hero */
+  .dko-hero { padding: 32px 0 0; }
+  .dko-hero__kaart { display: flex; background: #fff; border: 1px solid #E3E7ED; border-radius: 28px; overflow: hidden; min-height: 480px; }
+  .dko-hero__tekst { flex: 1 1 0; padding: 56px; display: flex; flex-direction: column; justify-content: center; }
+  .dko-crumbs { font-size: 13px; color: #5A6475; margin-bottom: 18px; }
+  .dko-crumbs a { color: #5A6475; }
+  .dko-lead { font-size: 19px; color: #5A6475; max-width: 500px; margin-bottom: 30px !important; }
+  .dko-hero__foto { flex: 1 1 0; position: relative; background: #141A2E; clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%); }
+  .dko-hero__foto img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .dko-hero__foto span { position: absolute; left: 18%; bottom: 24px; background: rgba(20,26,46,.82); color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; }
+
+  /* assortiment */
+  .dko-assortiment { padding: 88px 0 24px; scroll-margin-top: 90px; }
+  .dko-kop { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+  .dko-filter { display: flex; gap: 4px; background: #fff; border: 1px solid #E3E7ED; border-radius: 999px; padding: 6px; }
+  .dko-filter button { cursor: pointer; padding: 10px 18px; border-radius: 999px; font-size: 15px; font-weight: 700; border: 0; background: transparent; color: #141A2E; }
+  .dko-filter button.is-on { background: #141A2E; color: #fff; }
+  .dko-merk { margin-top: 44px; }
+  .dko-merk__kop { display: flex; align-items: baseline; gap: 14px; border-bottom: 2px solid #141A2E; padding-bottom: 10px; margin-bottom: 20px; }
+  .dko-merk__kop h3 { font-size: 30px; font-weight: 900; font-stretch: 65%; text-transform: uppercase; }
+  .dko-merk__kop span { color: #5A6475; font-size: 15px; }
+  .dko-merk__va { margin-left: auto; }
+  .dko-merk__va strong { color: #141A2E; }
+  .dko-kaarten { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .dko-kaart { background: #fff; border: 1px solid #E3E7ED; border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow .2s, border-color .2s; }
+  .dko-kaart:hover { border-color: #141A2E; box-shadow: 0 18px 40px rgba(20,26,46,.12); }
+  .dko-kaart__foto { display: block; position: relative; background: #F4F6F9; height: 200px; clip-path: polygon(0 0, 100% 0, 100% 84%, 0 100%); }
+  .dko-kaart__foto img { position: absolute; left: 6%; top: 34px; width: 88%; height: auto; filter: drop-shadow(0 12px 12px rgba(20,26,46,.16)); }
+  .dko-kaart__ph { position: absolute; inset: 20px; display: grid; place-items: center; color: #5A6475; font-size: 14px; border: 2px dashed #E3E7ED; border-radius: 12px; }
+  .dko-kaart__chip { position: absolute; right: 14px; top: 14px; background: #141A2E; color: #fff; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px; opacity: 0; transition: opacity .2s; }
+  .dko-kaart:hover .dko-kaart__chip { opacity: 1; }
+  .dko-kaart__body { padding: 6px 24px 24px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .dko-kaart__tag { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #D6283A; }
+  .dko-kaart__body h4 { margin: -6px 0 0; font-size: 26px; line-height: 1.05; font-weight: 900; font-stretch: 65%; text-transform: uppercase; }
+  .dko-stalen { display: flex; gap: 8px; align-items: center; min-height: 36px; }
+  .dko-stalen span { font-size: 13px; color: #5A6475; margin-left: 4px; }
+  .dko-staal { cursor: pointer; width: 22px; height: 22px; border-radius: 50%; padding: 0; border: 1px solid #CBD2DB; box-shadow: 0 0 0 2px #fff inset; outline: 2px solid transparent; outline-offset: 2px; transition: width .15s, height .15s; }
+  .dko-kaart:hover .dko-staal:not([disabled]) { width: 30px; height: 30px; }
+  .dko-staal.is-on { outline-color: #D6283A; }
+  .dko-staal[disabled] { cursor: default; }
+  .dko-kern { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .dko-kern li { background: #F4F6F9; border-radius: 6px; padding: 4px 9px; font-size: 13px; color: #5A6475; }
+  .dko-kern strong { color: #141A2E; }
+  .dko-kaart__voet { margin-top: auto; padding-top: 14px; border-top: 1px solid #E3E7ED; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .dko-kaart__voet div { font-size: 14px; color: #5A6475; display: flex; flex-direction: column; }
+  .dko-kaart__voet strong { font-size: 22px; color: #141A2E; }
+  .dko-kaart__voet small { font-size: 12px; }
+  .dko-kaart__btn { background: #FBE3E5; color: #B01F2F !important; text-decoration: none; font-weight: 800; padding: 11px 18px; border-radius: 999px; font-size: 15px; white-space: nowrap; transition: background .2s, color .2s; }
+  .dko-kaart:hover .dko-kaart__btn { background: #D6283A; color: #fff !important; }
+
+  /* secties */
+  .dko-sectie { padding: 40px 0; }
+  .dko-sectie--laatst { padding-bottom: 96px; }
+  .dko-multi { background: #141A2E; color: #fff; border-radius: 28px; display: flex; overflow: hidden; }
+  .dko-multi__tekst { flex: 1.4 1 0; padding: 52px 56px; }
+  .dko-multi__tekst p { color: rgba(255,255,255,.8); font-size: 17px; max-width: 580px; margin-bottom: 24px !important; }
+  .dko-multi__prijs { color: rgba(255,255,255,.85); font-size: 18px; font-weight: 800; }
+  .dko-multi__prijs small { font-weight: 500; font-size: 13px; color: rgba(255,255,255,.7); }
+  .dko-multi__schema { flex: 1 1 0; background: #1F2740; display: grid; place-items: center; padding: 40px; clip-path: polygon(12% 0, 100% 0, 100% 100%, 0 100%); }
+  .dko-multi__schema svg { width: 100%; max-width: 320px; height: auto; }
+  .dko-drie { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .dko-card { background: #fff; border: 1px solid #E3E7ED; border-radius: 18px; padding: 28px; }
+  .dko-card h3 { font-size: 26px; font-weight: 900; font-stretch: 65%; text-transform: uppercase; margin: 6px 0 8px !important; }
+  .dko-card p, .dko-card li { color: #5A6475; }
+  .dko-card ul { margin: 0; padding-left: 18px; }
+  .dko-card__prijs { margin-top: 12px !important; }
+  .dko-card__prijs strong { color: #141A2E; }
+  .dko-stappen { list-style: none; margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .dko-stappen li { background: #fff; border: 1px solid #E3E7ED; border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 6px; }
+  .dko-stappen b { width: 40px; height: 40px; border-radius: 50%; background: #141A2E; color: #fff; display: grid; place-items: center; margin-bottom: 6px; }
+  .dko-stappen li:last-child b { background: #D6283A; }
+  .dko-stappen strong { font-size: 18px; }
+  .dko-stappen span { color: #5A6475; }
+  .dko-faq { display: flex; gap: 48px; margin-top: 72px; }
+  .dko-faq > div:first-child { flex: 1 1 0; }
+  .dko-faq__lijst { flex: 2 1 0; display: grid; gap: 10px; }
+  .dko-faq details { background: #fff; border: 1px solid #E3E7ED; border-radius: 14px; }
+  .dko-faq summary { cursor: pointer; list-style: none; padding: 20px 22px; display: flex; justify-content: space-between; gap: 16px; font-size: 17px; font-weight: 700; }
+  .dko-faq summary::-webkit-details-marker { display: none; }
+  .dko-faq summary::after { content: '+'; color: #D6283A; font-size: 22px; line-height: 1; }
+  .dko-faq details[open] summary::after { content: '−'; }
+  .dko-faq details p { padding: 0 22px 20px; color: #5A6475; }
+  .dko-slot { background: #fff; border: 1px solid #E3E7ED; border-radius: 24px; padding: 44px 56px; display: flex; gap: 28px; align-items: center; }
+  .dko-slot img { width: 140px; height: auto; }
+  .dko-slot > div { flex: 1; min-width: 0; }
+  @media (max-width: 1180px) { .dko-kaarten { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dko-h1 { font-size: 60px; } }
+</style>

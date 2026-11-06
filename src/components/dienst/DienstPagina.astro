@@ -170,6 +170,7 @@ const check = '<path d="M20 6 9 17l-5-5"/>';
       <CtaCard title={data.cta.title} text={data.cta.text} button={data.cta.button} href={data.cta.href} />
     </div>
   </section>
+  {Astro.slots.has('desktop') && <Fragment slot="desktop"><slot name="desktop" /></Fragment>}
 </Base>
 
 <script>
