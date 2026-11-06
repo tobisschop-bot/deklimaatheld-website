@@ -6,6 +6,46 @@ import DkHeader from './DkHeader.astro';
 import DkFooter from './DkFooter.astro';
 import ProductImage from '../ProductImage.astro';
 import { warmtepompen, euro, kaartLink } from '../../data/warmtepompen';
+import { bereken } from '../../lib/rekenmodel';
+
+// USP's per model op de kaart: altijd het geluid, plus één kenmerk. Alles uit src/data/configurator.ts.
+const usps: Record<string, [string, string]> = {
+  flint: ['Stil: 37,5 dB(A)', 'Ingebouwde 4G en Weheat-app'],
+  sparrow: ['Stil: 40,5 dB(A)', 'R290, natuurlijk koudemiddel'],
+  blackbird: ['Stil: 38 dB(A)', 'Nog 8 kW bij -10 °C'],
+  swift: ['Geluid: geen buitenunit in de tuin', 'Plaatsing van binnenuit, zonder kraan'],
+  'arotherm-pro': ['Geluid: 48–55 dB(A) in fluistermodus', 'Tot 70 °C, ook voor radiatoren'],
+  'arotherm-plus': ['Fluisterstil: vanaf 27,5 dB(A) op 3 m', 'Tot 75 °C, ook voor radiatoren'],
+  'altherma-4h': ['Stil: 28 dB(A) op 3 m', 'Tot 75 °C, vervangt je cv-ketel'],
+  'altherma-hybride': ['Geluid: 37 dB(A) buitendeel', 'Werkt samen met je cv-ketel'],
+  'haier-super-aqua': ['Geluid: 59–68 dB(A) geluidsvermogen', 'Werkt tot -25 °C buiten'],
+  'haier-gt-r290': ['Geluid: 44–55 dB(A) geluidsdruk', 'Tot 80 °C, ook voor radiatoren'],
+  quatt: ['Stil instelbaar met de SoundSlider', 'Hybride of all-electric, op R290'],
+};
+
+// Terugverdientijd: (v.a.-prijs − ISDE) ÷ besparing per jaar. Zelfde rekenmodel en referentiewoning
+// als de configurator (rijtjeshuis, 1.200 m³ gas, 3 personen). Hybride waar dat kan, anders all-electric.
+const perJaar = (u: 'hybride' | 'all-electric') => {
+  const r = bereken({ soort: 'lucht-water', uitvoering: u, gasM3: 1200, personen: 3 });
+  return Math.round((r.nettoZonderInvestering * 12) / 10) * 10;
+};
+const PJ_H = perJaar('hybride');
+const PJ_AE = perJaar('all-electric');
+const jaarT = (j: number) => j.toFixed(1).replace('.', ',');
+const terug = (w: (typeof warmtepompen)[number]) => {
+  if (w.from == null) return null;
+  const pj = w.types.includes('all-electric') && !w.types.includes('hybride') ? PJ_AE : PJ_H;
+  const netto = w.from - (w.isde ?? 0);
+  const j = netto / pj;
+  const rest = netto - 3 * pj;
+  return {
+    tekst: j <= 0 ? 'direct' : j < 1 ? '< 1 jaar' : `${jaarT(j)} jaar`,
+    pct: Math.max(0, Math.min(100, j * 10)),
+    na3: rest > 0 ? `nog ${euro(rest)}` : `+ ${euro(-rest)}`,
+    na3Plus: rest <= 0,
+    aria: j <= 0 ? 'Direct terugverdiend' : `Terugverdiend in ongeveer ${jaarT(j)} jaar`,
+  };
+};
 
 const notes: Record<string, string> = {
   Alle: 'vaste prijs inclusief montage, ontworpen volgens de Heat Geek-methode.',
@@ -120,18 +160,27 @@ const faq = [
             </div>
             <h3>{w.name.replace(new RegExp('^' + w.merk + ' '), '')}</h3>
             <p class="dkw-kaart__tag">{w.tag}</p>
-            <div class="dkw-kaart__voet">
-              <div>
-                <p class="dkw-kaart__prijs">{w.from == null ? 'Prijs op aanvraag' : <>v.a. {euro(w.from)},-</>}</p>
-                <p class="dkw-kaart__isde">{w.isde == null ? 'ISDE-subsidie mogelijk*' : `Tot ${euro(w.isde)} ISDE-subsidie*`}</p>
+            <p class="dkw-kaart__prijs">{w.from == null ? 'Prijs op aanvraag' : <>v.a. {euro(w.from)},- <small>incl. montage</small></>}</p>
+            <ul class="dkw-usps">
+              {(usps[w.slug] ?? []).map((u) => <li>{u}</li>)}
+              <li>{w.isde == null ? 'ISDE-subsidie mogelijk*' : `Tot ${euro(w.isde)} ISDE-subsidie*`}</li>
+            </ul>
+            {(() => { const t = terug(w); return t && (
+              <div class="dkw-terug" role="img" aria-label={t.aria}>
+                <div class="dkw-terug__kop">
+                  <span>Terugverdiend in <strong>{t.tekst}*</strong></span>
+                  <span class:list={['dkw-terug__na3', { 'is-plus': t.na3Plus }]} title={t.na3Plus ? 'Na 3 jaar al bespaard' : 'Na 3 jaar nog terug te verdienen'}>na 3 jr: {t.na3}</span>
+                </div>
+                <div class="dkw-terug__balk"><span style={`width:${t.pct}%`}></span><span></span></div>
+                <div class="dkw-terug__leg"><span>terugverdienen</span><span>besparing · tot 10 jaar</span></div>
               </div>
-              <a class="dkw-kaart__knop" href={kaartLink(w).href}>{kaartLink(w).label}</a>
-            </div>
+            ); })()}
+            <a class="dkw-kaart__knop" href={kaartLink(w).href}>{kaartLink(w).label}</a>
           </article>
         ))}
       </div>
       <p class="dkw-leeg" data-dkw-leeg hidden>Geen modellen in deze combinatie. Kies een ander merk of type.</p>
-      <p class="dkw-noot">Prijzen zijn indicatief en afhankelijk van je woning en installatie, inclusief montage. *Subsidiebedrag indicatief, zie de RVO-lijst.</p>
+      <p class="dkw-noot">Prijzen zijn indicatief en afhankelijk van je woning en installatie, inclusief montage. *Subsidiebedrag indicatief, zie de RVO-lijst. Terugverdientijd indicatief: v.a.-prijs min ISDE, gedeeld door de besparing van {euro(PJ_H)} per jaar (hybride) of {euro(PJ_AE)} (all-electric) in een rijtjeshuis met 1.200 m³ gas. Rood = de investering terugverdienen, groen = de jaren daarna. Je eigen besparing reken je uit met de besparingscheck.</p>
     </div>
   </section>
 
@@ -325,10 +374,26 @@ const faq = [
   .dkw-foto--ph { height: 150px; filter: none; border: 2px dashed rgba(255,255,255,.3); border-radius: 14px; align-items: center; text-align: center; padding: 12px; font-size: 14px; font-weight: 700; color: #C9CFDA; }
   .dkw-kaart h3 { margin-top: 22px; font-size: 36px; line-height: .92; font-weight: 900; font-stretch: 64%; text-transform: uppercase; }
   .dkw-kaart__tag { margin-top: 6px !important; font-size: 14px; color: #9AA3B2; }
-  .dkw-kaart__voet { margin-top: auto; padding-top: 22px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
-  .dkw-kaart__prijs { font-size: 22px; font-weight: 900; white-space: nowrap; }
+  .dkw-kaart__prijs { margin-top: 14px !important; font-size: 26px; font-weight: 900; font-stretch: 80%; white-space: nowrap; }
+  .dkw-kaart__prijs small { font-size: 13px; font-weight: 600; font-stretch: 100%; color: #9AA3B2; }
+  .dkw-usps { list-style: none; margin: 14px 0 0; padding: 14px 0 0; border-top: 1px solid rgba(255,255,255,.1); display: grid; gap: 8px; font-size: 14px; color: rgba(255,255,255,.88); }
+  .dkw-usps li { display: flex; gap: 10px; align-items: flex-start; }
+  .dkw-usps li::before { content: ''; flex: 0 0 16px; height: 16px; margin-top: 2px; background: no-repeat center / 16px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234CC38A' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E"); }
+  .dkw-terug { margin-top: auto; margin-bottom: 20px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.1); }
+  .dkw-terug__kop { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: rgba(255,255,255,.85); }
+  .dkw-terug__kop > span:first-child { white-space: nowrap; }
+  .dkw-terug__kop strong { color: #FF8A95; font-size: 18px; font-weight: 900; }
+  .dkw-terug__na3 { font-size: 12px; color: #FF8A95; white-space: nowrap; }
+  .dkw-terug__na3.is-plus { color: #4CC38A; }
+  .dkw-terug__balk { display: flex; height: 10px; border-radius: 5px; overflow: hidden; }
+  .dkw-terug__balk span:first-child { background: #D6283A; }
+  .dkw-terug__balk span:last-child { flex: 1; background: linear-gradient(90deg, #1E9E6A, #4CC38A); }
+  .dkw-terug__leg { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; font-weight: 700; color: #FF8A95; }
+  .dkw-terug__leg span:last-child { color: #4CC38A; }
   .dkw-kaart__isde { margin-top: 3px !important; font-size: 13px; font-weight: 700; color: #4CC38A; }
-  .dkw-kaart__knop { flex: none; background: #fff; color: #141A2E; font-weight: 800; font-size: 14px; text-decoration: none; padding: 12px 18px; border-radius: 999px; }
+  .dkw-kaart__knop { margin-top: auto; display: block; text-align: center; background: #fff; color: #141A2E; font-weight: 800; font-size: 15px; text-decoration: none; padding: 13px 18px; border-radius: 999px; }
+  .dkw-usps { margin-bottom: 18px !important; }
+  .dkw-terug + .dkw-kaart__knop { margin-top: 0; }
   .dkw-kaart__knop:hover { background: #FFE3E6; }
   .dkw-leeg { margin-top: 24px !important; font-size: 16px; color: #C9CFDA; }
   .dkw-noot { margin-top: 22px !important; font-size: 13px; color: #9AA3B2; }
