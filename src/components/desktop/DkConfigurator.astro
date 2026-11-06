@@ -39,7 +39,7 @@ const SCEN = { hybride: perJaar('hybride'), 'all-electric': perJaar('all-electri
 const JAREN = [1, 3, 7, 10];
 
 // Geluid (voor de decibelschaal), uit de specificaties of kerncijfers
-const dbTekst = [...m.specs, ...m.quickFacts].find((f) => /dB/.test(f.value))?.value;
+const dbTekst = m.geenGeluidsschaal ? undefined : [...m.specs, ...m.quickFacts].find((f) => /dB/.test(f.value))?.value;
 const db = dbTekst ? Number(dbTekst.replace(',', '.').replace(/[^0-9.]/g, '')) : null;
 const dbPos = db ? Math.max(0, Math.min(100, ((db - 20) / 60) * 100)) : 0;
 const schaal = [
@@ -299,8 +299,20 @@ const stappen = [
         </section>
       )}
 
+      {m.uitgelicht && m.uitgelicht.filter((u) => heeft(u.img)).map((u, i) => (
+        <section class:list={['dkc__uit', { 'is-omgekeerd': i % 2 === 1 }]} aria-labelledby={`dkc-u-${i}`}>
+          <img src={u.img} alt={u.alt} loading="lazy" width="1600" height="1200" />
+          <div>
+            <span class="dk-kicker">{u.kicker}</span>
+            <h2 id={`dkc-u-${i}`} class="dkc__h2 dkc__h2--s">{u.titel}</h2>
+            <p>{u.tekst}</p>
+            <ul>{u.punten.map((p) => <li>{p}</li>)}</ul>
+          </div>
+        </section>
+      ))}
+
       {m.app && (
-        <section class="dkc__app" aria-labelledby="dkc-a-h">
+        <section class="dkc__app" aria-labelledby="dkc-a-h" style={m.app.kleur ? `background:${m.app.kleur}` : undefined}>
           <div class="dkc__app-head">
             <div>
               <span class="dk-kicker dk-kicker--light">{m.app.naam}</span>
@@ -308,14 +320,16 @@ const stappen = [
             </div>
             <p>{m.app.lead}</p>
           </div>
-          <div class="dkc__app-blokken">
+          <div class:list={['dkc__app-blokken', { 'is-tekst': m.app.blokken.every((b) => !b.video) }]}>
             {m.app.blokken.map((b) => (
               <article class="dkc__app-blok">
-                <div class="dkc__app-media">
-                  <video data-app-video muted loop playsinline preload="none" poster={b.poster} aria-label={b.alt} width="1358" height="752">
-                    <source src={b.video} type="video/mp4" />
-                  </video>
-                </div>
+                {b.video && (
+                  <div class="dkc__app-media">
+                    <video data-app-video muted loop playsinline preload="none" poster={b.poster} aria-label={b.alt} width="1358" height="752">
+                      <source src={b.video} type="video/mp4" />
+                    </video>
+                  </div>
+                )}
                 <div class="dkc__app-tekst">
                   {b.label && <span class="dkc__app-label">{b.label}</span>}
                   <h3>{b.titel}</h3>
@@ -730,6 +744,14 @@ const stappen = [
   .dkc__app-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; }
   .dkc__app-head p { max-width: 460px; font-size: 16px; line-height: 1.55; color: rgba(255,255,255,.78); }
   .dkc__app-blokken { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .dkc__app-blokken.is-tekst { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .dkc__uit { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 56px; align-items: center; }
+  .dkc__uit.is-omgekeerd > img { order: 2; }
+  .dkc__uit > img { width: 100%; height: 440px; object-fit: cover; border-radius: 18px; display: block; }
+  .dkc__uit p { margin-top: 14px !important; font-size: 16px; line-height: 1.6; color: var(--dk-muted); max-width: 520px; }
+  .dkc__uit ul { list-style: none; margin: 20px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .dkc__uit li { position: relative; padding-left: 28px; font-size: 15px; font-weight: 600; }
+  .dkc__uit li::before { content: ''; position: absolute; left: 0; top: 2px; width: 18px; height: 18px; border-radius: 50%; background: #E3F4EC url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M3 7.5 6 10.5 11 4' fill='none' stroke='%2313744C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat; }
   .dkc__app-blok { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; }
   .dkc__app-media { aspect-ratio: 1358 / 752; background: #233F37; }
   .dkc__app-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -773,8 +795,8 @@ const stappen = [
   .dkc__specs dl > div + div { border-top: 1px solid var(--dk-line); }
   .dkc__specs dt { color: var(--dk-muted); }
   .dkc__specs dd { margin: 0; font-weight: 700; }
-  .dkc__specs .is-extra { display: none; }
-  .dkc__specs.is-open .is-extra { display: grid; }
+  .dkc__specs dl > div.is-extra { display: none; }
+  .dkc__specs.is-open dl > div.is-extra { display: grid; }
   .dkc__specs button { width: 100%; min-height: 52px; border: 0; border-top: 1px solid var(--dk-line); background: #fff; color: var(--dk-red-dark); font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; }
 
   .dkc__inbegrepen { background: var(--dk-navy); color: #fff; border-radius: 18px; padding: 44px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 48px; align-items: center; }

@@ -54,6 +54,10 @@ export interface ConfigModel {
   /** optioneel (desktop): 'Zo is hij opgebouwd', explodeview met genummerde onderdelen (x/y in % van de foto) */
   /** optioneel (desktop): sectie over de app van het merk */
   app?: AppInfo;
+  /** optioneel (desktop): uitgelichte kenmerken, afwisselend foto en tekst */
+  uitgelicht?: { img: string; alt: string; kicker: string; titel: string; tekst: string; punten: string[] }[];
+  /** desktop: geen decibelschaal tonen (bijv. als alleen geluidsvermogen bekend is) */
+  geenGeluidsschaal?: boolean;
   /** optioneel (desktop): foto bij 'Zo werkt het' */
   montage?: Foto;
   opbouw?: { img: string; alt: string; onderdelen: { x: number; y: number; titel: string; tekst: string }[] };
@@ -61,8 +65,27 @@ export interface ConfigModel {
 
 export interface Foto { src: string; alt: string }
 
-export interface AppBlok { titel: string; tekst: string; video: string; poster: string; alt: string; label?: string }
-export interface AppInfo { naam: string; lead: string; blokken: AppBlok[]; fotos?: (Foto & { caption: string })[]; overzicht: Foto; punten: string[]; noot?: string }
+export interface AppBlok { titel: string; tekst: string; video?: string; poster?: string; alt?: string; label?: string }
+export interface AppInfo { naam: string; kleur?: string; lead: string; blokken: AppBlok[]; fotos?: (Foto & { caption: string })[]; overzicht: Foto; punten: string[]; noot?: string }
+
+// myVAILLANT-app (aroTHERM pro en plus). Bron: vaillant.nl. Beeld: Vaillant.
+export const vaillantApp: AppInfo = {
+  naam: 'myVAILLANT-app',
+  kleur: '#13212E',
+  lead: 'Met de myVAILLANT-app regel je de warmtepomp vanaf je telefoon. Daarvoor sluiten we hem aan op internet met de myVAILLANT connect-module.',
+  blokken: [
+    { label: 'Inzicht', titel: 'Zie je verbruik', tekst: 'Volg in de app hoeveel energie je warmtepomp gebruikt en wat hij oplevert.' },
+    { label: 'Comfort', titel: 'Temperatuur en tijden', tekst: 'Stel de temperatuur in en leg vaste tijden vast, ook als je niet thuis bent.' },
+    { label: 'Service', titel: 'Wij kijken mee', tekst: 'Met jouw toestemming kijken wij via myVAILLANT Pro op afstand mee. Zo lossen we veel vragen op zonder langs te komen.' },
+  ],
+  overzicht: { src: '/img/vaillant-myvaillant-app.webp', alt: 'De myVAILLANT-app op een telefoon met de ingestelde temperatuur van 21 graden' },
+  punten: [
+    'Verwarming, warm water en verbruik in één app',
+    'Voor iPhone (App Store) en Android (Google Play)',
+    'myVAILLANT connect-module voor de internetverbinding',
+  ],
+  noot: 'De myVAILLANT connect-module zit standaard bij de uniTOWER. Bij andere opstellingen nemen we hem mee in je offerte.',
+};
 
 // Weheat-app (geldt voor alle Weheat-modellen). Beeld: Weheat.
 export const weheatApp: AppInfo = {
@@ -698,6 +721,7 @@ export const configurators: Record<string, ConfigModel> = {
   // Prijzen (Tycho, okt 2026): aroTHERM pro v.a. € 5.329 hybride, all-electric + € 1.855; aroTHERM plus 8% lager.
   // Grotere vermogens = hypothese (marktstappen), later herzien.
   'arotherm-plus': {
+    app: vaillantApp,
     slug: 'arotherm-plus',
     name: 'Vaillant aroTHERM plus',
     short: 'aroTHERM plus',
@@ -754,6 +778,24 @@ export const configurators: Record<string, ConfigModel> = {
   },
 
   'arotherm-pro': {
+    app: vaillantApp,
+    geenGeluidsschaal: true,
+    galerij: [{ src: '/img/vaillant-arotherm-pro-raam.webp', alt: 'Vaillant aroTHERM pro in antraciet onder een raam, voor een haag' }],
+    sfeer: { src: '/img/vaillant-arotherm-pro-voortuin.webp', alt: 'Man met racefiets voor een wit huis, met de aroTHERM pro in de voortuin', caption: 'Ook in de voortuin: compact en strak in antraciet.' },
+    uitgelicht: [
+      {
+        img: '/img/vaillant-arotherm-pro-raam.webp', alt: 'Vaillant aroTHERM pro onder een raam, naast een haag',
+        kicker: 'Plaatsing', titel: 'Past ook onder het raam',
+        tekst: 'De aroTHERM pro neemt ongeveer een halve vierkante meter in. Dankzij de Flexible Space Function mag hij direct naast deuren, ramen, stopcontacten en buitenlampen staan. Bij eerdere warmtepompen met R290 was daar meer ruimte voor nodig.',
+        punten: ['Ongeveer 0,5 m² vloeroppervlak', '75 cm hoog (VWL 55 en 75)', 'Eén ventilator, strak in antraciet'],
+      },
+      {
+        img: '/img/vaillant-arotherm-pro-tuin.webp', alt: 'Lachende man in de tuin naast een Vaillant-warmtepomp',
+        kicker: 'Ook voor bestaande huizen', titel: 'Warm genoeg voor radiatoren',
+        tekst: 'De aroTHERM pro levert tot 70 °C aanvoertemperatuur zonder elektrische bijverwarming. Daardoor werkt hij met vloerverwarming, en ook met de radiatoren in een bestaande woning.',
+        punten: ['Tot 70 °C aanvoer', 'Werkt tot −25 °C buitentemperatuur', 'SCOP tot 5,0 bij 35 °C (VWL 55)'],
+      },
+    ],
     slug: 'arotherm-pro',
     name: 'Vaillant aroTHERM pro',
     short: 'aroTHERM pro',
@@ -783,25 +825,34 @@ export const configurators: Record<string, ConfigModel> = {
     defaultBoiler: '200',
     specs: [
       { value: 'VWL 55, 75 en 115 (5–11 kW)', label: 'Vermogens' },
-      { value: '4,81–4,94', label: 'SCOP bij 35 °C' },
+      { value: '4,87–5,01', label: 'SCOP bij 35 °C' },
       { value: 'A+++', label: 'Energielabel verwarmen (35 °C)' },
+      { value: 'A++', label: 'Energielabel verwarmen (55 °C)' },
       { value: 'Tot 70 °C', label: 'Aanvoertemperatuur' },
       { value: 'Tot -25 °C', label: 'Werkt bij buitentemperatuur' },
       { value: 'R290 (GWP 0,02)', label: 'Koudemiddel' },
-      { value: 'Ja, optioneel', label: 'Koelen' },
-      { value: '750 × 1.104 × 454 mm, 85 kg (VWL 55)', label: 'Afmetingen (h × b × d)' },
+      { value: 'Ja (VWL 55 en 75)', label: 'Koelen' },
+      { value: '48–55 dB(A) (fluistermodus, A-7/W35)', label: 'Geluidsvermogen buitendeel' },
+      { value: '750 × 1.104 × 454 mm, 84 kg (VWL 55)', label: 'Afmetingen (h × b × d)' },
+      { value: '1.103 × 1.169 × 454 mm, 137 kg', label: 'Afmetingen VWL 115' },
+      { value: '230 V (VWL 55, 75) · 400 V (VWL 115)', label: 'Aansluiting' },
+      { value: 'myVAILLANT connect', label: 'Internetmodule (voor de app)' },
       { value: '2 jaar + 3 jaar extra bij registratie', label: 'Garantie' },
     ],
     waarom: [
       { title: 'Compact en betaalbaar', text: 'Een monoblock met een klein buitendeel (ongeveer 0,5 m²), en de voordeligste instap in de Vaillant-lijn.' },
       { title: 'Ook voor radiatoren', text: 'Met aanvoertemperaturen tot 70 °C werkt hij ook in bestaande woningen met gewone radiatoren.' },
       { title: 'Plaatsen dicht bij huis', text: 'Dankzij de Flexible Space Function mag hij vlak naast deuren, ramen en stopcontacten staan, ondanks het R290-koudemiddel.' },
+      { title: 'Tot 5 jaar garantie', text: 'Standaard 2 jaar garantie. Registreer je hem online, dan komt daar gratis 3 jaar bij.' },
     ],
     inbegrepen,
     faq: [
       { q: 'Wat is het verschil met de aroTHERM plus?', a: 'Beide zijn monoblocks met R290, leverbaar in antraciet of wit. De plus is stiller, gaat tot 75 °C en heeft meer vermogens. De pro is compacter en voordeliger, tot 70 °C.' },
       { q: 'Welk vermogen heb ik nodig?', a: 'Doe de besparingscheck voor een eerste indicatie. Het exacte vermogen berekenen we tijdens de installatiecheck.' },
       { q: 'Hoeveel ISDE-subsidie ontvang ik?', a: 'Het ISDE-bedrag hangt af van het vermogen: tot € 3.700 (indicatief, zie de actuele RVO-lijst). We helpen je met de aanvraag.' },
+      { q: 'Kan ik hem met mijn telefoon bedienen?', a: 'Ja, met de myVAILLANT-app. Daarvoor is de myVAILLANT connect-internetmodule nodig. Die nemen we mee in je offerte als hij niet al bij je opstelling zit.' },
+      { q: 'Hoe dicht mag hij bij ramen en deuren staan?', a: 'Dankzij de Flexible Space Function mag de aroTHERM pro direct naast deuren, ramen, kelderschachten en stopcontacten staan. De precieze plek bepalen we samen bij de installatiecheck.' },
+      { q: 'Heb ik een buffervat nodig?', a: 'In veel gevallen niet. Of het in jouw situatie nodig is, bekijken we bij de installatiecheck.' },
     ],
   },
 
