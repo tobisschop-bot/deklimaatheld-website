@@ -142,7 +142,11 @@ export const configurators: Record<string, ConfigModel> = {
   sparrow: {
     app: weheatApp,
     // Foto's van Weheat; leg ze in public/img/ onder deze namen, dan verschijnen ze vanzelf op desktop.
-    sfeer: { src: '/img/weheat-familie.webp', alt: 'De Weheat-lijn: warmtepompen en boilervaten naast elkaar, met in het midden de Sparrow in koper', caption: 'De Weheat-lijn op een rij. In het midden de Sparrow met koperen front.' },
+    galerij: [
+      { src: '/img/weheat-sparrow-tuin.webp', alt: 'Weheat Sparrow P60 met koperen front tegen een houten schuur in de tuin' },
+      { src: '/img/weheat-familie.webp', alt: 'De Weheat-lijn op een rij, met in het midden de Sparrow in koper' },
+    ],
+    sfeer: { src: '/img/weheat-sparrow-raam.webp', alt: 'Man binnen op de bank, buiten door het raam de Weheat Sparrow P60 in koper', caption: 'Binnen merk je er niets van. Buiten staat de Sparrow netjes tegen de schuur.' },
     opbouw: {
       img: '/img/weheat-sparrow-explodeview.webp',
       alt: 'Explodeview van de Weheat Sparrow P60 met de losse onderdelen',
