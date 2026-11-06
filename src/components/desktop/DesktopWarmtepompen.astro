@@ -167,12 +167,9 @@ const faq = [
             </ul>
             {(() => { const t = terug(w); return t && (
               <div class="dkw-terug" role="img" aria-label={t.aria}>
-                <div class="dkw-terug__kop">
-                  <span>Terugverdiend in <strong>{t.tekst}*</strong></span>
-                  <span class:list={['dkw-terug__na3', { 'is-plus': t.na3Plus }]} title={t.na3Plus ? 'Na 3 jaar al bespaard' : 'Na 3 jaar nog terug te verdienen'}>na 3 jr: {t.na3}</span>
-                </div>
+                <div class="dkw-terug__kop"><span>Terugverdiend in <strong>{t.tekst}*</strong></span></div>
                 <div class="dkw-terug__balk"><span style={`width:${t.pct}%`}></span><span></span></div>
-                <div class="dkw-terug__leg"><span>terugverdienen</span><span>besparing · tot 10 jaar</span></div>
+                <div class="dkw-terug__leg"><span>terugverdienen</span><span class:list={['dkw-terug__na3', { 'is-plus': t.na3Plus }]}>na 3 jaar: {t.na3}</span></div>
               </div>
             ); })()}
             <a class="dkw-kaart__knop" href={kaartLink(w).href}>{kaartLink(w).label}</a>
@@ -383,13 +380,12 @@ const faq = [
   .dkw-terug__kop { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px; font-size: 14px; font-weight: 700; color: rgba(255,255,255,.85); }
   .dkw-terug__kop > span:first-child { white-space: nowrap; }
   .dkw-terug__kop strong { color: #FF8A95; font-size: 18px; font-weight: 900; }
-  .dkw-terug__na3 { font-size: 12px; color: #FF8A95; white-space: nowrap; }
+  .dkw-terug__na3 { color: #FF8A95; white-space: nowrap; }
   .dkw-terug__na3.is-plus { color: #4CC38A; }
   .dkw-terug__balk { display: flex; height: 10px; border-radius: 5px; overflow: hidden; }
   .dkw-terug__balk span:first-child { background: #D6283A; }
   .dkw-terug__balk span:last-child { flex: 1; background: linear-gradient(90deg, #1E9E6A, #4CC38A); }
-  .dkw-terug__leg { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; font-weight: 700; color: #FF8A95; }
-  .dkw-terug__leg span:last-child { color: #4CC38A; }
+  .dkw-terug__leg { display: flex; justify-content: space-between; gap: 8px; margin-top: 7px; font-size: 12px; font-weight: 700; color: #FF8A95; white-space: nowrap; }
   .dkw-kaart__isde { margin-top: 3px !important; font-size: 13px; font-weight: 700; color: #4CC38A; }
   .dkw-kaart__knop { margin-top: auto; display: block; text-align: center; background: #fff; color: #141A2E; font-weight: 800; font-size: 15px; text-decoration: none; padding: 13px 18px; border-radius: 999px; }
   .dkw-usps { margin-bottom: 18px !important; }
