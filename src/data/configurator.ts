@@ -54,13 +54,15 @@ export interface ConfigModel {
   /** optioneel (desktop): 'Zo is hij opgebouwd', explodeview met genummerde onderdelen (x/y in % van de foto) */
   /** optioneel (desktop): sectie over de app van het merk */
   app?: AppInfo;
+  /** optioneel (desktop): foto bij 'Zo werkt het' */
+  montage?: Foto;
   opbouw?: { img: string; alt: string; onderdelen: { x: number; y: number; titel: string; tekst: string }[] };
 }
 
 export interface Foto { src: string; alt: string }
 
 export interface AppBlok { titel: string; tekst: string; video: string; poster: string; alt: string; label?: string }
-export interface AppInfo { naam: string; lead: string; blokken: AppBlok[]; overzicht: Foto; punten: string[]; noot?: string }
+export interface AppInfo { naam: string; lead: string; blokken: AppBlok[]; fotos?: (Foto & { caption: string })[]; overzicht: Foto; punten: string[]; noot?: string }
 
 // Weheat-app (geldt voor alle Weheat-modellen). Beeld: Weheat.
 export const weheatApp: AppInfo = {
@@ -83,6 +85,11 @@ export const weheatApp: AppInfo = {
       poster: '/img/weheat-app-schema-poster.webp',
       alt: "Weheat-app: handmatig warmwaterschema per dag met tijdblokken",
     },
+  ],
+  fotos: [
+    { src: '/img/weheat-app-bank.webp', alt: 'Vrouw op de bank met haar telefoon in de hand', caption: 'Even de temperatuur aanpassen vanaf de bank.' },
+    { src: '/img/weheat-app-tafel.webp', alt: 'Vader met telefoon aan tafel naast zijn tekenende zoon', caption: 'Zien wat je warmtepomp doet, zonder op te staan.' },
+    { src: '/img/weheat-app-hand.webp', alt: 'Startscherm van de Weheat-app op een telefoon', caption: 'Warmtepomp en cv-ketel samen in één overzicht.' },
   ],
   overzicht: { src: '/img/weheat-app-schermen.webp', alt: 'Drie schermen van de Weheat-app: startscherm, warm water en warm water boost' },
   punten: [
@@ -135,11 +142,7 @@ export const configurators: Record<string, ConfigModel> = {
   sparrow: {
     app: weheatApp,
     // Foto's van Weheat; leg ze in public/img/ onder deze namen, dan verschijnen ze vanzelf op desktop.
-    galerij: [
-      { src: '/img/weheat-sparrow-kaal-1.webp', alt: 'Weheat Sparrow P60 zonder designfront' },
-      { src: '/img/weheat-sparrow-kaal-2.webp', alt: 'Weheat Sparrow P60 zonder designfront, van opzij' },
-    ],
-    sfeer: { src: '/img/weheat-sparrow-buiten.webp', alt: 'Weheat Sparrow P60 buiten aan de gevel', caption: 'De Sparrow aan de gevel: compact en stil.' },
+    sfeer: { src: '/img/weheat-familie.webp', alt: 'De Weheat-lijn: warmtepompen en boilervaten naast elkaar, met in het midden de Sparrow in koper', caption: 'De Weheat-lijn op een rij. In het midden de Sparrow met koperen front.' },
     opbouw: {
       img: '/img/weheat-sparrow-explodeview.webp',
       alt: 'Explodeview van de Weheat Sparrow P60 met de losse onderdelen',
@@ -219,6 +222,9 @@ export const configurators: Record<string, ConfigModel> = {
 
   flint: {
     app: weheatApp,
+    galerij: [{ src: '/img/weheat-flint-gevel.webp', alt: 'Weheat Flint P40 buiten tegen een stenen muur' }],
+    sfeer: { src: '/img/weheat-flint-buiten.webp', alt: 'Kind met loopfiets langs een Weheat Flint P40 in de tuin', caption: 'De Flint in de tuin: compact, strak en stil.' },
+    montage: { src: '/img/weheat-flint-monteur.webp', alt: 'Monteur bij een Weheat Flint P40' },
     slug: 'flint',
     name: 'Weheat Flint P40',
     short: 'Flint P40',
@@ -283,6 +289,24 @@ export const configurators: Record<string, ConfigModel> = {
 
   blackbird: {
     app: weheatApp,
+    galerij: [
+      { src: '/img/weheat-blackbird-dak.webp', alt: 'Weheat Blackbird P80 op een plat dak, gezien vanaf de oprit' },
+      { src: '/img/weheat-blackbird-duo.webp', alt: 'Twee Weheat Blackbird-units naast elkaar op een plat dak' },
+      { src: '/img/weheat-blackbird-kraan.webp', alt: 'Weheat Blackbird wordt met een kraan op het dak gehesen' },
+    ],
+    sfeer: { src: '/img/weheat-blackbird-carport.webp', alt: 'Weheat Blackbird P80 op het platte dak van een carport', caption: 'De Blackbird op een plat dak: uit de tuin en uit het zicht.' },
+    montage: { src: '/img/weheat-blackbird-monteur.webp', alt: 'Monteur bij een Weheat Blackbird op een plat dak' },
+    opbouw: {
+      img: '/img/weheat-blackbird-explodeview.webp',
+      alt: 'Explodeview van de Weheat Blackbird P80 met de losse onderdelen',
+      onderdelen: [
+        { x: 27, y: 15, titel: 'Luchtkap', tekst: 'De gebogen kap boven de ventilator voert de uitgeblazen lucht naar boven af.' },
+        { x: 74, y: 30, titel: 'Slimme besturing met 4G', tekst: 'Een eigen 4G-verbinding, los van je wifi. Zo krijgt hij updates en bedien je hem via de app.' },
+        { x: 69, y: 43, titel: 'Propaan-circuit (R290)', tekst: 'Het koelcircuit werkt met propaan, een natuurlijk koudemiddel met een zeer lage klimaatimpact.' },
+        { x: 41, y: 51, titel: 'Ventilator', tekst: 'Een grote, liggende ventilator die rustig draait: veel lucht met weinig geluid.' },
+        { x: 25, y: 68, titel: 'EPP-behuizing', tekst: 'Licht en isolerend schuimmateriaal dat geluid en trillingen dempt.' },
+      ],
+    },
     slug: 'blackbird',
     name: 'Weheat Blackbird P80',
     short: 'Blackbird P80',
@@ -343,6 +367,7 @@ export const configurators: Record<string, ConfigModel> = {
 
   swift: {
     app: weheatApp,
+    sfeer: { src: '/img/weheat-familie.webp', alt: 'De Weheat-lijn: warmtepompen en boilervaten naast elkaar', caption: 'De Weheat-lijn op een rij.' },
     slug: 'swift',
     name: 'Weheat Swift',
     short: 'Swift',

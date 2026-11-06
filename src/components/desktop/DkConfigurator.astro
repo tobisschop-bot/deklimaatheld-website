@@ -324,6 +324,13 @@ const stappen = [
               </article>
             ))}
           </div>
+          {m.app.fotos && (
+            <div class="dkc__app-fotos">
+              {m.app.fotos.filter((f) => heeft(f.src)).map((f) => (
+                <figure><img src={f.src} alt={f.alt} loading="lazy" width="1600" height="900" /><figcaption>{f.caption}</figcaption></figure>
+              ))}
+            </div>
+          )}
           <div class="dkc__app-overzicht">
             <img src={m.app.overzicht.src} alt={m.app.overzicht.alt} loading="lazy" width="1600" height="1182" />
             <div>
@@ -388,6 +395,7 @@ const stappen = [
       <section aria-labelledby="dkc-z-h">
         <span class="dk-kicker">Zo werkt het</span>
         <h2 id="dkc-z-h" class="dkc__h2">Van aanvraag tot warm huis</h2>
+        {m.montage && heeft(m.montage.src) && <img class="dkc__montage" src={m.montage.src} alt={m.montage.alt} loading="lazy" width="1600" height="900" />}
         <ol class="dkc__stappen">
           {stappen.map((s, i) => <li class:list={{ 'is-first': i === 0 }}><span>0{i + 1}</span><h3>{s.t}</h3><p>{s.d}</p></li>)}
         </ol>
@@ -590,7 +598,8 @@ const stappen = [
   .dkc__img :global(.pi) { width: auto; height: 100%; max-width: 82%; }
   .dkc__img :global(.pi-box) { width: 82%; height: 100%; }
   .dkc__img.is-fade { opacity: 0; }
-  .dkc__alt { position: absolute; inset: 24px 48px 56px; width: calc(100% - 96px); height: calc(100% - 80px); object-fit: contain; }
+  .dkc__alt { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .dkc__thumb img { object-fit: cover; border-radius: 6px; }
   .dkc__thumbs { position: absolute; left: 16px; bottom: 16px; display: flex; gap: 6px; z-index: 1; }
   .dkc__thumb { width: 52px; height: 52px; padding: 4px; border-radius: 10px; border: 2px solid var(--dk-line); background: #fff; cursor: pointer; }
   .dkc__thumb img { width: 100%; height: 100%; object-fit: contain; }
@@ -728,6 +737,11 @@ const stappen = [
   .dkc__app-label { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #FFB37A; margin-bottom: 6px; }
   .dkc__app-tekst h3 { font-size: 24px; font-weight: 900; font-stretch: 72%; text-transform: uppercase; }
   .dkc__app-tekst p { margin-top: 8px !important; font-size: 15px; line-height: 1.55; color: rgba(255,255,255,.78); }
+  .dkc__app-fotos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .dkc__app-fotos figure { margin: 0; }
+  .dkc__app-fotos img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 14px; display: block; }
+  .dkc__app-fotos figcaption { margin-top: 10px; font-size: 14px; color: rgba(255,255,255,.75); }
+  .dkc__montage { width: 100%; height: 380px; object-fit: cover; border-radius: 18px; display: block; margin-top: 28px; }
   .dkc__app-overzicht { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 32px; align-items: center; background: #fff; color: var(--dk-navy); border-radius: 18px; overflow: hidden; }
   .dkc__app-overzicht img { width: 100%; height: 100%; max-height: 420px; object-fit: cover; display: block; }
   .dkc__app-overzicht > div { padding: 28px 32px 28px 0; }
