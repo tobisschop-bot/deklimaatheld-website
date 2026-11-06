@@ -1,0 +1,44 @@
+---
+import Besparingscheck from '../besparingscheck/Besparingscheck.astro';
+---
+<section class="dkhero" id="dk-besparingscheck">
+  <div class="dk-wrap dkhero__kop">
+    <h1>Hoeveel bespaar <span class="dk-red-l">jij</span> met een warmtepomp?</h1>
+    <p>In twee minuten je persoonlijke besparing. Gratis, vrijblijvend, en de ISDE-subsidie rekenen we direct mee.</p>
+  </div>
+  <div class="dkhero__grid">
+    <img class="dkhero__held dk-zweef" src="/img/mascotte.webp" alt="" aria-hidden="true" width="640" height="620" />
+    <div class="dkhero__check"><Besparingscheck /></div>
+    <aside class="dkhero__info" aria-label="Wat je te zien krijgt">
+      <span class="dk-kicker" style="color:#4CC38A">Jouw besparing</span>
+      <p class="dkhero__info-lead">Na de check zie je direct:</p>
+      <ul>
+        <li><strong>Besparing per jaar</strong><span>op basis van jouw woning en gasverbruik</span></li>
+        <li><strong>Minder gas</strong><span>hoeveel m³ je niet meer verstookt</span></li>
+        <li><strong>ISDE-subsidie</strong><span>wat je terugkrijgt; wij vragen het aan</span></li>
+        <li><strong>Passend model</strong><span>met vaste prijs inclusief montage</span></li>
+      </ul>
+      <p class="dkhero__info-foot">Je adres gebruiken we alleen om bouwjaar en oppervlakte op te zoeken.</p>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .dkhero { padding: 56px 32px 96px; scroll-margin-top: 100px; background: radial-gradient(60% 40% at 80% 0%, rgba(214,40,58,.32), rgba(214,40,58,0) 70%), radial-gradient(50% 30% at 0% 30%, rgba(30,158,106,.14), rgba(30,158,106,0) 70%), #0B132B; }
+  .dkhero__kop { text-align: center; }
+  .dkhero h1 { max-width: 980px; margin: 0 auto; font-size: clamp(68px, 6.4vw, 92px); line-height: .9; font-weight: 900; font-stretch: 68%; text-transform: uppercase; color: #fff; }
+  .dkhero__kop p { margin: 20px auto 0; max-width: 620px; font-size: 19px; line-height: 1.5; color: #C9CFDA; }
+  .dkhero__grid { position: relative; max-width: 1080px; margin: 48px auto 0; display: grid; grid-template-columns: 1.2fr 1fr; align-items: stretch; }
+  .dkhero__check { min-width: 0; }
+  .dkhero__check :global(.bc) { height: 100%; border-radius: 18px 0 0 18px; padding: 32px 36px; }
+  .dkhero__info { min-width: 0; background: #141A2E; border: 1px solid rgba(255,255,255,.12); border-left: 0; border-radius: 0 18px 18px 0; padding: 36px 32px; display: flex; flex-direction: column; gap: 16px; }
+  .dkhero__info-lead { font-size: 22px; font-weight: 900; font-stretch: 75%; text-transform: uppercase; color: #fff; }
+  .dkhero__info ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .dkhero__info li { background: rgba(255,255,255,.05); border-radius: 10px; padding: 12px 14px; display: grid; gap: 2px; }
+  .dkhero__info li strong { font-size: 16px; color: #fff; }
+  .dkhero__info li span { font-size: 13px; color: #9AA3B2; }
+  .dkhero__info-foot { margin-top: auto; font-size: 13px; line-height: 1.5; color: #9AA3B2; }
+  .dkhero__held { position: absolute; left: -170px; bottom: -10px; width: 230px; height: auto; z-index: 2; filter: drop-shadow(0 16px 16px rgba(0,0,0,.5)); pointer-events: none; }
+  @media (max-width: 1360px) { .dkhero__held { left: -120px; width: 170px; } }
+  @media (max-width: 1240px) { .dkhero__held { display: none; } }
+</style>

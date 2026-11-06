@@ -1,0 +1,39 @@
+---
+import { site, nav } from '../../data/site';
+const year = new Date().getFullYear();
+---
+<footer class="dkf">
+  <div class="dk-wrap dkf__grid">
+    <div>
+      <img class="dkf__logo" src="/img/logo-de-klimaatheld.png" alt="De Klimaatheld" width="1400" height="127" />
+      <p>{site.tagline}. Eerlijk advies, vakwerk en geen gedoe.</p>
+    </div>
+    <div>
+      <h3>Diensten</h3>
+      <ul>{nav.slice(0, 4).map((i) => <li><a href={i.href}>{i.label}</a></li>)}</ul>
+    </div>
+    <div>
+      <h3>De Klimaatheld</h3>
+      <ul>{nav.slice(4).map((i) => <li><a href={i.href}>{i.label}</a></li>)}<li><a href="/offerte/">Offerte</a></li></ul>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <ul><li>{site.address}</li><li>{site.phone}</li><li>{site.email}</li><li>{site.hours}</li></ul>
+    </div>
+  </div>
+  <div class="dk-wrap dkf__onder">
+    <span>© {year} {site.name}</span>
+    <span><a href="/privacy/">Privacy</a> · <a href="/voorwaarden/">Voorwaarden</a></span>
+  </div>
+</footer>
+
+<style>
+  .dkf { background: #0B132B; color: #C9CFDA; padding: 72px 0 32px; border-top: 1px solid rgba(255,255,255,.08); font-size: 15px; }
+  .dkf__grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 40px; }
+  .dkf__logo { width: 220px; height: auto; filter: invert(1); margin-bottom: 16px; }
+  .dkf h3 { margin-bottom: 12px; font-size: 16px; font-weight: 800; color: #fff; text-transform: none; font-stretch: 100%; }
+  .dkf ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .dkf a { color: inherit; text-decoration: none; }
+  .dkf a:hover { color: #fff; }
+  .dkf__onder { display: flex; justify-content: space-between; gap: 12px; margin-top: 48px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.1); font-size: 13px; }
+</style>

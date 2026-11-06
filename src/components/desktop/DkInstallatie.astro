@@ -1,0 +1,225 @@
+---
+// "Kies jouw installatie": 4 opstellingen met bewegende schematekening en uitleg
+import DkSchemas from './DkSchemas.astro';
+import { warmtepompen, euro } from '../../data/warmtepompen';
+
+const systems = [
+  { id: 'hybride', label: 'Hybride', sub: 'Warmtepomp + cv-ketel' },
+  { id: 'ae', label: 'All-electric', sub: 'Warmtepomp met boilervat, van het gas af' },
+  { id: 'zon', label: 'Warmtepomp + zon', sub: 'All-electric met zonnepanelen' },
+  { id: 'wpb', label: 'Warmtepompboiler', sub: 'Alleen warm tapwater, zonder gas' },
+];
+const P = {
+  unit: { t: 'Buitenunit', d: 'Haalt warmte uit de buitenlucht, ook als het vriest. Een ventilator trekt lucht langs de unit, het koudemiddel neemt de warmte op en de compressor brengt die op temperatuur.', tip: 'We plaatsen hem op een plek waar het geluid niemand stoort, ook de buren niet.', x: 96, y: 300 },
+  binnenH: { t: 'Binnenunit en regelaar', d: 'Stuurt de warmtepomp en de cv-ketel aan en kiest steeds de zuinigste warmtebron voor dat moment.', tip: 'Via de app zie je precies hoeveel de warmtepomp doet en hoeveel de ketel.', x: 282, y: 300 },
+  ketel: { t: 'CV-ketel', d: 'Je huidige ketel blijft hangen. Hij springt alleen bij op de koudste dagen en blijft je warme tapwater leveren.', tip: 'Is je ketel oud? Dan bekijken we of vervangen slim is, of juist wachten.', x: 282, y: 172 },
+  rad: { t: 'Radiatoren', d: 'Afgestemd op een lage aanvoertemperatuur volgens het Heat Geek-ontwerp. Soms zijn een paar grotere of extra radiatoren nodig.', tip: 'We rekenen per kamer uit welke radiatoren kunnen blijven hangen.', x: 518, y: 198 },
+  radAE: { t: 'Radiatoren', d: 'Afgestemd op een lage aanvoertemperatuur volgens het Heat Geek-ontwerp. Soms zijn een paar grotere of extra radiatoren nodig.', tip: 'We rekenen per kamer uit welke radiatoren kunnen blijven hangen.', x: 529, y: 198 },
+  binnenA: { t: 'Binnenunit', d: 'Het hart van de installatie: pomp, regeling en warmtewisselaar. Verdeelt de warmte over je verwarming en het boilervat.', tip: 'Hij past vaak op de plek waar nu je cv-ketel hangt.', x: 282, y: 300 },
+  boiler: { t: 'Boilervat', d: 'Een voorraad warm tapwater, opgewarmd door de warmtepomp. Zo douche je zonder gas.', tip: 'De grootte stemmen we af op je gezin en je douchegedrag.', x: 357, y: 168 },
+  vloer: { t: 'Vloerverwarming', d: 'Ideaal bij een warmtepomp: een groot oppervlak geeft gelijkmatige warmte op een lage temperatuur.', tip: 'Ook infrezen in een bestaande vloer is mogelijk.', x: 530, y: 362 },
+  panelen: { t: 'Zonnepanelen', d: 'Wekken stroom op met zonlicht. De warmtepomp gebruikt die stroom direct; wat over is gaat naar het net.', tip: 'Op zonnige dagen laten we het boilervat extra opwarmen. Zo gebruik je meer van je eigen stroom.', x: 540, y: 76 },
+  omvormer: { t: 'Omvormer', d: 'Zet de stroom van je panelen om naar stroom die je in huis gebruikt, ook voor de warmtepomp.', tip: 'Hangt meestal op zolder of bij de meterkast.', x: 240, y: 176 },
+  wpbUnit: { t: 'Warmtepompdeel', d: 'Bovenop zit een kleine warmtepomp. Die haalt warmte uit de lucht en verwarmt daarmee het water in het vat.', tip: 'We zetten hem graag op zolder, in de berging of bijkeuken, waar de koelere lucht geen kwaad kan.', x: 374, y: 280 },
+  vat: { t: 'Voorraadvat', d: 'Hier staat je warme tapwater klaar. De grootte stemmen we af op je huishouden.', tip: 'Een groter vat geeft meer comfort bij veel douchen achter elkaar.', x: 374, y: 348 },
+  kanaal: { t: 'Luchtkanaal', d: 'Voert de afgekoelde lucht af naar buiten.', tip: 'Soms kan hij aansluiten op je ventilatie. Dan haalt hij ook warmte uit de afvoerlucht.', x: 348, y: 150 },
+  douche: { t: 'Tappunten', d: 'Douche, bad en keukenkraan krijgen hun warme water uit het vat, niet meer uit de cv-ketel.', tip: 'Alle tappunten blijven gewoon zoals ze zijn.', x: 560, y: 214 },
+  cvBlijft: { t: 'Je huidige verwarming', d: 'Je cv-ketel of warmtepomp blijft je huis verwarmen. De warmtepompboiler neemt alleen het warme tapwater over.', tip: 'Samen met een hybride warmtepomp daalt je gasverbruik nog verder.', x: 245, y: 176 },
+};
+const IDS: Record<string, string[]> = {
+  hybride: ['unit', 'binnenH', 'ketel', 'rad'],
+  ae: ['unit', 'binnenA', 'boiler', 'radAE', 'vloer'],
+  zon: ['panelen', 'omvormer', 'unit', 'binnenA', 'boiler', 'radAE'],
+  wpb: ['wpbUnit', 'vat', 'kanaal', 'douche', 'cvBlijft'],
+};
+const INFO: Record<string, { kicker: string; title: string; lead: string; facts: [string, string][] }> = {
+  hybride: { kicker: 'Hybride warmtepomp', title: 'Grotendeels op stroom', lead: 'Een hybride warmtepomp verwarmt je huis grotendeels op stroom. Alleen op de koudste dagen springt je cv-ketel bij.', facts: [['Werking', 'Warmtepomp + cv-ketel'], ['Gas', 'Aansluiting blijft, verbruik flink lager'], ['Warm tapwater', 'Via de cv-ketel'], ['Investering', 'Lager'], ['Past als', 'Je huis nog niet volledig geïsoleerd is'], ['ISDE-subsidie', 'Ja']] },
+  ae: { kicker: 'All-electric met boilervat', title: 'Helemaal van het gas af', lead: 'Een all-electric warmtepomp verwarmt je huis én je douchewater via een boilervat, helemaal zonder gas.', facts: [['Werking', 'Alleen de warmtepomp'], ['Gas', 'Aansluiting kan eraf'], ['Warm tapwater', 'Via het boilervat'], ['Investering', 'Hoger'], ['Past als', 'Je huis goed geïsoleerd is'], ['ISDE-subsidie', 'Ja']] },
+  zon: { kicker: 'Warmtepomp + zonnepanelen', title: 'Verwarmen met eigen stroom', lead: 'Een warmtepomp draait op stroom. Met zonnepanelen wek je een deel daarvan zelf op, zodat je minder stroom inkoopt.', facts: [['Werking', 'All-electric warmtepomp + zonnepanelen'], ['Gas', 'Aansluiting kan eraf'], ['Warm tapwater', 'Via het boilervat'], ['Slim', 'Boilervat opwarmen als de zon schijnt'], ['Investering', 'Hoogst, met de meeste eigen opwek'], ['ISDE-subsidie', 'Voor de warmtepomp']] },
+  wpb: { kicker: 'Warmtepompboiler', title: 'Warm water zonder gas', lead: 'Een warmtepompboiler maakt alleen je warme tapwater, met warmte uit de lucht. Je verwarming blijft zoals hij is.', facts: [['Werking', 'Warmtepomp en voorraadvat in één'], ['Verwarming', 'Blijft via je huidige installatie'], ['Warm tapwater', 'Uit het vat'], ['Plaats', 'Zolder, berging of bijkeuken'], ['Investering', 'Laag'], ['Combineert met', 'Hybride warmtepomp of zonnepanelen']] },
+};
+const STATUS: Record<string, string[]> = {
+  hybride: ['Warmtepomp verwarmt, cv-ketel staat uit', 'Warmtepomp verwarmt, cv-ketel staat uit', 'Vorst: de cv-ketel springt even bij'],
+  ae: ['Warmtepomp draait rustig', 'Warmtepomp draait harder', 'Vol vermogen, hierop is hij ontworpen'],
+  zon: ['Zonnige dag: je panelen leveren veel van de stroom', 'Warmtepomp draait, de panelen vullen aan', 'Winter: weinig zon, stroom van het net vult aan'],
+  wpb: ['Warm water uit de lucht, rustig tempo', 'Warmtepompboiler warmt het vat op', 'Koude dag: het vat warmt wat langzamer op'],
+};
+const want: Record<string, string | null> = { hybride: 'hybride', ae: 'all-electric', zon: 'all-electric', wpb: null };
+const MODELS: Record<string, { name: string; price: string; href: string }[]> = {};
+for (const s of systems) {
+  MODELS[s.id] = want[s.id] ? warmtepompen.filter((w) => w.types.includes(want[s.id] as never)).map((w) => ({ name: w.name.replace(new RegExp('^' + w.merk + ' '), ''), price: w.from == null ? 'op aanvraag' : 'v.a. ' + euro(w.from), href: w.page ?? '/offerte/' })) : [];
+}
+const temps = ['Mild · 10 °C', 'Koud · 0 °C', 'Vorst · −10 °C'];
+const data = { P, IDS, INFO, STATUS, MODELS };
+---
+<section class="dkis" data-dk-is>
+  <script type="application/json" data-dk-is-data set:html={JSON.stringify(data)} />
+  <div class="dk-wrap">
+    <div class="dkis__kop">
+      <div>
+        <span class="dk-kicker">Welke installatie past bij jou?</span>
+        <h2 class="dk-h2">Kies jouw <span class="dk-red">installatie</span></h2>
+        <p>Kies een opstelling en zie hoe warmte, water en stroom door je huis gaan. Tik op de nummers in de tekening voor uitleg per onderdeel.</p>
+      </div>
+      <div class="dkis__tabs" role="tablist" aria-label="Kies een installatie">
+        {systems.map((s, i) => (
+          <button type="button" role="tab" data-sys={s.id} aria-selected={i === 0 ? 'true' : 'false'} class:list={['dkis__tab', { 'is-on': i === 0 }]}>
+            <strong>{s.label}</strong><span>{s.sub}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+    <div class="dkis__body">
+      <figure class="dkis__fig" data-temp="1" style="--flow: 1.2s; --fan: 1.2s">
+        <div class="dkis__bar">
+          <div class="dkis__temps" role="group" aria-label="Buitentemperatuur">
+            {temps.map((t, i) => <button type="button" data-temp={i} aria-pressed={i === 1 ? 'true' : 'false'} class:list={{ 'is-on': i === 1 }}>{t}</button>)}
+          </div>
+          <p class="dkis__status"><span data-dot></span><span data-status>{STATUS.hybride[1]}</span></p>
+        </div>
+        <div class="dkis__teken">
+          <DkSchemas />
+          <div data-hotspots></div>
+        </div>
+        <figcaption>Schematisch. Rood: warm water. Blauw: koud of afgekoeld water en lucht. Geel: stroom van je zonnepanelen.</figcaption>
+      </figure>
+      <aside class="dkis__info" aria-live="polite">
+        <div data-overzicht>
+          <span class="dk-kicker dk-kicker--light" data-i="kicker">{INFO.hybride.kicker}</span>
+          <h3 data-i="title">{INFO.hybride.title}</h3>
+          <p class="dkis__lead" data-i="lead">{INFO.hybride.lead}</p>
+          <dl data-i="facts">{INFO.hybride.facts.map((f) => <div><dt>{f[0]}</dt><dd>{f[1]}</dd></div>)}</dl>
+        </div>
+        <div data-onderdeel hidden>
+          <span class="dkis__onum"><span data-p="n"></span>Onderdeel</span>
+          <h3 data-p="t"></h3>
+          <p class="dkis__lead" data-p="d"></p>
+          <p class="dkis__tip"><strong>Tip van de monteur · </strong><span data-p="tip"></span></p>
+          <button type="button" class="dk-btn dk-btn--ghost" data-terug>← Terug naar overzicht</button>
+        </div>
+        <a class="dk-btn dk-btn--red dkis__cta" href="#dk-besparingscheck">Bereken jouw besparing →</a>
+      </aside>
+    </div>
+    <div class="dkis__modellen"><span data-models-title>Past bij hybride</span><div data-models></div></div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-dk-is]').forEach((root) => {
+    const D = JSON.parse(root.querySelector('[data-dk-is-data]')!.textContent || '{}');
+    const fig = root.querySelector<HTMLElement>('.dkis__fig')!;
+    const hot = root.querySelector<HTMLElement>('[data-hotspots]')!;
+    const ov = root.querySelector<HTMLElement>('[data-overzicht]')!;
+    const od = root.querySelector<HTMLElement>('[data-onderdeel]')!;
+    let sys = 'hybride', temp = 1;
+    const el = (tag: string, cls?: string, text?: string) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+    const showPart = (id: string | null) => {
+      ov.hidden = !!id; od.hidden = !id;
+      hot.querySelectorAll<HTMLElement>('button').forEach((b) => b.classList.toggle('is-on', b.dataset.part === id));
+      if (!id) return;
+      const p = D.P[id];
+      od.querySelector('[data-p="n"]')!.textContent = String(D.IDS[sys].indexOf(id) + 1);
+      od.querySelector('[data-p="t"]')!.textContent = p.t;
+      od.querySelector('[data-p="d"]')!.textContent = p.d;
+      od.querySelector('[data-p="tip"]')!.textContent = p.tip;
+    };
+    const render = () => {
+      root.querySelectorAll<HTMLButtonElement>('.dkis__tab').forEach((b) => { const on = b.dataset.sys === sys; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', String(on)); });
+      root.querySelectorAll<SVGElement>('svg[data-sys]').forEach((s) => { if (s.dataset.sys === sys) s.removeAttribute('hidden'); else s.setAttribute('hidden', ''); });
+      root.querySelectorAll<HTMLButtonElement>('.dkis__temps button').forEach((b) => { const on = Number(b.dataset.temp) === temp; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', String(on)); });
+      fig.style.setProperty('--flow', ['2.2s', '1.2s', '.6s'][temp]);
+      fig.style.setProperty('--fan', ['2.6s', '1.2s', '.45s'][temp]);
+      fig.dataset.temp = String(temp);
+      fig.classList.toggle('ketel-aan', sys === 'hybride' && temp === 2);
+      root.querySelector('[data-status]')!.textContent = D.STATUS[sys][temp];
+      // hotspots
+      hot.innerHTML = '';
+      D.IDS[sys].forEach((id: string, k: number) => {
+        const p = D.P[id];
+        const b = el('button', 'dk-hotspot', String(k + 1)) as HTMLButtonElement;
+        b.type = 'button'; b.dataset.part = id; b.setAttribute('aria-label', (k + 1) + ': ' + p.t);
+        b.style.left = (p.x / 6.4).toFixed(2) + '%'; b.style.top = (p.y / 4.2).toFixed(2) + '%';
+        b.addEventListener('click', () => showPart(id));
+        hot.appendChild(b);
+      });
+      // info
+      const I = D.INFO[sys];
+      ov.querySelector('[data-i="kicker"]')!.textContent = I.kicker;
+      ov.querySelector('[data-i="title"]')!.textContent = I.title;
+      ov.querySelector('[data-i="lead"]')!.textContent = I.lead;
+      const dl = ov.querySelector('[data-i="facts"]')!; dl.innerHTML = '';
+      I.facts.forEach((f: string[]) => { const d = el('div'); d.append(el('dt', '', f[0]), el('dd', '', f[1])); dl.appendChild(d); });
+      // modellen
+      const mt = root.querySelector('[data-models-title]')!;
+      const mb = root.querySelector('[data-models]')!; mb.innerHTML = '';
+      mt.textContent = sys === 'wpb' ? 'Warmtepompboilers · assortiment op aanvraag' : 'Past bij ' + ({ hybride: 'hybride', ae: 'all-electric', zon: 'warmtepomp + zon' } as Record<string, string>)[sys];
+      D.MODELS[sys].forEach((m: { name: string; price: string; href: string }) => {
+        const a = el('a', 'dkis__model') as HTMLAnchorElement; a.href = m.href;
+        a.append(document.createTextNode(m.name + ' '), el('span', '', m.price)); mb.appendChild(a);
+      });
+      showPart(null);
+    };
+    root.querySelectorAll<HTMLButtonElement>('.dkis__tab').forEach((b) => b.addEventListener('click', () => { sys = b.dataset.sys!; render(); }));
+    root.querySelectorAll<HTMLButtonElement>('.dkis__temps button').forEach((b) => b.addEventListener('click', () => { temp = Number(b.dataset.temp); render(); }));
+    root.querySelector('[data-terug]')!.addEventListener('click', () => showPart(null));
+    render();
+  });
+</script>
+
+<style>
+  .dkis { background: #fff; color: #141A2E; padding-bottom: 120px; }
+  .dkis__kop { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; margin-bottom: 32px; }
+  .dkis__kop > div:first-child { flex: 1 1 520px; }
+  .dkis__kop .dk-h2 { margin: 12px 0 14px; font-size: clamp(60px, 5.4vw, 80px); }
+  .dkis__kop p { font-size: 18px; line-height: 1.6; color: #5A6475; max-width: 560px; }
+  .dkis__tabs { flex: 0 1 560px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .dkis__tab { font: inherit; text-align: left; cursor: pointer; border-radius: 18px; padding: 18px 20px; background: #fff; color: #141A2E; border: 2px solid #E3E7ED; }
+  .dkis__tab strong { display: block; font-size: 24px; font-weight: 900; font-stretch: 75%; text-transform: uppercase; }
+  .dkis__tab span { display: block; margin-top: 4px; font-size: 14px; font-weight: 600; opacity: .8; }
+  .dkis__tab.is-on { background: #D6283A; color: #fff; border-color: #D6283A; box-shadow: 0 16px 30px -14px rgba(214,40,58,.7); }
+  .dkis__body { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; align-items: stretch; }
+  .dkis__fig { margin: 0; background: #F4F6F9; border: 1px solid #E3E7ED; border-radius: 24px; padding: 20px; min-width: 0; }
+  .dkis__bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .dkis__temps { display: flex; gap: 6px; background: #fff; border: 1px solid #E3E7ED; border-radius: 999px; padding: 4px; }
+  .dkis__temps button { font: inherit; font-size: 13px; font-weight: 800; padding: 8px 14px; border-radius: 999px; border: 0; cursor: pointer; background: transparent; color: #141A2E; }
+  .dkis__temps button.is-on { background: #141A2E; color: #fff; }
+  .dkis__status { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; }
+  .dkis__status [data-dot] { width: 10px; height: 10px; border-radius: 50%; background: #1E9E6A; }
+  .ketel-aan .dkis__status [data-dot] { background: #E0A100; }
+  .dkis__teken { position: relative; }
+  .dkis__fig figcaption { margin-top: 12px; font-size: 13px; color: #5A6475; }
+  /* bewegende onderdelen in de tekening */
+  .dkis__teken :global(.stroom) { stroke-dasharray: 10 10; animation: dk-stroom var(--flow, 1.2s) linear infinite; }
+  .dkis__teken :global(.fan) { transform-box: fill-box; transform-origin: center; animation: dk-draai var(--fan, 1.2s) linear infinite; }
+  .dkis__teken :global(.vlam) { transform-box: fill-box; transform-origin: 50% 100%; animation: dk-vlam .5s ease-in-out infinite; }
+  .dkis__teken :global(.dkis-vlamgroep), .dkis__teken :global(.dkis-ketelpijp) { opacity: 0; transition: opacity .3s; }
+  .ketel-aan :global(.dkis-vlamgroep), .ketel-aan :global(.dkis-ketelpijp) { opacity: 1; }
+  .ketel-aan :global(.dkis-uit) { opacity: 0; }
+  .dkis__teken :global(.dkis-zon) { transition: opacity .3s; }
+  [data-temp="1"] :global(.dkis-zon) { opacity: .7; }
+  [data-temp="2"] :global(.dkis-zon) { opacity: .35; }
+  .dkis__teken :global(.dk-hotspot) { position: absolute; transform: translate(-50%, -50%); width: 36px; height: 36px; border-radius: 50%; border: 3px solid #fff; font: inherit; font-size: 15px; font-weight: 900; color: #fff; background: #D6283A; cursor: pointer; animation: dk-puls 1.8s ease-out infinite; }
+  .dkis__teken :global(.dk-hotspot.is-on) { background: #141A2E; animation: none; }
+  .dkis__info { background: #141A2E; color: #fff; border-radius: 24px; padding: 36px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .dkis__info > div { display: flex; flex-direction: column; gap: 14px; }
+  .dkis__info > div[hidden] { display: none; }
+  .dkis__info h3 { font-size: 46px; line-height: .9; font-weight: 900; font-stretch: 65%; text-transform: uppercase; color: #fff; }
+  .dkis__lead { font-size: 17px; line-height: 1.6; color: #C9CFDA; }
+  .dkis__info dl { margin: 0; display: flex; flex-direction: column; }
+  .dkis__info dl :global(div) { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-top: 1px solid rgba(255,255,255,.12); }
+  .dkis__info dl :global(dt) { color: #9AA3B2; font-size: 14px; }
+  .dkis__info dl :global(dd) { margin: 0; text-align: right; font-weight: 800; font-size: 15px; }
+  .dkis__onum { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; letter-spacing: .12em; color: #FF8A95; text-transform: uppercase; }
+  .dkis__onum [data-p] { width: 30px; height: 30px; border-radius: 50%; background: #D6283A; color: #fff; display: grid; place-items: center; letter-spacing: 0; }
+  .dkis__tip { padding: 14px 16px; background: rgba(255,255,255,.06); border-radius: 12px; font-size: 15px; line-height: 1.5; }
+  .dkis__tip strong { color: #4CC38A; }
+  .dkis__info [data-terug] { align-self: flex-start; }
+  .dkis__cta { margin-top: auto; }
+  .dkis__modellen { margin-top: 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .dkis__modellen > span { font-size: 13px; font-weight: 800; letter-spacing: .1em; color: #5A6475; text-transform: uppercase; margin-right: 6px; }
+  .dkis__modellen [data-models] { display: flex; flex-wrap: wrap; gap: 10px; }
+  .dkis__modellen :global(.dkis__model) { font-size: 14px; font-weight: 800; padding: 10px 16px; border-radius: 999px; text-decoration: none; color: #141A2E; border: 1px solid #E3E7ED; background: #fff; }
+  .dkis__modellen :global(.dkis__model:hover) { border-color: #141A2E; }
+  .dkis__modellen :global(.dkis__model span) { opacity: .65; font-weight: 600; }
+</style>

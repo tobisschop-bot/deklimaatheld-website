@@ -1,0 +1,46 @@
+/* =====================================================================
+   DESKTOP – HOMEPAGE (alleen zichtbaar vanaf 1024 px, binnen .dk-site)
+   Alle klassen beginnen met dk- zodat de mobiele site er nooit last van heeft.
+   ===================================================================== */
+:root {
+  --dk-navy: #141A2E; --dk-deep: #0B132B; --dk-red: #D6283A; --dk-red-dark: #B01F2F;
+  --dk-pink: #FF8A95; --dk-green: #1E9E6A; --dk-green-l: #4CC38A; --dk-blue: #2F6FA8;
+  --dk-bg: #F4F6F9; --dk-line: #E3E7ED; --dk-muted: #5A6475; --dk-soft: #C9CFDA; --dk-grey: #9AA3B2;
+}
+.dk-site {
+  font-family: 'Archivo', system-ui, sans-serif; color: #fff; overflow-x: clip;
+}
+.dk-site *, .dk-site *::before, .dk-site *::after { box-sizing: border-box; }
+.dk-site img { max-width: 100%; display: block; }
+.dk-site h1, .dk-site h2, .dk-site h3 { margin: 0; letter-spacing: 0; hyphens: manual; }
+.dk-site p { margin: 0; }
+.dk-wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+
+/* typografie */
+.dk-kicker { display: inline-block; font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--dk-red); }
+.dk-kicker--light { color: var(--dk-pink); }
+.dk-h2 { font-size: clamp(64px, 6vw, 88px); line-height: .88; font-weight: 900; font-stretch: 62%; text-transform: uppercase; }
+.dk-red { color: var(--dk-red); }
+.dk-red-l { color: #FF5A6A; }
+
+/* knoppen */
+.dk-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-weight: 800; font-size: 16px; text-decoration: none; padding: 15px 26px; border-radius: 999px; border: 0; cursor: pointer; transition: background .15s, transform .15s; }
+.dk-btn:hover { transform: translateY(-1px); }
+.dk-btn--red { background: var(--dk-red); color: #fff; }
+.dk-btn--red:hover { background: var(--dk-red-dark); }
+.dk-btn--white { background: #fff; color: var(--dk-navy); }
+.dk-btn--dark { background: var(--dk-navy); color: #fff; }
+.dk-btn--ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.4); }
+.dk-btn--outline { background: transparent; color: var(--dk-navy); border: 2px solid var(--dk-navy); }
+.dk-btn:focus-visible, .dk-site button:focus-visible, .dk-site a:focus-visible { outline: 3px solid #FFB020; outline-offset: 2px; }
+
+/* animaties */
+@keyframes dk-zweef { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes dk-stroom { to { stroke-dashoffset: -40; } }
+@keyframes dk-draai { to { transform: rotate(360deg); } }
+@keyframes dk-vlam { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(.82); } }
+@keyframes dk-puls { 0% { box-shadow: 0 0 0 0 rgba(214,40,58,.55); } 100% { box-shadow: 0 0 0 14px rgba(214,40,58,0); } }
+.dk-zweef { animation: dk-zweef 3.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .dk-zweef, .dk-site .stroom, .dk-site .fan, .dk-site .vlam, .dk-hotspot { animation: none !important; }
+}

@@ -1,0 +1,69 @@
+---
+// Over ons: complete verduurzaming (bento met eigen werk)
+const tegels = [
+  { cat: 'Verwarmen', c: '#D6283A', t: 'Warmtepompen', img: '/img/case-dordrecht-dak.webp', alt: 'Weheat-warmtepompen op een plat dak in Dordrecht', hoog: true, href: '/warmtepompen/' },
+  { cat: 'Afgifte', c: '#D6283A', t: 'Vloerverwarming', img: '/img/case-vloer-woonkamer.webp', alt: 'Vloerverwarming in aanleg', href: '/vloerverwarming/' },
+  { cat: 'Opslaan', c: '#1E9E6A', t: 'Thuisbatterij', img: '/img/case-leiden-batterij.webp', alt: 'Thuisbatterij met omvormer in Leiden', href: '/verduurzamen/' },
+  { cat: 'Koelen', c: '#2F6FA8', t: 'Airco', img: '/img/case-amsterdam-airco.webp', alt: 'Daikin-airco in Amsterdam', href: '/airco/' },
+  { cat: 'Opwekken', c: '#B88400', t: 'Zonnepanelen', img: '', alt: '[Foto: zonnepanelen op het dak]', href: '/verduurzamen/' },
+  { cat: 'Elektra', c: '#141A2E', t: 'Meterkast en groepen', img: '/img/case-wateringen-meterkast.webp', alt: 'Nette meterkast in Wateringen', href: '/verduurzamen/' },
+];
+const waarden = [
+  { t: 'Eerlijk advies', d: 'Alleen wat past bij jouw woning. Geen overgedimensioneerde systemen.' },
+  { t: 'Vakwerk', d: 'Gecertificeerde monteurs, Heat Geek-methode, nette afwerking.' },
+  { t: 'Ontzorgen', d: 'Van advies tot subsidieaanvraag: wij regelen het.' },
+];
+---
+<section class="dkoo">
+  <div class="dk-wrap dkoo__grid">
+    <article class="dkoo__stelling">
+      <img class="dkoo__held dk-zweef" src="/img/mascotte-vliegend.webp" alt="" aria-hidden="true" />
+      <span class="dk-kicker dk-kicker--light">Over ons</span>
+      <div>
+        <h2 class="dk-h2">Complete verduurzaming, door één team</h2>
+        <p>Wij zijn De Klimaatheld, installateurs uit Den Haag. Warmtepomp, vloerverwarming, zonnepanelen, thuisbatterij, airco en elektra: wij realiseren het allemaal, met eigen monteurs en één aanspreekpunt.</p>
+        <a class="dk-btn dk-btn--red" href="#dk-contact">Plan een gratis adviesgesprek →</a>
+      </div>
+    </article>
+    {tegels.map((t) => (
+      <a href={t.href} class:list={['dkoo__tegel', { 'is-hoog': t.hoog }]}>
+        {t.img ? <img src={t.img} alt={t.alt} loading="lazy" /> : <span class="dkoo__ph">{t.alt}</span>}
+        <span class="dkoo__label"><span class="dkoo__cat" style={`background:${t.c}`}>{t.cat}</span><strong>{t.t}</strong></span>
+      </a>
+    ))}
+    <article class="dkoo__keur">
+      <span class="dk-kicker" style="color:#5A6475">Gecertificeerd</span>
+      <div><img src="/img/heatgeek-logo.png" alt="Heat Geek" width="360" height="149" /><span>[F-gassen]</span><span>[Keurmerk]</span></div>
+      <p>Lokale monteurs uit Den Haag.</p>
+    </article>
+    <article class="dkoo__waarden">
+      {waarden.map((w) => <div><p class="dkoo__wt">{w.t}</p><p class="dkoo__wd">{w.d}</p></div>)}
+    </article>
+  </div>
+</section>
+
+<style>
+  .dkoo { background: #F4F6F9; color: #141A2E; padding: 112px 0 120px; }
+  .dkoo__grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 250px; gap: 16px; }
+  .dkoo__stelling { grid-column: span 2; grid-row: span 2; position: relative; overflow: hidden; background: radial-gradient(60% 50% at 100% 0%, rgba(214,40,58,.35), rgba(214,40,58,0) 70%), #141A2E; color: #fff; border-radius: 24px; padding: 40px; display: flex; flex-direction: column; justify-content: space-between; }
+  .dkoo__held { position: absolute; right: 28px; top: 20px; width: 130px; height: auto; }
+  .dkoo__stelling .dk-h2 { margin-bottom: 16px; font-size: clamp(40px, 3.9vw, 56px); color: #fff; max-width: 420px; overflow-wrap: normal; }
+  .dkoo__stelling p { margin-bottom: 24px !important; font-size: 17px; line-height: 1.6; color: #C9CFDA; max-width: 480px; }
+  .dkoo__tegel { position: relative; overflow: hidden; border-radius: 24px; background: #E3E7ED; text-decoration: none; color: #fff; }
+  .dkoo__tegel.is-hoog { grid-row: span 2; }
+  .dkoo__tegel img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+  .dkoo__tegel:hover img { transform: scale(1.04); }
+  .dkoo__tegel::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(11,19,43,.8) 0%, rgba(11,19,43,0) 55%); }
+  .dkoo__ph { position: absolute; inset: 0; display: grid; place-items: center; color: #5A6475; font-weight: 700; text-align: center; padding: 20px; }
+  .dkoo__label { position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 1; display: grid; justify-items: start; gap: 6px; }
+  .dkoo__cat { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+  .dkoo__label strong { font-size: 22px; font-weight: 900; font-stretch: 78%; text-transform: uppercase; }
+  .dkoo__keur { background: #fff; border: 1px solid #E3E7ED; border-radius: 24px; padding: 26px; display: flex; flex-direction: column; justify-content: space-between; }
+  .dkoo__keur div { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .dkoo__keur img { height: 38px; width: auto; }
+  .dkoo__keur div span { border: 1px dashed #9AA3B2; border-radius: 8px; padding: 10px 12px; font-weight: 700; color: #5A6475; font-size: 13px; }
+  .dkoo__keur p { font-size: 14px; color: #5A6475; }
+  .dkoo__waarden { grid-column: 1 / -1; background: #D6283A; color: #fff; border-radius: 24px; padding: 32px 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: center; }
+  .dkoo__wt { font-size: 40px; line-height: .95; font-weight: 900; font-stretch: 65%; text-transform: uppercase; }
+  .dkoo__wd { margin-top: 8px !important; font-size: 15px; line-height: 1.5; color: #FFE3E6; }
+</style>
