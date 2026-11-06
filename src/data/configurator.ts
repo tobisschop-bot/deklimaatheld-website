@@ -52,10 +52,46 @@ export interface ConfigModel {
   /** optioneel (desktop): brede sfeerfoto onder 'Waarom' */
   sfeer?: Foto & { caption?: string };
   /** optioneel (desktop): 'Zo is hij opgebouwd', explodeview met genummerde onderdelen (x/y in % van de foto) */
+  /** optioneel (desktop): sectie over de app van het merk */
+  app?: AppInfo;
   opbouw?: { img: string; alt: string; onderdelen: { x: number; y: number; titel: string; tekst: string }[] };
 }
 
 export interface Foto { src: string; alt: string }
+
+export interface AppBlok { titel: string; tekst: string; video: string; poster: string; alt: string; label?: string }
+export interface AppInfo { naam: string; lead: string; blokken: AppBlok[]; overzicht: Foto; punten: string[]; noot?: string }
+
+// Weheat-app (geldt voor alle Weheat-modellen). Beeld: Weheat.
+export const weheatApp: AppInfo = {
+  naam: 'Weheat-app',
+  lead: 'Je bedient en volgt je warmtepomp via de Weheat-app. Dankzij de eigen 4G-verbinding werkt dat ook als je wifi de tuin niet haalt.',
+  blokken: [
+    {
+      label: 'Warm water',
+      titel: 'Warm water boost',
+      tekst: 'Logés of een paar lange douches achter elkaar? Met de boost warmt je warmtepomp het boilervat direct op. Je kiest 30, 60, 90 of 120 minuten en stopt de boost wanneer je wilt.',
+      video: '/video/weheat-app-boost.mp4',
+      poster: '/img/weheat-app-boost-poster.webp',
+      alt: 'Weheat-app: warm water boost instellen voor 30 minuten tot 2 uur',
+    },
+    {
+      label: 'Warm water',
+      titel: "Handmatige schema's",
+      tekst: 'Bepaal zelf wanneer en hoe warm je water wordt verwarmd, per dag in tijdblokken. Ook het moment van de legionella-check plan je zelf, die zie je terug in je schema.',
+      video: '/video/weheat-app-schema.mp4',
+      poster: '/img/weheat-app-schema-poster.webp',
+      alt: "Weheat-app: handmatig warmwaterschema per dag met tijdblokken",
+    },
+  ],
+  overzicht: { src: '/img/weheat-app-schermen.webp', alt: 'Drie schermen van de Weheat-app: startscherm, warm water en warm water boost' },
+  punten: [
+    'Eigen 4G-verbinding, los van je wifi',
+    'Warm water en centrale verwarming elk op een eigen plek',
+    'Voor iPhone (App Store) en Android (Google Play)',
+  ],
+  noot: 'De warmwaterfuncties gelden bij all-electric met boilervat. Bij hybride levert je cv-ketel het tapwater.',
+};
 
 // ---- Gedeelde onderdelen ----
 export const boilers: Boiler[] = [
@@ -97,6 +133,7 @@ const madoka: NonNullable<ConfigModel['bediening']> = {
 // ---- Modellen ----
 export const configurators: Record<string, ConfigModel> = {
   sparrow: {
+    app: weheatApp,
     // Foto's van Weheat; leg ze in public/img/ onder deze namen, dan verschijnen ze vanzelf op desktop.
     galerij: [
       { src: '/img/weheat-sparrow-kaal-1.webp', alt: 'Weheat Sparrow P60 zonder designfront' },
@@ -181,6 +218,7 @@ export const configurators: Record<string, ConfigModel> = {
   },
 
   flint: {
+    app: weheatApp,
     slug: 'flint',
     name: 'Weheat Flint P40',
     short: 'Flint P40',
@@ -244,6 +282,7 @@ export const configurators: Record<string, ConfigModel> = {
   },
 
   blackbird: {
+    app: weheatApp,
     slug: 'blackbird',
     name: 'Weheat Blackbird P80',
     short: 'Blackbird P80',
@@ -303,6 +342,7 @@ export const configurators: Record<string, ConfigModel> = {
   },
 
   swift: {
+    app: weheatApp,
     slug: 'swift',
     name: 'Weheat Swift',
     short: 'Swift',
