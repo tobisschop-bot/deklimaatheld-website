@@ -6,7 +6,7 @@ import { site, nav } from '../data/site';
   <div class="container header__inner">
     <Logo />
     <nav class="header__nav" aria-label="Hoofdmenu">
-      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+      {nav.map((item) => <a href={item.href} aria-current={Astro.url.pathname.startsWith(item.href) ? 'page' : undefined}>{item.label}</a>)}
     </nav>
     <div class="header__actions">
       <a class="icon-btn" href={site.phoneHref} aria-label="Bel ons">
@@ -47,4 +47,23 @@ import { site, nav } from '../data/site';
   .menu__panel a:hover { background: var(--bg); }
   .menu__panel .menu__cta { background: var(--red); color: #fff; text-align: center; margin-top: 6px; }
   .menu__info { margin: 10px 12px 4px; font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); text-align: center; }
+  /* Desktop – alleen op pagina's met een desktopontwerp (html.desktop-ok) */
+  @media (min-width: 1024px) {
+    :global(html.desktop-ok) .header { padding: 14px 24px 0; }
+    :global(html.desktop-ok) .header__inner { max-width: 1280px; border-radius: 999px; padding: 0 10px 0 26px; min-height: 64px; }
+    :global(html.desktop-ok) .header__nav { display: flex; gap: clamp(14px, 1.6vw, 26px); font-size: .92rem; flex-wrap: nowrap; }
+    :global(html.desktop-ok) .header__nav a { white-space: nowrap; padding: 6px 0; border-bottom: 2px solid transparent; }
+    :global(html.desktop-ok) .header__nav a[aria-current='page'] { color: #fff; border-bottom-color: var(--red); }
+    :global(html.desktop-ok) .cta { display: inline-flex; border-radius: 999px; padding: 12px 22px; }
+    :global(html.desktop-ok) .cta:hover { background: var(--red-dark); }
+    :global(html.desktop-ok) .icon-btn { border-radius: 999px; }
+    :global(html.desktop-ok) .menu { display: none; }
+    :global(html.desktop-ok) .header :global(.logo) { flex-shrink: 0; }
+    :global(html.desktop-ok) .header :global(.logo__img) { width: clamp(150px, 15vw, 240px); }
+  }
+  @media (min-width: 1024px) and (max-width: 1239.98px) {
+    :global(html.desktop-ok) .header__inner { padding-left: 20px; gap: 12px; }
+    :global(html.desktop-ok) .header__nav { gap: 13px; font-size: .84rem; }
+    :global(html.desktop-ok) .icon-btn { display: none; }
+  }
 </style>

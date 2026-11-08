@@ -82,8 +82,13 @@ p { margin: 0 0 1em; }
 }
 
 /* Tijdelijk: zolang er geen desktopontwerp is, tonen we op grote schermen
-   de mobiele site in een gecentreerde kolom. Verwijderen zodra desktop.css aan staat. */
+   de mobiele site in een gecentreerde kolom. Verwijderen zodra desktop.css aan staat.
+   Pagina's met een desktopontwerp (html.desktop-ok, prop `desktop` op Base) krijgen vanaf 1024 px de volle breedte. */
 @media (min-width: 600px) {
-  html { background: #E6E9EF; }
-  body { max-width: 480px; margin: 0 auto; box-shadow: 0 0 0 1px var(--border), 0 20px 60px rgba(20,26,46,.12); min-height: 100vh; }
+  html:not(.desktop-ok) { background: #E6E9EF; }
+  html:not(.desktop-ok) body { max-width: 480px; margin: 0 auto; box-shadow: 0 0 0 1px var(--border), 0 20px 60px rgba(20,26,46,.12); min-height: 100vh; }
+}
+@media (min-width: 600px) and (max-width: 1023.98px) {
+  html.desktop-ok { background: #E6E9EF; }
+  html.desktop-ok body { max-width: 480px; margin: 0 auto; box-shadow: 0 0 0 1px var(--border), 0 20px 60px rgba(20,26,46,.12); min-height: 100vh; }
 }

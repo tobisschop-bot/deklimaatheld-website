@@ -4,11 +4,12 @@ import '../styles/global.css';
 // import '../styles/desktop.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-interface Props { title: string; description?: string }
-const { title, description = 'De Klimaatheld – warmtepompen, airco en duurzaam verwarmen in Den Haag en omstreken.' } = Astro.props;
+// desktop: deze pagina heeft al een desktopontwerp (anders: mobiele kolom van 480 px)
+interface Props { title: string; description?: string; desktop?: boolean }
+const { title, desktop = false, description = 'De Klimaatheld – warmtepompen, airco en duurzaam verwarmen in Den Haag en omstreken.' } = Astro.props;
 ---
 <!doctype html>
-<html lang="nl">
+<html lang="nl" class:list={[{ 'desktop-ok': desktop }]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
