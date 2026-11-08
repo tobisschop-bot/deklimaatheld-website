@@ -1,5 +1,8 @@
 ---
 import DienstPagina from '../../components/dienst/DienstPagina.astro';
 import { ltVerwarming } from '../../data/diensten';
+import DkLtVerwarming from '../../components/desktop/DkLtVerwarming.astro';
 ---
-<DienstPagina data={ltVerwarming} />
+<DienstPagina data={ltVerwarming}>
+  <DkLtVerwarming slot="desktop" />
+</DienstPagina>
