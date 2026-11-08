@@ -1,5 +1,8 @@
 ---
 import DienstPagina from '../../components/dienst/DienstPagina.astro';
 import { vloerverwarming } from '../../data/diensten';
+import DkVloerverwarming from '../../components/desktop/DkVloerverwarming.astro';
 ---
-<DienstPagina data={vloerverwarming} />
+<DienstPagina data={vloerverwarming}>
+  <DkVloerverwarming slot="desktop" />
+</DienstPagina>

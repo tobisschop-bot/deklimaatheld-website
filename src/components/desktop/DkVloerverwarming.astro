@@ -1,0 +1,430 @@
+---
+// Desktopversie (≥ 1024 px) van /vloerverwarming/. Ontwerp "A · Doorsnede": donkere hero met gloed en
+// vloer-illustratie, interactieve doorsnede (infrezen/opbouw), COP + 'wat zit er in de prijs' naast elkaar,
+// twee methodes, voordelen, stappen, cases, FAQ, andere diensten en slot met dubbele knop.
+// Inhoud uit src/data/diensten.ts (object vloerverwarming) en src/data/projecten.ts.
+import '../../styles/desktop-home.css';
+import DkHeader from './DkHeader.astro';
+import DkFooter from './DkFooter.astro';
+import { vloerverwarming as v, andereDiensten } from '../../data/diensten';
+import { cases } from '../../data/projecten';
+
+const vloerCases = ['c4', 'c6', 'c1'].map((id) => cases.find((c) => c.id === id)).filter((c) => !!c);
+const anderen = andereDiensten('vloerverwarming');
+const [frees, opbouw] = v.keuze.kaarten;
+
+const lagen = {
+  frees: [
+    { id: 'afwerking', t: 'Afwerkvloer', d: 'Tegels, PVC of parket. Tegels en natuursteen geven de warmte het best door.' },
+    { id: 'leiding', t: 'Leidingen in sleuven', d: 'We frezen sleuven in je dekvloer en leggen de leidingen erin.' },
+    { id: 'dekvloer', t: 'Bestaande dekvloer', d: 'Moet dik en stevig genoeg zijn. Dat meten we bij de opname.' },
+    { id: 'onder', t: 'Ondervloer', d: 'Blijft zoals hij is. Je hoeft niets te slopen.' },
+  ],
+  opbouw: [
+    { id: 'afwerking', t: 'Afwerkvloer', d: 'Komt bovenop de egalisatielaag. Je vloer wordt iets hoger.' },
+    { id: 'egalisatie', t: 'Egalisatielaag', d: 'Een dunne laag die alles vlak en dicht maakt.' },
+    { id: 'leiding', t: 'Systeem + leidingen', d: 'Een dun vloerverwarmingssysteem met de leidingen erin.' },
+    { id: 'bestaand', t: 'Bestaande vloer', d: 'Ook hout of een te dunne ondervloer. Blijft liggen.' },
+  ],
+};
+const sleuven = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => 60 + i * 74);
+const ic: Record<string, string> = {
+  blad: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>',
+  zon: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+  vloer: '<path d="M3 5h14a3 3 0 0 1 0 6H7a3 3 0 0 0 0 6h14"/>',
+  thermo: '<path d="M14 14.76V5a2 2 0 0 0-4 0v9.76a4 4 0 1 0 4 0z"/><path d="M12 9v6"/>',
+};
+---
+<DkHeader />
+<main class="dkv" data-dkv>
+  <!-- hero -->
+  <section class="dkv-hero">
+    <div class="dkv-gloed" aria-hidden="true"></div>
+    <div class="dk-wrap dkv-hero__grid">
+      <div>
+        <nav class="dkv-crumbs" aria-label="Kruimelpad"><a href="/">Home</a> / <span>{v.hero.label}</span></nav>
+        <span class="dk-kicker dk-kicker--light">{v.hero.label}</span>
+        <h1 class="dkv-h1">{v.hero.title}</h1>
+        <p class="dkv-lead">{v.hero.lead}</p>
+        <div class="dkv-knoppen">
+          <a class="dk-btn dk-btn--red" href={v.hero.cta.href}>{v.hero.cta.label} →</a>
+          <a class="dk-btn dk-btn--ghost" href="#doorsnede">Zo werkt het ↓</a>
+        </div>
+        <ul class="dkv-chips">
+          <li>Infrezen of opbouw</li><li>Ontworpen op lage temperatuur</li><li>Den Haag en omstreken</li>
+        </ul>
+      </div>
+      <figure class="dkv-hero__vloer">
+        <svg viewBox="0 0 640 330" role="img" aria-label="Doorsnede van een vloer met ingefreesde leidingen en warmte die opstijgt">
+          <g class="dkv-warmte" fill="none" stroke="#FF8A95" stroke-width="3" stroke-linecap="round">
+            <path d="M150 110c10-14-10-26 0-40s-10-26 0-40"/><path d="M320 110c10-14-10-26 0-40s-10-26 0-40"/><path d="M490 110c10-14-10-26 0-40s-10-26 0-40"/>
+          </g>
+          <polygon points="60,150 600,150 640,126 100,126" fill="#F1EDE4"/>
+          <rect x="60" y="150" width="540" height="18" fill="#E2DCCF"/>
+          <polygon points="600,150 640,126 640,144 600,168" fill="#CFC8B9"/>
+          <rect x="60" y="168" width="540" height="100" fill="#B8BFCC"/>
+          <polygon points="600,168 640,144 640,244 600,268" fill="#9EA6B5"/>
+          <g fill="#0B132B">{[96,166,236,306,376,446,516].map((x) => <rect x={x} y="168" width="22" height="26" rx="3"/>)}</g>
+          <g fill="#D6283A">{[107,177,247,317,387,457,527].map((x) => <circle cx={x} cy="182" r="8"/>)}</g>
+          <rect x="60" y="268" width="540" height="34" fill="#5A6475"/>
+          <polygon points="600,268 640,244 640,278 600,302" fill="#48505F"/>
+        </svg>
+        <figcaption><span>Leidingen in je bestaande dekvloer</span><span>Verdeler in meterkast of trapkast</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- doorsnede -->
+  <section class="dkv-sectie dkv-wit" id="doorsnede">
+    <div class="dk-wrap">
+      <div class="dkv-kop">
+        <div><span class="dk-kicker">Hoe het werkt</span><h2 class="dkv-h2">Wat zit er in je vloer?</h2></div>
+        <div class="dkv-tabs" role="tablist" aria-label="Methode">
+          <button type="button" role="tab" id="dkv-tab-frees" aria-controls="dkv-paneel-frees" aria-selected="true" tabindex="0" data-tab="frees">Infrezen</button>
+          <button type="button" role="tab" id="dkv-tab-opbouw" aria-controls="dkv-paneel-opbouw" aria-selected="false" tabindex="-1" data-tab="opbouw">Opbouw</button>
+        </div>
+      </div>
+
+      <div class="dkv-paneel" role="tabpanel" id="dkv-paneel-frees" aria-labelledby="dkv-tab-frees" data-paneel="frees">
+        <div class="dkv-doorsnede">
+          <svg viewBox="0 0 640 250" role="img" aria-label="Doorsnede infrezen: afwerkvloer, dekvloer met sleuven en leidingen, ondervloer">
+            <g data-laag="afwerking"><rect x="20" y="40" width="600" height="22" fill="#E2DCCF"/></g>
+            <g data-laag="dekvloer"><rect x="20" y="62" width="600" height="128" fill="#B8BFCC"/></g>
+            <g data-laag="leiding">
+              <g fill="#F4F6F9">{sleuven.map((x) => <rect x={x - 12} y="62" width="24" height="30" rx="3"/>)}</g>
+              <g fill="#D6283A">{sleuven.map((x) => <circle cx={x} cy="78" r="9"/>)}</g>
+            </g>
+            <g data-laag="onder"><rect x="20" y="190" width="600" height="40" fill="#5A6475"/></g>
+          </svg>
+          <p class="dkv-noot">Neutrale illustratie, niet op schaal. Wijs een laag aan voor uitleg.</p>
+        </div>
+        <ol class="dkv-lagen">
+          {lagen.frees.map((l, i) => <li tabindex="0" data-laag={l.id} class:list={{ 'is-warm': l.id === 'leiding' }}><b>{i + 1}</b><div><strong>{l.t}</strong><span>{l.d}</span></div></li>)}
+        </ol>
+      </div>
+
+      <div class="dkv-paneel" role="tabpanel" id="dkv-paneel-opbouw" aria-labelledby="dkv-tab-opbouw" data-paneel="opbouw" hidden>
+        <div class="dkv-doorsnede">
+          <svg viewBox="0 0 640 250" role="img" aria-label="Doorsnede opbouw: afwerkvloer, egalisatielaag, dun systeem met leidingen, bestaande vloer">
+            <g data-laag="afwerking"><rect x="20" y="20" width="600" height="22" fill="#E2DCCF"/></g>
+            <g data-laag="egalisatie"><rect x="20" y="42" width="600" height="24" fill="#D3D7DE"/></g>
+            <g data-laag="leiding">
+              <rect x="20" y="66" width="600" height="30" fill="#1E9E6A"/>
+              <g fill="#D6283A">{sleuven.map((x) => <circle cx={x} cy="78" r="9"/>)}</g>
+            </g>
+            <g data-laag="bestaand">
+              <rect x="20" y="96" width="600" height="94" fill="#B08D66"/>
+              <path d="M140 96v94M290 96v94M440 96v94" stroke="#94744F" stroke-width="2"/>
+            </g>
+            <rect x="20" y="190" width="600" height="40" fill="#5A6475"/>
+          </svg>
+          <p class="dkv-noot">Neutrale illustratie, niet op schaal. Wijs een laag aan voor uitleg.</p>
+        </div>
+        <ol class="dkv-lagen">
+          {lagen.opbouw.map((l, i) => <li tabindex="0" data-laag={l.id} class:list={{ 'is-warm': l.id === 'leiding' }}><b>{i + 1}</b><div><strong>{l.t}</strong><span>{l.d}</span></div></li>)}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- COP + prijs -->
+  <section class="dkv-sectie">
+    <div class="dk-wrap dkv-twee">
+      <div class="dkv-kaart">
+        <div class="dkv-merk"><img src="/img/heatgeek-logo.png" alt="Heat Geek" width="360" height="149" /><span class="dk-kicker">De Klimaatheld × Heat Geek</span></div>
+        <h2 class="dkv-h3">Lauw water, hoge COP</h2>
+        <p class="dkv-muted">Vloerverwarming verwarmt met een groot oppervlak, dus lauw water is genoeg. Hoe lager de aanvoertemperatuur, hoe meer warmte je warmtepomp uit elke kWh haalt.</p>
+        <figure class="dkv-grafiek">
+          <p class="dkv-gtitel">COP bij buitentemperatuur</p>
+          <svg viewBox="0 -26 310 226" role="img" aria-label="Grafiek: COP van een Heat Geek-ontwerp ligt hoger dan bij een standaard installateur" font-family="Archivo,sans-serif" font-size="10" fill="#5A6475"><path d="M40 160H300M40 125H300M40 90H300M40 55H300M40 20H300" stroke="#E3E7ED"/><text x="32" y="164" text-anchor="end">2</text><text x="32" y="129" text-anchor="end">3</text><text x="32" y="94" text-anchor="end">4</text><text x="32" y="59" text-anchor="end">5</text><text x="32" y="24" text-anchor="end">6</text><text x="40" y="178" text-anchor="middle">-10°</text><text x="92" y="178" text-anchor="middle">-5°</text><text x="144" y="178" text-anchor="middle">0°</text><text x="196" y="178" text-anchor="middle">5°</text><text x="248" y="178" text-anchor="middle">10°</text><text x="300" y="178" text-anchor="middle">15°</text><polygon points="40,132 92,111 144,90 196,69 248,52 300,38 300,94 248,104 196,118 144,132 92,146 40,160" fill="#D6283A" opacity=".08"/><polyline points="40,160 92,146 144,132 196,118 248,104 300,94" fill="none" stroke="#9AA3B2" stroke-width="2.5" stroke-dasharray="5 4" stroke-linecap="round"/><polyline points="40,132 92,111 144,90 196,69 248,52 300,38" fill="none" stroke="#D6283A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="300" cy="38" r="4.5" fill="#D6283A" stroke="#fff" stroke-width="2"/><text x="40" y="196">Buitentemperatuur</text><text x="40" y="10">COP</text></svg>
+          <figcaption><span><i class="is-rood"></i>Heat Geek-ontwerp</span><span><i></i>Standaard installateur</span><span class="dkv-ind">Indicatief</span></figcaption>
+        </figure>
+      </div>
+      <div class="dkv-kaart">
+        <span class="dk-kicker">Altijd inbegrepen</span>
+        <h2 class="dkv-h3">{v.prijs.title}</h2>
+        <ul class="dkv-checks">
+          {v.prijs.items.map((p) => <li><span aria-hidden="true">✓</span><div><strong>{p.title}</strong><small>{p.tekst}</small></div></li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- methodes -->
+  <section class="dkv-sectie dkv-sectie--top0">
+    <div class="dk-wrap">
+      <span class="dk-kicker">Twee methodes</span>
+      <h2 class="dkv-h2">{v.keuze.title}</h2>
+      {v.keuze.lead && <p class="dkv-muted dkv-smal">{v.keuze.lead}</p>}
+      <div class="dkv-methodes">
+        {[frees, opbouw].map((k) => (
+          <article class="dkv-methode">
+            <div class="dkv-methode__top">
+              <div><span class="dk-kicker">{k.tag}</span><h3>{k.title}</h3></div>
+              <div class="dkv-methode__prijs"><strong>{k.prijs}</strong><small>{k.prijsNoot}</small></div>
+            </div>
+            <p>{k.tekst}</p>
+            <a class="dk-btn dk-btn--dark" href={k.href}>{k.cta} →</a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- voordelen -->
+  <section class="dkv-sectie dkv-wit">
+    <div class="dk-wrap">
+      <span class="dk-kicker">Voordelen</span>
+      <h2 class="dkv-h2">{v.voordelen.title}</h2>
+      <ul class="dkv-voordelen">
+        {v.voordelen.items.map((x) => (
+          <li><span class="dkv-icoon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ic[x.icon] ?? ic.vloer} /></span><h3>{x.title}</h3><p>{x.tekst}</p></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- stappen + cases -->
+  <section class="dkv-sectie">
+    <div class="dk-wrap">
+      <span class="dk-kicker">{v.stappen.title}</span>
+      <h2 class="dkv-h2">Van aanvraag tot warme voeten</h2>
+      <ol class="dkv-stappen">
+        {v.stappen.items.map((s, i) => <li><b>{String(i + 1).padStart(2, '0')}</b><strong>{s.title}</strong><span>{s.tekst}</span></li>)}
+      </ol>
+
+      <div class="dkv-kop dkv-kop--cases">
+        <div><span class="dk-kicker">Uit ons werk</span><h2 class="dkv-h3">Vloerverwarming in de praktijk</h2></div>
+        <a class="dkv-link" href="/verduurzamen/">Bekijk al ons werk →</a>
+      </div>
+      <ul class="dkv-cases">
+        {vloerCases.map((c) => (
+          <li>
+            <a href="/verduurzamen/" class="dkv-case">
+              <span class="dkv-case__foto"><img src={c.groot.src} alt={c.groot.alt} loading="lazy" /></span>
+              {c.klein && <span class="dkv-case__klein"><img src={c.klein.src} alt={c.klein.alt} loading="lazy" /></span>}
+              <span class="dk-kicker">{c.plaats}</span>
+              <strong>{c.titel}</strong>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- faq -->
+  <section class="dkv-sectie dkv-wit">
+    <div class="dk-wrap dkv-faq">
+      <div>
+        <span class="dk-kicker">Vragen</span>
+        <h2 class="dkv-h2">Goed om te weten</h2>
+        <p class="dkv-muted">Staat je vraag er niet bij? Bel ons, we denken graag mee.</p>
+        <img class="dkv-held dk-zweef" src="/img/kh-held.webp" alt="" aria-hidden="true" width="520" height="484" loading="lazy" />
+      </div>
+      <div class="dkv-faq__lijst">
+        {v.faq.map((f, i) => <details open={i === 0}><summary>{f.q}</summary><p>{f.a}</p></details>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- andere diensten + slot -->
+  <section class="dkv-sectie dkv-sectie--laatst">
+    <div class="dk-wrap">
+      <h2 class="dkv-h3">Andere diensten</h2>
+      <ul class="dkv-anderen">
+        {anderen.map((d) => <li><a href={d.href}>{d.title} <span aria-hidden="true">→</span></a></li>)}
+      </ul>
+      <div class="dkv-slot">
+        <div class="dkv-gloed dkv-gloed--slot" aria-hidden="true"></div>
+        <div><h2 class="dkv-h2">{v.cta.title}</h2><p>{v.cta.text}</p></div>
+        <div class="dkv-slot__knoppen">
+          <a class="dk-btn dk-btn--red" href="/#besparingscheck">Doe de besparingscheck</a>
+          <a class="dk-btn dkv-btn-roze" href={v.cta.href ?? '/offerte/'}>{v.cta.button}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<DkFooter />
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-dkv]').forEach((root) => {
+    // tabs infrezen / opbouw (pijltjestoetsen wisselen ook)
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const kies = (tab: HTMLButtonElement) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        const p = root.querySelector<HTMLElement>(`[data-paneel="${t.dataset.tab}"]`);
+        if (p) p.hidden = !on;
+      });
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => kies(t));
+      t.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        kies(n); n.focus();
+      });
+    });
+    // laag aanwijzen = laag in de doorsnede oplichten
+    root.querySelectorAll<HTMLElement>('[data-paneel]').forEach((p) => {
+      const svg = p.querySelector('svg');
+      p.querySelectorAll<HTMLElement>('.dkv-lagen li').forEach((li) => {
+        const aan = () => {
+          svg?.classList.add('is-focus');
+          svg?.querySelectorAll('[data-laag]').forEach((g) => g.classList.toggle('is-aan', (g as HTMLElement).dataset.laag === li.dataset.laag));
+          p.querySelectorAll('.dkv-lagen li').forEach((x) => x.classList.toggle('is-aan', x === li));
+        };
+        const uit = () => {
+          svg?.classList.remove('is-focus');
+          p.querySelectorAll('.is-aan').forEach((x) => x.classList.remove('is-aan'));
+        };
+        li.addEventListener('mouseenter', aan); li.addEventListener('focus', aan);
+        li.addEventListener('mouseleave', uit); li.addEventListener('blur', uit);
+      });
+    });
+  });
+</script>
+
+<style>
+  .dkv { background: #F4F6F9; color: #141A2E; font-size: 16px; line-height: 1.5; }
+  .dkv-wit { background: #fff; }
+  .dkv-sectie { padding: 88px 0; }
+  .dkv-sectie--top0 { padding-top: 0; }
+  .dkv-sectie--laatst { padding: 72px 0 96px; }
+  .dkv-h1 { font-size: 76px; line-height: .9; font-weight: 900; font-stretch: 62%; text-transform: uppercase; margin: 10px 0 20px !important; }
+  .dkv-h2 { font-size: 56px; line-height: .95; font-weight: 900; font-stretch: 62%; text-transform: uppercase; margin: 6px 0 12px !important; }
+  .dkv-h3 { font-size: 40px; line-height: .95; font-weight: 900; font-stretch: 62%; text-transform: uppercase; margin: 6px 0 12px !important; }
+  .dkv-muted { color: #5A6475; font-size: 17px; }
+  .dkv-smal { max-width: 640px; }
+  .dkv-kop { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 36px; }
+
+  /* hero */
+  .dkv-hero { position: relative; overflow: hidden; background: #0B132B; color: #fff; padding: 56px 0 96px; }
+  .dkv-gloed { position: absolute; right: -120px; top: 40px; width: 820px; height: 620px; border-radius: 50%; background: radial-gradient(closest-side, rgba(214,40,58,.42), rgba(214,40,58,0)); pointer-events: none; }
+  .dkv-hero__grid { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px; align-items: center; }
+  .dkv-crumbs { font-size: 13px; color: rgba(255,255,255,.7); margin-bottom: 16px; }
+  .dkv-crumbs a { color: rgba(255,255,255,.7); }
+  .dkv-lead { font-size: 19px; color: rgba(255,255,255,.82); max-width: 520px; margin-bottom: 30px !important; }
+  .dkv-knoppen { display: flex; gap: 12px; flex-wrap: wrap; }
+  .dkv-chips { list-style: none; margin: 34px 0 0; padding: 0; display: flex; gap: 10px; flex-wrap: wrap; }
+  .dkv-chips li { padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.08); font-size: 13px; font-weight: 600; }
+  .dkv-hero__vloer { margin: 0; border-radius: 24px; background: linear-gradient(180deg, #141A2E, #0F1730); border: 1px solid rgba(255,255,255,.1); padding: 28px 24px 20px; }
+  .dkv-hero__vloer svg { width: 100%; height: auto; display: block; }
+  .dkv-hero__vloer figcaption { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 13px; color: rgba(255,255,255,.7); }
+  .dkv-warmte path { opacity: .75; stroke-dasharray: 8 6; animation: dk-stroom 2.4s linear infinite; }
+
+  /* doorsnede */
+  .dkv-tabs { display: flex; gap: 6px; padding: 6px; border-radius: 999px; background: #F4F6F9; border: 1px solid #E3E7ED; }
+  .dkv-tabs button { min-height: 44px; padding: 0 24px; border-radius: 999px; border: 0; background: transparent; color: #141A2E; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; transition: background .2s, color .2s; }
+  .dkv-tabs button:hover { background: #E3E7ED; }
+  .dkv-tabs button[aria-selected='true'] { background: #141A2E; color: #fff; }
+  .dkv-paneel { display: grid; grid-template-columns: 7fr 5fr; gap: 40px; align-items: center; }
+  .dkv-paneel[hidden] { display: none; }
+  .dkv-doorsnede { border-radius: 24px; background: #F4F6F9; border: 1px solid #E3E7ED; padding: 32px; }
+  .dkv-doorsnede svg { width: 100%; height: auto; display: block; }
+  .dkv-doorsnede [data-laag] { transition: opacity .2s; }
+  .dkv-doorsnede svg.is-focus [data-laag]:not(.is-aan) { opacity: .25; }
+  .dkv-noot { margin-top: 12px !important; font-size: 13px; color: #5A6475; }
+  .dkv-lagen { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .dkv-lagen li { display: flex; gap: 16px; align-items: flex-start; padding: 16px 18px; border-radius: 16px; cursor: default; transition: background .2s; }
+  .dkv-lagen li:hover, .dkv-lagen li.is-aan { background: #F4F6F9; }
+  .dkv-lagen li.is-warm { background: #FBE3E5; }
+  .dkv-lagen li:focus-visible { outline: 3px solid #FFB020; outline-offset: 2px; }
+  .dkv-lagen b { flex: 0 0 32px; height: 32px; border-radius: 50%; background: #141A2E; color: #fff; display: grid; place-items: center; font-size: 14px; }
+  .dkv-lagen li.is-warm b { background: #D6283A; }
+  .dkv-lagen strong { display: block; font-size: 17px; }
+  .dkv-lagen span { display: block; color: #5A6475; font-size: 15px; line-height: 1.45; }
+
+  /* COP + prijs */
+  .dkv-twee { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .dkv-kaart { background: #fff; border: 1px solid #E3E7ED; border-radius: 28px; padding: 40px; }
+  .dkv-merk { display: flex; align-items: center; gap: 14px; }
+  .dkv-merk img { width: 84px; height: auto; }
+  .dkv-grafiek { margin: 20px 0 0; }
+  .dkv-gtitel { font-size: 20px; font-weight: 900; font-stretch: 80%; text-transform: uppercase; margin-bottom: 6px !important; }
+  .dkv-grafiek svg { width: 100%; height: auto; display: block; }
+  .dkv-grafiek figcaption { display: flex; flex-wrap: wrap; gap: 18px; font-size: 13px; margin-top: 6px; }
+  .dkv-grafiek figcaption span { display: flex; align-items: center; gap: 8px; }
+  .dkv-grafiek i { display: inline-block; width: 20px; height: 3px; background: #9AA3B2; }
+  .dkv-grafiek i.is-rood { background: #D6283A; }
+  .dkv-ind { color: #5A6475; }
+  .dkv-checks { list-style: none; margin: 8px 0 0; padding: 0; }
+  .dkv-checks li { display: flex; gap: 14px; padding: 15px 0; border-bottom: 1px solid #E3E7ED; }
+  .dkv-checks li:last-child { border-bottom: 0; }
+  .dkv-checks li > span { flex: 0 0 28px; height: 28px; border-radius: 50%; background: #DDF2E8; color: #1E9E6A; display: grid; place-items: center; font-weight: 800; font-size: 13px; }
+  .dkv-checks strong { display: block; }
+  .dkv-checks small { display: block; color: #5A6475; font-size: 15px; }
+
+  /* methodes */
+  .dkv-methodes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 32px; }
+  .dkv-methode { background: #fff; border: 1px solid #E3E7ED; border-top: 4px solid #D6283A; border-radius: 24px; padding: 36px; display: flex; flex-direction: column; gap: 16px; }
+  .dkv-methode__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .dkv-methode h3 { font-size: 44px; line-height: .95; font-weight: 900; font-stretch: 62%; text-transform: uppercase; margin-top: 4px !important; }
+  .dkv-methode__prijs { text-align: right; }
+  .dkv-methode__prijs strong { display: block; font-size: 24px; white-space: nowrap; }
+  .dkv-methode__prijs small { font-size: 13px; color: #5A6475; }
+  .dkv-methode p { color: #5A6475; }
+  .dkv-methode .dk-btn { margin-top: auto; align-self: flex-start; }
+
+  /* voordelen */
+  .dkv-voordelen { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .dkv-voordelen li { background: #F4F6F9; border-radius: 18px; padding: 24px; }
+  .dkv-icoon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #FBE3E5; color: #D6283A; margin-bottom: 14px; }
+  .dkv-voordelen h3 { font-size: 18px; margin-bottom: 6px !important; }
+  .dkv-voordelen p { color: #5A6475; font-size: 15px; line-height: 1.45; }
+
+  /* stappen + cases */
+  .dkv-stappen { list-style: none; margin: 28px 0 72px; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .dkv-stappen li { background: #fff; border: 1px solid #E3E7ED; border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 6px; }
+  .dkv-stappen b { width: 40px; height: 40px; border-radius: 50%; background: #141A2E; color: #fff; display: grid; place-items: center; margin-bottom: 6px; font-size: 14px; }
+  .dkv-stappen li:last-child b { background: #D6283A; }
+  .dkv-stappen strong { font-size: 19px; }
+  .dkv-stappen span { color: #5A6475; }
+  .dkv-kop--cases { margin-bottom: 24px; }
+  .dkv-link { color: #D6283A; font-weight: 800; text-decoration: none; }
+  .dkv-link:hover { text-decoration: underline; }
+  .dkv-cases { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+  .dkv-case { position: relative; display: flex; flex-direction: column; gap: 4px; color: #141A2E; text-decoration: none; }
+  .dkv-case__foto { display: block; height: 340px; border-radius: 20px; overflow: hidden; margin-bottom: 14px; background: #E3E7ED; }
+  .dkv-case__foto img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+  .dkv-case:hover .dkv-case__foto img { transform: scale(1.04); }
+  .dkv-case__klein { position: absolute; right: -10px; top: 220px; width: 130px; height: 110px; border-radius: 12px; border: 4px solid #F4F6F9; overflow: hidden; transform: rotate(-5deg); box-shadow: 0 12px 30px rgba(20,26,46,.2); }
+  .dkv-case__klein img { width: 100%; height: 100%; object-fit: cover; }
+  .dkv-case strong { font-size: 20px; }
+  .dkv-case:hover strong { color: #D6283A; }
+
+  /* faq */
+  .dkv-faq { display: flex; gap: 56px; }
+  .dkv-faq > div:first-child { flex: 1 1 0; }
+  .dkv-held { width: 180px; height: auto; margin-top: 28px; }
+  .dkv-faq__lijst { flex: 2 1 0; display: grid; gap: 10px; align-content: start; }
+  .dkv-faq details { background: #F4F6F9; border-radius: 16px; }
+  .dkv-faq summary { cursor: pointer; list-style: none; padding: 22px 26px; display: flex; justify-content: space-between; gap: 16px; font-size: 18px; font-weight: 700; }
+  .dkv-faq summary::-webkit-details-marker { display: none; }
+  .dkv-faq summary::after { content: '+'; color: #D6283A; font-size: 24px; line-height: 1; }
+  .dkv-faq details[open] summary::after { content: '−'; }
+  .dkv-faq details p { padding: 0 26px 22px; color: #5A6475; }
+
+  /* andere diensten + slot */
+  .dkv-anderen { list-style: none; margin: 16px 0 56px; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+  .dkv-anderen a { display: flex; justify-content: space-between; align-items: center; padding: 22px; border-radius: 16px; background: #fff; border: 1px solid #E3E7ED; text-decoration: none; color: #141A2E; font-weight: 700; transition: border-color .2s, transform .2s; }
+  .dkv-anderen a span { color: #D6283A; }
+  .dkv-anderen a:hover { border-color: #D6283A; transform: translateY(-2px); }
+  .dkv-slot { position: relative; overflow: hidden; border-radius: 28px; background: #0B132B; color: #fff; padding: 64px; display: flex; justify-content: space-between; align-items: center; gap: 40px; flex-wrap: wrap; }
+  .dkv-slot > div:not(.dkv-gloed) { position: relative; }
+  .dkv-slot p { font-size: 18px; color: rgba(255,255,255,.8); }
+  .dkv-gloed--slot { right: -100px; top: -200px; width: 560px; height: 480px; }
+  .dkv-slot__knoppen { display: flex; gap: 12px; flex-wrap: wrap; }
+  .dkv-btn-roze { background: #FBE3E5; color: #B01F2F; }
+  .dkv-btn-roze:hover { background: #F8D2D6; }
+
+  @media (max-width: 1180px) {
+    .dkv-h1 { font-size: 62px; }
+    .dkv-voordelen { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .dkv-anderen { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (prefers-reduced-motion: reduce) { .dkv-warmte path { animation: none; } }
+</style>
