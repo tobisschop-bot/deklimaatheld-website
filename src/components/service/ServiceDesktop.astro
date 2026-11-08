@@ -6,7 +6,6 @@
 //   3. Pakketten: schakelaar Warmtepomp / Airco / CV-ketel, 3 prijskaarten;
 //      het gekozen pakket krijgt een subtiel rood neon-effect; vergelijkingstabel klapt uit
 //   4. Storing? Zo helpen we je (donker) + direct contact
-//   4b. Wij zien het eerder dan jij (monitoring, uit richting B)
 //   5. Vragen + afsluiter (dubbele knop)
 // Alle prijzen en kenmerken komen uit src/data/service.ts.
 import { site } from '../../data/site';
@@ -272,41 +271,6 @@ const check = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" strok
     </div>
   </section>
 
-  <!-- 4b. MONITORING -->
-  <section class="svd-mon">
-    <div class="svd-wrap svd-mon__grid">
-      <div>
-        <span class="label">Monitoring op afstand</span>
-        <h2>Wij zien het eerder dan jij</h2>
-        <p class="svd-lead">Je installatie meldt zich bij ons. Zakt het rendement of verschijnt er een foutcode, dan bellen wij jou. Vaak lossen we het op afstand op, nog voordat je het koud krijgt.</p>
-        <ul class="svd-mon__lijst">
-          <li><span>1</span>We kijken mee, het hele jaar</li>
-          <li><span>2</span>Afwijking? Wij nemen contact op</li>
-          <li><span>3</span>In okt/nov: winterklaar-check</li>
-        </ul>
-      </div>
-      <figure class="svd-mon__dash" role="img" aria-label="Illustratie van het monitoringdashboard: rendement over een week met één dip en een melding">
-        <div class="svd-mon__kop">
-          <span class="svd-mini svd-mini--roze">Rendement · deze week</span>
-          <span class="svd-mon__live"><span aria-hidden="true"></span>Live</span>
-        </div>
-        <svg viewBox="0 0 520 200" width="100%" height="200" aria-hidden="true">
-          <line x1="0" y1="50" x2="520" y2="50" stroke="rgba(255,255,255,0.08)"/>
-          <line x1="0" y1="100" x2="520" y2="100" stroke="rgba(255,255,255,0.08)"/>
-          <line x1="0" y1="150" x2="520" y2="150" stroke="rgba(255,255,255,0.08)"/>
-          <path d="M0 70 C40 60 70 66 110 62 S180 58 220 64 S270 140 300 138 S340 70 380 64 S470 58 520 60" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="300" cy="138" r="9" fill="#D6283A"/>
-          <circle cx="300" cy="138" r="18" fill="none" stroke="#D6283A" stroke-opacity="0.4" stroke-width="2"/>
-        </svg>
-        <div class="svd-mon__dagen" aria-hidden="true"><span>ma</span><span>di</span><span>wo</span><span>do</span><span>vr</span><span>za</span><span>zo</span></div>
-        <div class="svd-mon__melding">
-          <span class="svd-mon__ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 7v6M12 17h.01"/></svg></span>
-          <span><b>Foutcode ontvangen</b> · De monteur belt je en kijkt eerst op afstand mee.</span>
-        </div>
-      </figure>
-    </div>
-  </section>
-
   <!-- 5. VRAGEN + AFSLUITER -->
   <section class="svd-faq">
     <div class="svd-wrap svd-faq__grid">
@@ -551,20 +515,6 @@ const check = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" strok
   .svd-contact a:hover { color: var(--red-dark); }
   .svd-contact small { font-size: .88rem; color: var(--muted); }
 
-  /* 4b. Monitoring */
-  .svd-mon { background: #fff; padding: 96px 0; }
-  .svd-mon__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 56px; align-items: center; }
-  .svd-mon__lijst { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 12px; font-weight: 600; }
-  .svd-mon__lijst li { display: flex; gap: 10px; align-items: center; }
-  .svd-mon__lijst li span { width: 28px; height: 28px; border-radius: 50%; background: var(--red-soft); color: var(--red-dark); display: grid; place-items: center; font-size: .82rem; flex-shrink: 0; }
-  .svd-mon__dash { margin: 0; background: var(--navy); color: #fff; border-radius: 24px; padding: 28px; box-shadow: 0 30px 60px rgba(20,26,46,.25); }
-  .svd-mon__kop { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
-  .svd-mon__live { display: flex; gap: 8px; align-items: center; font-size: .82rem; }
-  .svd-mon__live span { width: 8px; height: 8px; border-radius: 50%; background: #1E9E6A; }
-  .svd-mon__dagen { display: flex; justify-content: space-between; font-size: .75rem; color: #A9B1C2; margin-top: 4px; }
-  .svd-mon__melding { margin-top: 20px; display: flex; gap: 12px; align-items: center; background: #fff; color: var(--navy); border-radius: 16px; padding: 14px 16px; font-size: .88rem; line-height: 1.4; }
-  .svd-mon__ico { width: 36px; height: 36px; border-radius: 50%; background: var(--red); display: grid; place-items: center; flex-shrink: 0; }
-
   /* 5. Vragen + afsluiter */
   .svd-faq { padding: 96px 0; }
   .svd-faq__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 56px; align-items: start; }
@@ -589,7 +539,6 @@ const check = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" strok
     .svd-hero__grid { grid-template-columns: minmax(0, 1fr); }
     .svd-belofte__lijst { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .svd-storing__grid { grid-template-columns: minmax(0, 1fr); }
-    .svd-mon__grid { grid-template-columns: minmax(0, 1fr); }
     .svd-slot__kaart { flex-direction: column; align-items: flex-start; }
   }
 
