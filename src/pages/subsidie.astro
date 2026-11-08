@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import Faq from '../components/Faq.astro';
 import CtaCard from '../components/CtaCard.astro';
+import DkSubsidie from '../components/desktop/DkSubsidie.astro';
 import { warmtepompen, euro } from '../data/warmtepompen';
 
 const stappen = [
@@ -27,6 +28,7 @@ const faq = [
 ];
 ---
 <Base title="ISDE-subsidie voor je warmtepomp – De Klimaatheld" description="Uitleg over de ISDE-subsidie voor warmtepompen. De Klimaatheld regelt de aanvraag bij RVO voor je.">
+  <DkSubsidie slot="desktop" faq={faq} />
   <PageHero
     label="Subsidie"
     title="ISDE-subsidie: wij regelen het"

@@ -1,0 +1,431 @@
+---
+// Desktopversie (≥ 1024 px) van /subsidie/. Mobiel blijft src/pages/subsidie.astro (zie Base.astro: slot "desktop").
+// Gekozen door Tycho (8 nov 2026): richting C "stappenplan".
+//   Hero: navy met rode schuine rand + hoogste ISDE-bedrag uit de data (indicatief)
+//   1. Kies je warmtepomp: modeltegels met ISDE-balk, keuzebalk met prijs / ISDE / na subsidie
+//   2. Check de voorwaarden: alleen "eigenaar én bewoner" vinkt de bezoeker aan, de andere drie regelen wij
+//   3. Wij regelen de rest (installatie → dossier → aanvraag RVO → uitbetaling)
+//   4. Financiering: ISDE + Energiebespaarlening (Warmtefonds)
+//   FAQ + afsluiter met dubbele knop
+// Alle bedragen komen uit src/data/warmtepompen.ts (ISDE = max. bedrag RVO-meldcodelijst 2026, indicatief).
+import '../../styles/desktop-home.css';
+import DkHeader from './DkHeader.astro';
+import DkFooter from './DkFooter.astro';
+import { warmtepompen, euro } from '../../data/warmtepompen';
+
+interface Props { faq: { q: string; a: string }[] }
+const { faq } = Astro.props;
+
+const RVO = 'https://www.rvo.nl/subsidies-financiering/isde';
+const kort = (w: (typeof warmtepompen)[number]) => w.name.replace(new RegExp('^' + w.merk + '\\s+'), '');
+
+// Berekening per model. Is de ISDE onbekend, de prijs onbekend of de ISDE ≥ v.a.-prijs, dan tonen we geen nettobedrag.
+const modellen = warmtepompen.map((w) => {
+  const bekend = w.from != null && w.isde != null && w.isde < w.from;
+  const pct = bekend ? Math.round((w.isde! / w.from!) * 100) : 0;
+  return {
+    slug: w.slug, merk: w.merk, naam: w.name, kort: kort(w), img: w.img, page: w.page ?? '/offerte/',
+    prijs: w.from != null ? euro(w.from) : 'Op aanvraag',
+    isde: w.isde != null ? `tot ${euro(w.isde)}` : 'Op aanvraag',
+    isdeMin: w.isde != null ? `– ${euro(w.isde)}` : 'Op aanvraag',
+    netto: bekend ? euro(w.from! - w.isde!) : 'Op aanvraag',
+    pct, bekend,
+  };
+});
+const start = modellen.find((m) => m.slug === 'sparrow') ?? modellen[0];
+const top = warmtepompen.filter((w) => w.isde != null).sort((a, b) => b.isde! - a.isde!)[0];
+
+const voorwaarden = [
+  { t: 'Je bent eigenaar én bewoner van de woning', wij: false },
+  { t: 'De warmtepomp wordt geïnstalleerd door een installateur', wij: true },
+  { t: 'De warmtepomp staat op de meldcodelijst van RVO', wij: true },
+  { t: 'De aanvraag wordt ná de installatie ingediend', wij: true },
+];
+
+const regelen = [
+  { t: 'Installatie', d: 'Wij plaatsen je warmtepomp en nemen hem in bedrijf.', icon: '<path d="M3 11l9-7 9 7v9H3z"/><path d="M9 20v-6h6v6"/>' },
+  { t: 'Dossier', d: 'Factuur, betaalbewijs, foto’s en de meldcode van je warmtepomp.', icon: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>' },
+  { t: 'Aanvraag bij RVO', d: 'Ná de installatie, namens jou ingediend.', icon: '<path d="M3 11l18-8-8 18-2-8z"/>' },
+  { t: 'Uitbetaling', d: 'Na goedkeuring op jouw rekening. Termijnen: zie rvo.nl.', icon: '<circle cx="12" cy="12" r="9"/><path d="M15 8.5a4 4 0 1 0 0 7M7 11h6M7 13.5h6"/>' },
+];
+const vink = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+---
+<DkHeader />
+<div class="sbd" data-sbd>
+
+  <!-- HERO -->
+  <section class="sbd-hero">
+    <div class="sbd-hero__rand" aria-hidden="true"></div>
+    <div class="sbd-wrap sbd-hero__grid">
+      <div>
+        <nav class="sbd-crumbs" aria-label="Kruimelpad"><a href="/">Home</a> / <span aria-current="page">Subsidie</span></nav>
+        <span class="sbd-mini sbd-mini--roze">ISDE-subsidie</span>
+        <h1>De overheid<br />betaalt mee</h1>
+        <p class="sbd-lead">In vier stappen van keuze naar geld op je rekening. Wij doen de aanvraag, jij hoeft niets uit te zoeken.</p>
+        <a class="sbd-pill sbd-pill--white" href="#stap-1">Start bij stap 1 ↓</a>
+      </div>
+      {top && (
+        <div class="sbd-hero__claim">
+          <p class="sbd-mini">ISDE per model, indicatief</p>
+          <p class="sbd-hero__bedrag">tot {euro(top.isde!)}</p>
+          <p class="sbd-hero__noot">Hoogste bedrag in ons assortiment ({top.name}), volgens de RVO-meldcodelijst 2026. Jouw bedrag hangt af van type en vermogen.</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- STAPPEN -->
+  <section class="sbd-stappen">
+    <div class="sbd-wrap">
+
+      <!-- STAP 1 -->
+      <div class="sbd-stap">
+        <div class="sbd-rail" aria-hidden="true"><span class="sbd-nr sbd-nr--red">1</span><span class="sbd-lijn"></span></div>
+        <div class="sbd-stap__body" id="stap-1">
+          <span class="label">Stap 1</span>
+          <h2>Kies je warmtepomp</h2>
+          <p class="sbd-intro">Klik een model aan en zie direct wat de ISDE indicatief doet met de prijs.</p>
+          <div class="sbd-tegels" role="group" aria-label="Kies een warmtepomp">
+            {modellen.map((m) => (
+              <button type="button" class="sbd-tegel" aria-pressed={String(m.slug === start.slug)}
+                data-slug={m.slug} data-naam={m.naam} data-prijs={m.prijs} data-isde={m.isdeMin} data-netto={m.netto}
+                data-pct={m.pct} data-bekend={String(m.bekend)} data-page={m.page} data-img={m.img}>
+                <span class="sbd-tegel__top"><span>{m.merk}</span><span class="sbd-tegel__gekozen">Gekozen</span></span>
+                <span class="sbd-tegel__naam">{m.kort}</span>
+                <span class="sbd-balk sbd-balk--klein" aria-hidden="true"><span class="is-isde" style={`width:${m.pct}%`}></span><span class="is-jij" style={`width:${m.bekend ? 100 - m.pct : 0}%`}></span></span>
+                <span class="sbd-tegel__isde">{m.isde}</span>
+              </button>
+            ))}
+          </div>
+
+          <div class="sbd-keuze" aria-live="polite">
+            <div class="sbd-keuze__foto"><img src={start.img} alt="" width="120" height="100" loading="lazy" data-k-img /></div>
+            <div><p class="sbd-keuze__k">Jouw keuze</p><p class="sbd-keuze__naam" data-k-naam>{start.naam}</p></div>
+            <div><p class="sbd-keuze__k">Vanaf, incl. montage</p><p class="sbd-keuze__v" data-k-prijs>{start.prijs}</p></div>
+            <div><p class="sbd-keuze__k">ISDE (max.)</p><p class="sbd-keuze__v is-groen" data-k-isde>{start.isdeMin}</p></div>
+            <div><p class="sbd-keuze__k is-roze">Na subsidie</p><p class="sbd-keuze__netto" data-k-netto>{start.netto}</p></div>
+            <div class="sbd-keuze__onder">
+              <div class="sbd-balk" role="img" aria-label={`ISDE dekt circa ${start.pct} procent van de vanaf-prijs`} data-k-balk>
+                <span class="is-isde" style={`width:${start.pct}%`}></span><span class="is-jij" style={`width:${start.bekend ? 100 - start.pct : 0}%`}></span>
+              </div>
+              <div class="sbd-keuze__rij">
+                <p class="sbd-keuze__noot">
+                  <span class="sbd-dot is-isde" aria-hidden="true"></span>ISDE <span class="sbd-dot is-jij" aria-hidden="true"></span>Jouw deel ·
+                  Indicatief, op basis van de RVO-meldcodelijst 2026. Geen garantie op toekenning. Actueel: <a href={RVO} target="_blank" rel="noopener">rvo.nl</a>.
+                  <span data-k-aanvraag hidden={start.bekend}> Voor dit model rekenen we het bedrag voor je uit.</span>
+                </p>
+                <div class="sbd-keuze__knoppen">
+                  <a class="sbd-pill sbd-pill--red" href="/offerte/">Offerte voor dit model</a>
+                  <a class="sbd-pill sbd-pill--ghost" href={start.page} data-k-page>Bekijk product</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAP 2 -->
+      <div class="sbd-stap">
+        <div class="sbd-rail" aria-hidden="true"><span class="sbd-nr">2</span><span class="sbd-lijn"></span></div>
+        <div class="sbd-stap__body sbd-twee">
+          <div>
+            <span class="label">Stap 2</span>
+            <h2>Check de voorwaarden</h2>
+            <p class="sbd-intro">Drie punten regelen wij al voor je. Alleen de eerste kun jij afvinken.</p>
+            <fieldset class="sbd-checks">
+              <legend class="sr-only">Voorwaarden ISDE-subsidie</legend>
+              {voorwaarden.map((v, i) => (
+                <label class:list={['sbd-check', { 'is-wij': v.wij }]}>
+                  <input type="checkbox" checked={v.wij} disabled={v.wij} data-check={i} />
+                  <span class="sbd-check__t">{v.t}</span>
+                  {v.wij && <span class="sbd-chip">Regelen wij</span>}
+                </label>
+              ))}
+            </fieldset>
+          </div>
+          <div class="sbd-teller">
+            <p class="sbd-teller__n" data-teller>3/4</p>
+            <p class="sbd-teller__t" data-teller-t>Ben jij eigenaar én bewoner?</p>
+            <p class="sbd-teller__d" data-teller-d>De andere drie punten regelen wij als jouw installateur. Twijfel je over dit punt? We kijken het samen na.</p>
+            <p class="sbd-noot">Samenvatting, RVO beslist. Volledige voorwaarden op <a href={RVO} target="_blank" rel="noopener">rvo.nl</a>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAP 3 -->
+      <div class="sbd-stap">
+        <div class="sbd-rail" aria-hidden="true"><span class="sbd-nr">3</span><span class="sbd-lijn"></span></div>
+        <div class="sbd-stap__body">
+          <span class="label">Stap 3</span>
+          <h2>Wij regelen de rest</h2>
+          <ol class="sbd-regel">
+            {regelen.map((r, i) => (
+              <li class:list={{ 'is-groen': i === regelen.length - 1 }}>
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={r.icon} />
+                <h3>{r.t}</h3>
+                <p>{r.d}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+
+      <!-- STAP 4 -->
+      <div class="sbd-stap">
+        <div class="sbd-rail" aria-hidden="true"><span class="sbd-nr sbd-nr--groen">4</span></div>
+        <div class="sbd-stap__body">
+          <span class="label">Stap 4 · optioneel</span>
+          <h2>Liever gespreid betalen?</h2>
+          <div class="sbd-fin">
+            <div class="sbd-fin__kaart">
+              <h3>ISDE-subsidie</h3>
+              <p>Je schiet eerst voor, RVO betaalt achteraf een deel terug. Wij regelen de aanvraag.</p>
+              <a href="#stap-1">Terug naar de check →</a>
+            </div>
+            <div class="sbd-fin__kaart is-donker">
+              <h3>Energiebespaarlening</h3>
+              <p>Via het Nationaal Warmtefonds, tegen een lage rente. Bij een lager inkomen soms 0%. Actuele rente en voorwaarden bij het Warmtefonds.</p>
+              <a href="https://www.warmtefonds.nl" target="_blank" rel="noopener">Naar warmtefonds.nl ↗</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="sbd-faq">
+    <div class="sbd-wrap sbd-faq__wrap">
+      <span class="label">FAQ</span>
+      <h2>Veelgestelde vragen</h2>
+      <div class="sbd-faq__lijst">
+        {faq.map((f, i) => (
+          <details class="sbd-faq__item" open={i === 0}>
+            <summary>{f.q}<span class="sbd-plus" aria-hidden="true">+</span></summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- AFSLUITER -->
+  <section class="sbd-slot">
+    <div class="sbd-slot__rand" aria-hidden="true"></div>
+    <div class="sbd-wrap sbd-slot__grid">
+      <img class="sbd-slot__held" src="/img/mascotte-vliegend.webp" alt="" width="320" height="320" loading="lazy" />
+      <div>
+        <h2>Benieuwd wat<br />jij terugkrijgt?</h2>
+        <p class="sbd-lead">Laat ons vrijblijvend uitzoeken welke subsidie bij jouw woning en warmtepomp hoort.</p>
+        <div class="sbd-btns">
+          <a class="sbd-pill sbd-pill--red sbd-pill--ring" href="/#dk-besparingscheck">Doe de besparingscheck</a>
+          <a class="sbd-pill sbd-pill--roze" href="/offerte/">Vraag je offerte aan</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<DkFooter />
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-sbd]');
+  if (root) {
+    // Stap 1: modelkeuze
+    const tegels = [...root.querySelectorAll<HTMLButtonElement>('.sbd-tegel')];
+    const $ = <T extends HTMLElement>(s: string) => root.querySelector<T>(s);
+    const balk = $('[data-k-balk]');
+    tegels.forEach((t) => t.addEventListener('click', () => {
+      const d = t.dataset;
+      tegels.forEach((o) => o.setAttribute('aria-pressed', String(o === t)));
+      const set = (s: string, v = '') => { const el = $(s); if (el) el.textContent = v; };
+      set('[data-k-naam]', d.naam); set('[data-k-prijs]', d.prijs); set('[data-k-isde]', d.isde); set('[data-k-netto]', d.netto);
+      const bekend = d.bekend === 'true', pct = Number(d.pct);
+      if (balk) {
+        const [isde, jij] = balk.querySelectorAll<HTMLElement>('span');
+        isde.style.width = pct + '%'; jij.style.width = (bekend ? 100 - pct : 0) + '%';
+        balk.setAttribute('aria-label', bekend ? `ISDE dekt circa ${pct} procent van de vanaf-prijs` : 'Bedrag op aanvraag');
+      }
+      const img = $<HTMLImageElement>('[data-k-img]'); if (img && d.img) img.src = d.img;
+      const page = $<HTMLAnchorElement>('[data-k-page]'); if (page && d.page) page.href = d.page;
+      const aanvraag = $('[data-k-aanvraag]'); if (aanvraag) aanvraag.hidden = bekend;
+    }));
+
+    // Stap 2: alleen "eigenaar én bewoner" is aan te vinken
+    const eigen = $<HTMLInputElement>('[data-check="0"]');
+    const n = $('[data-teller]'), tt = $('[data-teller-t]'), td = $('[data-teller-d]');
+    eigen?.addEventListener('change', () => {
+      const ok = eigen.checked;
+      if (n) { n.textContent = (ok ? 4 : 3) + '/4'; n.classList.toggle('is-groen', ok); }
+      if (tt) tt.textContent = ok ? 'Je lijkt aan de basisvoorwaarden te voldoen' : 'Ben jij eigenaar én bewoner?';
+      if (td) td.textContent = ok
+        ? 'Installatie, meldcode en aanvraag regelen wij. RVO beoordeelt de aanvraag.'
+        : 'De andere drie punten regelen wij als jouw installateur. Twijfel je over dit punt? We kijken het samen na.';
+    });
+
+    // FAQ: één vraag tegelijk open
+    root.querySelectorAll<HTMLDetailsElement>('.sbd-faq__item').forEach((el, _, all) => {
+      el.addEventListener('toggle', () => { if (el.open) all.forEach((o) => { if (o !== el) o.open = false; }); });
+    });
+  }
+</script>
+
+<style>
+  /* Zichtbaarheid regelt Base.astro (.dk-site vanaf 1024 px) */
+  .sbd { --groen: #1E9E6A; --groen-tekst: #157A51; background: var(--bg); color: var(--text); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .sbd-wrap { max-width: 1264px; margin: 0 auto; padding: 0 32px; }
+  .sbd h1, .sbd h2 { hyphens: manual; text-transform: uppercase; font-stretch: 72%; font-weight: 900; margin: 0; }
+  .sbd h1 { font-size: clamp(4rem, 6.4vw, 6rem); line-height: .88; color: #fff; }
+  .sbd h2 { font-size: clamp(2.4rem, 3.6vw, 3.5rem); line-height: .95; }
+  .sbd h3 { margin: 0; }
+  .sbd .label { display: inline-block; margin-bottom: 10px; letter-spacing: .14em; font-weight: 800; }
+  .sbd-mini { margin: 0; font-size: .8rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .sbd-mini--roze { display: inline-block; color: #FF8A95; margin-bottom: 12px; }
+  .sbd-lead { margin: 22px 0 30px; font-size: 1.18rem; line-height: 1.55; color: #C9CFDA; max-width: 520px; }
+  .sbd-intro { margin: 12px 0 28px; color: var(--muted); font-size: 1.08rem; }
+  .sbd-noot { margin: 16px 0 0; font-size: .85rem; color: var(--muted); }
+  .sbd a:not(.sbd-pill) { color: var(--red-dark); font-weight: 700; }
+  .sbd-crumbs { font-size: .82rem; color: #9AA3B2; margin-bottom: 18px; }
+  .sbd-crumbs a { color: #9AA3B2 !important; font-weight: 400 !important; text-decoration: none; }
+
+  /* Knoppen */
+  .sbd-btns { display: flex; flex-wrap: wrap; gap: 12px; }
+  .sbd-pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 14px 26px; border-radius: 999px; font-weight: 800; text-decoration: none; border: 0; transition: background-color .15s, color .15s, transform .15s; }
+  .sbd-pill:hover { transform: translateY(-1px); }
+  .sbd-pill:active { transform: translateY(1px); }
+  .sbd-pill--red { background: var(--red); color: #fff; }
+  .sbd-pill--red:hover { background: var(--red-dark); }
+  .sbd-pill--white { background: #fff; color: var(--navy); }
+  .sbd-pill--white:hover { background: var(--bg); }
+  .sbd-pill--roze { background: var(--red-soft); color: var(--red-dark); }
+  .sbd-pill--roze:hover { background: #fff; }
+  .sbd-pill--ghost { background: transparent; color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35); }
+  .sbd-pill--ghost:hover { background: rgba(255,255,255,.08); }
+  .sbd-pill--ring { box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35); }
+  .sbd a:focus-visible, .sbd button:focus-visible, .sbd summary:focus-visible, .sbd input:focus-visible { outline: 3px solid #FF8A95; outline-offset: 3px; }
+
+  /* Hero */
+  .sbd-hero { position: relative; overflow: hidden; background: var(--navy); color: #fff; }
+  .sbd-hero__rand { position: absolute; inset: 0 0 0 auto; width: 44%; background: linear-gradient(160deg, var(--red) 0%, var(--red-dark) 100%); clip-path: polygon(26% 0, 100% 0, 100% 100%, 0 100%); }
+  .sbd-hero__grid { position: relative; display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; padding-top: 72px; padding-bottom: 96px; }
+  .sbd-hero__claim { justify-self: end; text-align: right; }
+  .sbd-hero__claim .sbd-mini { color: var(--red-soft); }
+  .sbd-hero__bedrag { margin: 8px 0; font-size: clamp(5rem, 8vw, 7.5rem); line-height: .9; font-weight: 900; font-stretch: 72%; text-transform: uppercase; }
+  .sbd-hero__noot { margin: 0 0 0 auto; font-size: .95rem; line-height: 1.5; color: var(--red-soft); max-width: 330px; }
+
+  /* Stappen */
+  .sbd-stappen { padding: 96px 0; }
+  .sbd-stap { display: grid; grid-template-columns: 112px minmax(0, 1fr); column-gap: 32px; }
+  .sbd-rail { display: flex; flex-direction: column; align-items: center; }
+  .sbd-nr { width: 88px; height: 88px; flex: 0 0 88px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-size: 2.8rem; font-weight: 900; font-stretch: 72%; }
+  .sbd-nr--red { background: var(--red); }
+  .sbd-nr--groen { background: var(--groen); }
+  .sbd-lijn { flex: 1; width: 2px; background: var(--border); margin: 8px 0; }
+  .sbd-stap__body { padding-bottom: 88px; min-width: 0; }
+  .sbd-stap:last-child .sbd-stap__body { padding-bottom: 0; }
+
+  /* Stap 1: tegels */
+  .sbd-tegels { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .sbd-tegel { display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 14px; border: 2px solid var(--border); background: #fff; font: inherit; color: var(--text); text-align: left; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; }
+  .sbd-tegel:hover { transform: translateY(-2px); border-color: var(--navy); }
+  .sbd-tegel[aria-pressed='true'] { border-color: var(--red); box-shadow: 0 10px 28px rgba(214,40,58,.18); }
+  .sbd-tegel__top { display: flex; justify-content: space-between; width: 100%; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .sbd-tegel__gekozen { color: var(--red-dark); visibility: hidden; }
+  .sbd-tegel[aria-pressed='true'] .sbd-tegel__gekozen { visibility: visible; }
+  .sbd-tegel__naam { font-size: 1rem; font-weight: 700; line-height: 1.2; }
+  .sbd-tegel__isde { font-size: .9rem; font-weight: 700; color: var(--groen-tekst); }
+
+  .sbd-balk { display: flex; width: 100%; height: 12px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,.12); }
+  .sbd-balk--klein { height: 6px; background: var(--border); }
+  .sbd-balk .is-isde { background: var(--groen); transition: width .4s; }
+  .sbd-balk .is-jij { background: var(--red); transition: width .4s; }
+  .sbd-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin: 0 5px 0 2px; }
+  .sbd-dot.is-isde { background: var(--groen); }
+  .sbd-dot.is-jij { background: var(--red); }
+
+  /* Stap 1: keuzebalk */
+  .sbd-keuze { margin-top: 20px; border-radius: 20px; background: var(--navy); color: #fff; padding: 28px 32px; display: grid; grid-template-columns: 96px 1.4fr 1fr 1fr 1.2fr; gap: 24px; align-items: center; }
+  .sbd-keuze__foto { width: 96px; height: 80px; border-radius: 12px; background: rgba(255,255,255,.06); display: grid; place-items: center; overflow: hidden; }
+  .sbd-keuze__foto img { width: 100%; height: 100%; object-fit: contain; }
+  .sbd-keuze p { margin: 0; }
+  .sbd-keuze__k { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #9AA3B2; }
+  .sbd-keuze__k.is-roze { color: #FF8A95; }
+  .sbd-keuze__naam { margin-top: 4px !important; font-size: 1.25rem; font-weight: 800; }
+  .sbd-keuze__v { margin-top: 4px !important; font-size: 1.4rem; font-weight: 700; }
+  .sbd-keuze__v.is-groen { color: #7FE0B4; }
+  .sbd-keuze__netto { margin-top: 2px !important; font-size: 2.8rem; line-height: 1; font-weight: 900; font-stretch: 72%; }
+  .sbd-keuze__onder { grid-column: 1 / -1; }
+  .sbd-keuze__rij { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-top: 14px; }
+  .sbd-keuze__noot { font-size: .82rem; line-height: 1.5; color: #9AA3B2; max-width: 640px; }
+  .sbd-keuze__noot a { color: #FF8A95 !important; }
+  .sbd-keuze__knoppen { display: flex; gap: 10px; flex: 0 0 auto; }
+
+  /* Stap 2 */
+  .sbd-twee { display: grid; grid-template-columns: 1.3fr 1fr; gap: 32px; align-items: end; }
+  .sbd-checks { border: 0; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .sbd-check { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 12px; border: 1.5px solid var(--border); background: #fff; font-size: 1.05rem; cursor: pointer; transition: border-color .15s, background .15s; }
+  .sbd-check:hover { border-color: var(--navy); }
+  .sbd-check:has(input:checked) { border-color: var(--groen); background: #F0F9F4; }
+  .sbd-check.is-wij { border-color: #BFE5CF; cursor: default; }
+  .sbd-check input { width: 22px; height: 22px; flex: 0 0 22px; margin: 0; accent-color: var(--groen); }
+  .sbd-check input:disabled { opacity: 1; }
+  .sbd-check__t { flex: 1; }
+  .sbd-chip { flex: 0 0 auto; padding: 4px 10px; border-radius: 999px; background: var(--green-soft); color: var(--groen-tekst); font-size: .75rem; font-weight: 800; letter-spacing: .04em; }
+  .sbd-teller { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 32px; }
+  .sbd-teller p { margin: 0; }
+  .sbd-teller__n { font-size: 4.5rem; line-height: 1; font-weight: 900; font-stretch: 72%; transition: color .2s; }
+  .sbd-teller__n.is-groen { color: var(--groen-tekst); }
+  .sbd-teller__t { margin-top: 10px !important; font-size: 1.15rem; font-weight: 700; }
+  .sbd-teller__d { margin-top: 8px !important; color: var(--muted); line-height: 1.55; }
+
+  /* Stap 3 */
+  .sbd-regel { list-style: none; margin: 28px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .sbd-regel li { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 22px; color: var(--red); }
+  .sbd-regel li.is-groen { background: var(--green-soft); border-color: #BFE5CF; color: var(--groen-tekst); }
+  .sbd-regel h3 { margin: 14px 0 6px; font-size: 1.12rem; color: var(--text); }
+  .sbd-regel p { margin: 0; color: var(--muted); font-size: .95rem; line-height: 1.5; }
+  .sbd-regel li.is-groen p { color: #2F4A3C; }
+
+  /* Stap 4 */
+  .sbd-fin { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .sbd-fin__kaart { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 30px; }
+  .sbd-fin__kaart h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+  .sbd-fin__kaart p { margin: 0 0 16px; color: #3A4254; line-height: 1.6; }
+  .sbd-fin__kaart.is-donker { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .sbd-fin__kaart.is-donker p { color: #C9CFDA; }
+  .sbd-fin__kaart.is-donker a { color: #FF8A95 !important; }
+
+  /* FAQ */
+  .sbd-faq { background: #fff; padding: 96px 0; }
+  .sbd-faq__wrap { max-width: 1000px; }
+  .sbd-faq__lijst { margin-top: 24px; }
+  .sbd-faq__item { border-bottom: 1px solid var(--border); }
+  .sbd-faq__item summary { cursor: pointer; list-style: none; padding: 22px 0; font-weight: 700; font-size: 1.12rem; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .sbd-faq__item summary::-webkit-details-marker { display: none; }
+  .sbd-plus { flex: 0 0 32px; height: 32px; border-radius: 50%; background: var(--red-soft); color: var(--red-dark); display: grid; place-items: center; font-size: 1.25rem; transition: transform .2s; }
+  .sbd-faq__item[open] .sbd-plus { transform: rotate(45deg); }
+  .sbd-faq__item p { margin: 0 0 22px; color: var(--muted); line-height: 1.6; }
+
+  /* Afsluiter */
+  .sbd-slot { position: relative; overflow: hidden; background: var(--navy); color: #fff; padding: 96px 0; }
+  .sbd-slot__rand { position: absolute; inset: 0 auto 0 0; width: 40%; background: linear-gradient(200deg, var(--red), var(--red-dark)); clip-path: polygon(0 0, 100% 0, 74% 100%, 0 100%); }
+  .sbd-slot__grid { position: relative; display: grid; grid-template-columns: 1fr 1.2fr; gap: 48px; align-items: center; }
+  .sbd-slot__held { width: 300px; height: auto; justify-self: center; }
+  .sbd-slot h2 { color: #fff; font-size: clamp(3rem, 4.6vw, 4rem); line-height: .92; }
+
+  @media (max-width: 1199.98px) {
+    .sbd-hero__grid { grid-template-columns: 1fr; }
+    .sbd-hero__claim { justify-self: start; text-align: left; }
+    .sbd-hero__noot { margin-left: 0; }
+    .sbd-hero__rand { width: 34%; }
+    .sbd-keuze { grid-template-columns: 80px 1fr 1fr; }
+    .sbd-keuze__rij { flex-direction: column; align-items: flex-start; }
+    .sbd-twee { grid-template-columns: 1fr; }
+    .sbd-regel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sbd-stap { grid-template-columns: 88px minmax(0, 1fr); column-gap: 24px; }
+    .sbd-nr { width: 72px; height: 72px; flex-basis: 72px; font-size: 2.2rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sbd-tegel, .sbd-pill, .sbd-balk span, .sbd-plus { transition: none; }
+  }
+</style>
