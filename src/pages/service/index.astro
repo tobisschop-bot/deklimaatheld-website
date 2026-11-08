@@ -3,7 +3,6 @@ import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import Button from '../../components/Button.astro';
 import Faq from '../../components/Faq.astro';
-import ServiceDesktop from '../../components/service/ServiceDesktop.astro';
 import { site } from '../../data/site';
 import { pakketten, kenmerken, prijzen, aircoKenmerken, aircoExtraBinnendeel, ketelKenmerken, opnameKosten, eur } from '../../data/service';
 
@@ -29,9 +28,7 @@ const vanaf = (id: 'basis' | 'zorgeloos' | 'compleet') => prijzen['lucht-water']
 const wpPakketten = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: 'basis' | 'zorgeloos' | 'compleet'; naam: string; tag?: string; kort: string }[];
 const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' : v);
 ---
-<Base title="Service & onderhoud – De Klimaatheld" description="Onderhoud en service voor je warmtepomp of airco in Den Haag en omstreken: monitoring op afstand, vaste monteurs en heldere servicepakketten." desktop>
-  <ServiceDesktop beloftes={beloftes} storing={storing} faq={faq} />
-  <div class="sv-mobiel">
+<Base title="Service & onderhoud – De Klimaatheld" description="Onderhoud en service voor je warmtepomp of airco in Den Haag en omstreken: monitoring op afstand, vaste monteurs en heldere servicepakketten.">
   <PageHero label="Service & onderhoud" title="Ook na de installatie in goede handen" lead="Monitoring op afstand, vaste monteurs en heldere servicepakketten. Zo blijft je warmtepomp of airco jarenlang zuinig draaien." crumbs={[{ label: 'Home', href: '/' }, { label: 'Service & onderhoud' }]} />
 
   <section class="section section--tight">
@@ -121,12 +118,9 @@ const cel = (v: boolean | string) => (v === true ? '✓' : v === false ? '–' :
       <p style="margin-top:24px"><Button href="/service/afsluiten/" full>Servicepakket afsluiten →</Button></p>
     </div>
   </section>
-  </div>
 </Base>
 
 <style>
-  /* Pagina met eigen desktopontwerp: mobiel verbergen vanaf 1024 px */
-  @media (min-width: 1024px) { :global(html.desktop-ok) .sv-mobiel { display: none; } }
   .sv-cta { display: grid; gap: 10px; }
   .sv-beloftes { list-style: none; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .sv-beloftes li { display: grid; gap: 4px; padding: 14px; }
