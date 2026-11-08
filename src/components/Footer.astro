@@ -39,4 +39,9 @@ const year = new Date().getFullYear();
   .footer__logo { display: inline-block; margin-bottom: 14px; }
   .footer__logo :global(.logo__img) { filter: invert(1); width: 220px; }
   .footer__bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; border-top: 1px solid rgba(255,255,255,.12); margin-top: 40px; padding-top: 20px; font-size: .85rem; }
-  </style>
+  @media (min-width: 1024px) {
+    :global(html.desktop-ok) .footer { padding: 72px 0 28px; }
+    :global(html.desktop-ok) .footer .container { max-width: 1264px; padding: 0 32px; }
+    :global(html.desktop-ok) .footer__grid { grid-template-columns: 2fr 1fr 1fr; gap: 48px; }
+  }
+</style>

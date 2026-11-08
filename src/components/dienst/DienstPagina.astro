@@ -9,8 +9,9 @@ import CtaCard from '../CtaCard.astro';
 import { site } from '../../data/site';
 import { andereDiensten, type DienstData, type IconNaam } from '../../data/diensten';
 
-interface Props { data: DienstData }
-const { data } = Astro.props;
+// desktop: deze dienst heeft een eigen desktopontwerp (slot "desktop"). Mobiel blijft dit sjabloon.
+interface Props { data: DienstData; desktop?: boolean }
+const { data, desktop = false } = Astro.props;
 const anderen = andereDiensten(data.slug);
 
 // Lijn-iconen (24x24, stroke). Alleen paden; de <svg>-wrapper staat hieronder.
@@ -29,7 +30,9 @@ const icons: Record<IconNaam, string> = {
 };
 const check = '<path d="M20 6 9 17l-5-5"/>';
 ---
-<Base title={data.meta.title} description={data.meta.description}>
+<Base title={data.meta.title} description={data.meta.description} desktop={desktop}>
+  {desktop && <slot name="desktop" />}
+  <div class:list={[{ 'd-mobiel': desktop }]}>
   <!-- HERO -->
   <PageHero
     crumbs={[{ label: 'Home', href: '/' }, { label: data.hero.label }]}
@@ -170,6 +173,7 @@ const check = '<path d="M20 6 9 17l-5-5"/>';
       <CtaCard title={data.cta.title} text={data.cta.text} button={data.cta.button} href={data.cta.href} />
     </div>
   </section>
+  </div>
 </Base>
 
 <script>
@@ -257,4 +261,7 @@ const check = '<path d="M20 6 9 17l-5-5"/>';
   .d-dienst__t span { color: var(--red); }
 
   .d-cta { padding-top: 0; }
+
+  /* Pagina met eigen desktopontwerp: het mobiele sjabloon verbergen vanaf 1024 px */
+  @media (min-width: 1024px) { :global(html.desktop-ok) .d-mobiel { display: none; } }
 </style>
