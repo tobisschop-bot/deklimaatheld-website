@@ -1,0 +1,548 @@
+---
+// Desktopontwerp /service/ (vanaf 1024 px). Mobiel blijft src/pages/service/index.astro.
+// Gekozen door Tycho (8 nov 2026): richting A "licht & strak".
+//   1. hero + jaartijdlijn op schuin navy vlak
+//   2. Service zoals het hoort (4 beloftes)
+//   3. Pakketten: schakelaar Warmtepomp / Airco / CV-ketel, 3 prijskaarten;
+//      het gekozen pakket krijgt een subtiel rood neon-effect; vergelijkingstabel klapt uit
+//   4. Storing? Zo helpen we je (donker) + direct contact
+//   5. Vragen + afsluiter (dubbele knop)
+// Alle prijzen en kenmerken komen uit src/data/service.ts.
+import { site } from '../../data/site';
+import { pakketten, kenmerken, prijzen, aircoKenmerken, aircoExtraBinnendeel, ketelKenmerken, opnameKosten, eur } from '../../data/service';
+
+interface Props {
+  beloftes: { t: string; d: string }[];
+  storing: { t: string; d: string }[];
+  faq: { q: string; a: string }[];
+}
+const { beloftes, storing, faq } = Astro.props;
+
+type WpId = 'basis' | 'zorgeloos' | 'compleet';
+const wp = pakketten.filter((p) => p.voor.includes('lucht-water')) as { id: WpId; naam: string; tag?: string; kort: string }[];
+const lw = (id: WpId) => prijzen['lucht-water'][id]!;
+const hy = (id: WpId) => prijzen.hybride[id]!;
+const hybrideExtra = prijzen.hybride.basis! - prijzen['lucht-water'].basis!;
+const aircoBasis = prijzen.airco.airco!;
+const icons = [
+  '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  '<path d="M3 12h4l2-6 4 12 2-6h6"/>',
+  '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
+];
+const maanden = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+const check = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+---
+<div class="svd">
+
+  <!-- 1. HERO -->
+  <section class="svd-hero">
+    <div class="svd-wrap svd-hero__grid">
+      <div>
+        <nav class="svd-crumbs" aria-label="Kruimelpad"><a href="/">Home</a> / <span aria-current="page">Service &amp; onderhoud</span></nav>
+        <span class="label">Service &amp; onderhoud</span>
+        <h1>Ook na de installatie in goede handen</h1>
+        <p class="svd-lead">Monitoring op afstand, vaste monteurs en heldere servicepakketten. Zo blijft je warmtepomp, airco of cv-ketel jarenlang zuinig draaien.</p>
+        <div class="svd-btns">
+          <a class="svd-pill svd-pill--red" href="/service/afsluiten/">Sluit een servicepakket af →</a>
+          <a class="svd-pill svd-pill--outline" href={site.whatsappHref}>Storing melden</a>
+        </div>
+      </div>
+
+      <div class="svd-jaar">
+        <div class="svd-jaar__vlak" aria-hidden="true"></div>
+        <div class="svd-jaar__gloed" aria-hidden="true"></div>
+        <div class="svd-jaar__kaart">
+          <div class="svd-jaar__kop">
+            <span class="svd-mini svd-mini--red">Jouw jaar met Zorgeloos</span>
+            <span class="svd-jaar__sub">Zo zijn we bij je installatie</span>
+          </div>
+          <div class="svd-jaar__grid" role="table" aria-label="Onderhoudsmomenten door het jaar">
+            <span></span>
+            {maanden.map((m, i) => <span class:list={['svd-jaar__m', { 'is-rood': i === 9 || i === 10 }]} aria-hidden="true">{m}</span>)}
+
+            <strong>Monitoring</strong>
+            <div class="svd-bar svd-bar--navy" style="grid-column: 2 / 14"><span class="svd-dot" aria-hidden="true"></span>Hele jaar op afstand, wij bellen bij een foutcode</div>
+
+            <strong>Onderhoudsbeurt</strong>
+            <div class="svd-bar svd-bar--dash" style="grid-column: 4 / 10">1× per jaar, moment in overleg</div>
+
+            <strong>Winterklaar-check</strong>
+            <div class="svd-bar svd-bar--red" style="grid-column: 11 / 13">okt / nov</div>
+
+            <strong>Rendementsrapport</strong>
+            <div class="svd-jaar__rapport" style="grid-column: 2 / 6"><span aria-hidden="true"></span>jaarrapport</div>
+
+            <strong>Storing</strong>
+            <div class="svd-bar svd-bar--licht" style="grid-column: 2 / 14">Voorrang · reactie binnen [X] uur · voorrijkosten inbegrepen</div>
+          </div>
+          <p class="svd-jaar__voet">Monitoring op afstand en een rendementscontrole zitten in elk pakket.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. BELOFTES -->
+  <section class="svd-belofte">
+    <div class="svd-wrap">
+      <span class="label">Onze belofte</span>
+      <h2>Service zoals het hoort</h2>
+      <ul class="svd-belofte__lijst">
+        {beloftes.map((b, i) => (
+          <li>
+            <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons[i % icons.length]}></svg>
+            <strong>{b.t}</strong>
+            <span>{b.d}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3. PAKKETTEN -->
+  <section class="svd-pk" id="pakketten" data-svd>
+    <div class="svd-wrap">
+      <div class="svd-pk__kop">
+        <div>
+          <span class="label">Servicepakketten</span>
+          <h2>Kies je installatie</h2>
+          <p class="svd-lead svd-lead--klein">Vaste prijs per maand, incl. btw. Na het eerste jaar maandelijks opzegbaar.</p>
+        </div>
+        <div class="svd-seg" role="group" aria-label="Installatie">
+          <button type="button" class="svd-seg__btn" data-inst="wp" aria-pressed="true">Warmtepomp</button>
+          <button type="button" class="svd-seg__btn" data-inst="airco" aria-pressed="false">Airco</button>
+          <button type="button" class="svd-seg__btn" data-inst="ketel" aria-pressed="false">CV-ketel</button>
+        </div>
+      </div>
+
+      <!-- Warmtepomp -->
+      <div data-panel="wp">
+        <div class="svd-type">
+          <span class="svd-type__lbl">Type warmtepomp</span>
+          <div class="svd-type__knoppen" role="group" aria-label="Type warmtepomp">
+            <button type="button" class="svd-type__btn" data-wp="lw" aria-pressed="true">All-electric</button>
+            <button type="button" class="svd-type__btn" data-wp="hy" aria-pressed="false">Hybride</button>
+          </div>
+          <span class="svd-type__noot" data-wp-noot="lw">Lucht-water, zonder cv-ketel.</span>
+          <span class="svd-type__noot" data-wp-noot="hy" hidden>Hybride: + {eur(hybrideExtra)} per maand, omdat we ook je cv-ketel nakijken.</span>
+        </div>
+
+        <fieldset class="svd-kaarten">
+          <legend class="sr-only">Kies je pakket</legend>
+          {wp.map((p) => (
+            <label class:list={['svd-kaart', { 'svd-kaart--top': p.tag }]}>
+              <input type="radio" name="svd-pakket" value={p.id} checked={p.id === 'zorgeloos'} />
+              {p.tag && <span class="svd-kaart__tag">{p.tag}</span>}
+              <h3>{p.naam}</h3>
+              <p class="svd-kaart__kort">{p.kort}</p>
+              <p class="svd-kaart__prijs"><strong data-lw={eur(lw(p.id))} data-hy={eur(hy(p.id))}>{eur(lw(p.id))}</strong> <span>per maand, incl. btw</span></p>
+              <ul class="svd-kaart__lijst">
+                {kenmerken.map((k) => {
+                  const v = k[p.id];
+                  return (
+                    <li class:list={{ 'is-nee': v === false }}>
+                      {v === false
+                        ? <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" role="img" aria-label="niet inbegrepen"><path d="M7 12h10"/></svg>
+                        : <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="inbegrepen"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>}
+                      <span>{k.label}{typeof v === 'string' && <b> · {v}</b>}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+              <a class="svd-kaart__btn" href={`/service/afsluiten/?pakket=${p.id}`} data-pk-link={p.id}>
+                <span class="svd-kaart__btn-kies">Kies {p.naam}</span>
+                <span class="svd-kaart__btn-verder">Ga verder met {p.naam} →</span>
+              </a>
+            </label>
+          ))}
+        </fieldset>
+
+        <p class="svd-noot svd-noot--pk">Voorlopige prijzen per maand, incl. btw. Jaarbetaling: 5% korting.</p>
+
+        <details class="svd-tabel" open>
+          <summary>Vergelijk alle kenmerken</summary>
+          <div class="svd-tabel__scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col"><span class="sr-only">Kenmerk</span></th>
+                  {wp.map((p) => (
+                    <th scope="col" class:list={{ 'is-top': p.tag }}>{p.naam}<br /><span data-lw={`${eur(lw(p.id))} p/m`} data-hy={`${eur(hy(p.id))} p/m`}>{eur(lw(p.id))} p/m</span></th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {kenmerken.map((k) => (
+                  <tr>
+                    <th scope="row">{k.label}</th>
+                    {wp.map((p) => {
+                      const v = k[p.id];
+                      return (
+                        <td class:list={{ 'is-top': p.tag }}>
+                          {v === true ? <span class="svd-ja" set:html={check.replace('aria-hidden="true"', 'role="img" aria-label="ja"')} /> : v === false ? <span class="svd-nee" aria-label="nee">–</span> : <b>{v}</b>}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <!-- Airco -->
+      <div data-panel="airco" hidden>
+        <article class="svd-los">
+          <div class="svd-los__info">
+            <h3>Airco Onderhoud</h3>
+            <p class="svd-los__kort">Elk voorjaar een complete reiniging, klaar voor de zomer.</p>
+            <p class="svd-los__prijs"><strong data-airco-prijs>{eur(aircoBasis)}</strong> <span>per maand, incl. btw</span></p>
+            <div class="svd-stepper">
+              <span id="svd-bd-lbl">Binnendelen op dit buitendeel</span>
+              <div class="svd-stepper__knoppen">
+                <button type="button" data-bd="-1" aria-label="Eén binnendeel minder">−</button>
+                <output aria-live="polite" aria-labelledby="svd-bd-lbl" data-bd-n>1</output>
+                <button type="button" data-bd="1" aria-label="Eén binnendeel meer">+</button>
+              </div>
+            </div>
+            <p class="svd-noot">{eur(aircoBasis)} per buitendeel incl. 1 binnendeel, + {eur(aircoExtraBinnendeel)} per maand voor elk extra binnendeel.</p>
+            <a class="svd-pill svd-pill--red" href="/service/afsluiten/?installatie=airco" >Kies Airco Onderhoud</a>
+          </div>
+          <div class="svd-los__wat">
+            <div class="svd-los__gloed" aria-hidden="true"></div>
+            <span class="svd-mini svd-mini--roze">Wat zit erin</span>
+            <ul>{aircoKenmerken.map((k) => <li><Fragment set:html={check} />{k}</li>)}</ul>
+          </div>
+        </article>
+      </div>
+
+      <!-- CV-ketel -->
+      <div data-panel="ketel" hidden>
+        <article class="svd-los">
+          <div class="svd-los__info">
+            <h3>CV-ketel Onderhoud</h3>
+            <p class="svd-los__kort">Elk jaar een onderhoudsbeurt, veilig en zuinig de winter door.</p>
+            <p class="svd-los__prijs"><strong>{eur(prijzen['cv-ketel'].ketel!)}</strong> <span>per maand, incl. btw</span></p>
+            <a class="svd-pill svd-pill--red" href="/service/afsluiten/?installatie=cv-ketel">Kies CV-ketel Onderhoud</a>
+          </div>
+          <div class="svd-los__wat">
+            <div class="svd-los__gloed" aria-hidden="true"></div>
+            <span class="svd-mini svd-mini--roze">Wat zit erin</span>
+            <ul>{ketelKenmerken.map((k) => <li><Fragment set:html={check} />{k}</li>)}</ul>
+          </div>
+        </article>
+      </div>
+
+      <div class="svd-opname">
+        <span class="svd-opname__ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.2L3 17.8V21h3.2l6.3-6.3a4 4 0 0 0 5.2-5.4l-2.6 2.6-2.3-.6-.6-2.3z"/></svg></span>
+        <div>
+          <strong>Installatie niet door ons geplaatst?</strong>
+          <p>Geen probleem, voor elk systeem. Na je aanmelding bellen we je, komen we langs, stellen alles waar nodig opnieuw in en adviseren je. Daarna loopt je pakket zoals bij onze eigen klanten.</p>
+        </div>
+        <span class="svd-opname__chip">eenmalig {eur(opnameKosten)} opname</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. STORING -->
+  <section class="svd-storing">
+    <div class="svd-storing__gloed" aria-hidden="true"></div>
+    <div class="svd-wrap svd-storing__grid">
+      <div>
+        <span class="label svd-label-roze">Storing?</span>
+        <h2>Zo helpen we je</h2>
+        <ol class="svd-storing__stappen">
+          {storing.map((s, i) => (
+            <li>
+              <span class:list={['svd-n', { 'svd-n--rood': i === 0 }]}>{i + 1}</span>
+              <strong>{s.t}</strong>
+              <span>{s.d}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div class="svd-contact">
+        <strong>Direct contact</strong>
+        <a href={site.phoneHref}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>{site.phone}</a>
+        <a href={site.whatsappHref}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.3-4.4A9 9 0 1 1 21 12z"/></svg>WhatsApp {site.whatsapp}</a>
+        <small>{site.hours}</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. VRAGEN + AFSLUITER -->
+  <section class="svd-faq">
+    <div class="svd-wrap svd-faq__grid">
+      <div>
+        <span class="label">Veelgestelde vragen</span>
+        <h2>Goed om te weten</h2>
+      </div>
+      <div class="svd-faq__lijst">
+        {faq.map((f, i) => (
+          <details class="svd-faq__item" open={i === 0}>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="svd-slot">
+    <div class="svd-wrap">
+      <div class="svd-slot__kaart">
+        <div class="svd-slot__streep" aria-hidden="true"></div>
+        <div class="svd-slot__streep svd-slot__streep--dun" aria-hidden="true"></div>
+        <div class="svd-slot__tekst">
+          <span class="label svd-label-roze">Klaar voor de winter?</span>
+          <h2>Laat je klimaatheld meekijken</h2>
+        </div>
+        <div class="svd-btns svd-slot__btns">
+          <a class="svd-pill svd-pill--red svd-pill--ring" href="/service/afsluiten/">Sluit een servicepakket af</a>
+          <a class="svd-pill svd-pill--roze" href="/offerte/">Vraag je offerte aan</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-svd]');
+  if (root) {
+    // Installatie-schakelaar
+    const instBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-inst]')];
+    instBtns.forEach((b) => b.addEventListener('click', () => {
+      instBtns.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+      root.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => (p.hidden = p.dataset.panel !== b.dataset.inst));
+    }));
+
+    // All-electric / hybride: prijzen wisselen
+    const wpBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-wp]')];
+    wpBtns.forEach((b) => b.addEventListener('click', () => {
+      const t = b.dataset.wp as 'lw' | 'hy';
+      wpBtns.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+      root.querySelectorAll<HTMLElement>('[data-lw]').forEach((el) => (el.textContent = el.dataset[t] ?? ''));
+      root.querySelectorAll<HTMLElement>('[data-wp-noot]').forEach((el) => (el.hidden = el.dataset.wpNoot !== t));
+    }));
+
+    // Airco: aantal binnendelen
+    const basis = 19.5, extra = 5;
+    const eur = (n: number) => '€ ' + n.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    let bd = 1;
+    const out = root.querySelector<HTMLElement>('[data-bd-n]');
+    const prijs = root.querySelector<HTMLElement>('[data-airco-prijs]');
+    root.querySelectorAll<HTMLButtonElement>('[data-bd]').forEach((b) => b.addEventListener('click', () => {
+      bd = Math.min(5, Math.max(1, bd + Number(b.dataset.bd)));
+      if (out) out.textContent = String(bd);
+      if (prijs) prijs.textContent = eur(basis + (bd - 1) * extra);
+    }));
+  }
+
+  // FAQ: één vraag tegelijk open
+  document.querySelectorAll<HTMLDetailsElement>('.svd-faq__item').forEach((el, _, all) => {
+    el.addEventListener('toggle', () => { if (el.open) all.forEach((o) => { if (o !== el) o.open = false; }); });
+  });
+</script>
+
+<style>
+  /* Alleen zichtbaar op desktop; mobiel = de bestaande pagina */
+  .svd { display: none; }
+  @media (min-width: 1024px) { :global(html.desktop-ok) .svd { display: block; } }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .svd-wrap { max-width: 1264px; margin: 0 auto; padding: 0 32px; }
+  .svd h1, .svd h2, .svd h3 { hyphens: manual; text-transform: uppercase; }
+  .svd h1 { font-size: clamp(3rem, 4.8vw, 4.6rem); line-height: .94; font-weight: 900; font-stretch: 72%; margin: 0; }
+  .svd h2 { font-size: clamp(2.4rem, 3.4vw, 3rem); line-height: 1; font-weight: 900; font-stretch: 72%; margin: 0; }
+  .svd .label { display: inline-block; margin-bottom: 12px; letter-spacing: .14em; font-weight: 800; }
+  .svd-label-roze { color: #FF8A95 !important; }
+  .svd-lead { margin: 22px 0 0; font-size: 1.18rem; line-height: 1.55; color: var(--muted); max-width: 540px; }
+  .svd-lead--klein { font-size: 1.05rem; margin-top: 14px; }
+  .svd-mini { font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .svd-mini--red { color: var(--red); }
+  .svd-mini--roze { color: #FF8A95; }
+  .svd-noot { margin: 0; font-size: .88rem; color: var(--muted); }
+  .svd-crumbs { font-size: .82rem; color: var(--muted); margin-bottom: 18px; }
+  .svd-crumbs a { color: var(--muted); }
+
+  /* Knoppen */
+  .svd-btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .svd-pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 54px; padding: 15px 28px; border-radius: 999px; font-weight: 800; text-decoration: none; transition: background-color .15s, color .15s, transform .15s; }
+  .svd-pill:active { transform: translateY(1px); }
+  .svd-pill--red { background: var(--red); color: #fff; }
+  .svd-pill--red:hover { background: var(--red-dark); }
+  .svd-pill--outline { border: 2px solid var(--navy); color: var(--navy); background: #fff; }
+  .svd-pill--outline:hover { background: var(--navy); color: #fff; }
+  .svd-pill--roze { background: var(--red-soft); color: var(--red-dark); }
+  .svd-pill--roze:hover { background: #fff; }
+  .svd-pill--ring { box-shadow: 0 0 0 2px #fff; }
+  .svd a:focus-visible, .svd button:focus-visible, .svd summary:focus-visible, .svd input:focus-visible + * { outline: 3px solid var(--red); outline-offset: 3px; }
+
+  /* 1. Hero */
+  .svd-hero { padding: 56px 0 104px; overflow: hidden; }
+  .svd-hero__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: 56px; align-items: center; }
+  .svd-jaar { position: relative; padding: 40px 0 40px 56px; }
+  .svd-jaar__vlak { position: absolute; inset: 0 -200px 0 0; background: var(--navy); clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%); border-radius: 28px 0 0 28px; }
+  .svd-jaar__gloed { position: absolute; right: -60px; top: 50%; width: 440px; height: 440px; transform: translateY(-50%); background: radial-gradient(circle, rgba(214,40,58,.5), rgba(214,40,58,0) 65%); }
+  .svd-jaar__kaart { position: relative; background: #fff; border-radius: 22px; padding: 26px; box-shadow: 0 30px 60px rgba(11,19,43,.35); }
+  .svd-jaar__kop { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .svd-jaar__sub { font-size: .82rem; color: var(--muted); }
+  .svd-jaar__grid { margin-top: 18px; display: grid; grid-template-columns: 136px repeat(12, minmax(0, 1fr)); row-gap: 13px; align-items: center; font-size: .82rem; }
+  .svd-jaar__grid > strong { grid-column: 1; font-weight: 700; }
+  .svd-jaar__grid > span:first-child { grid-column: 1; }
+  .svd-jaar__m { text-align: center; color: var(--muted); font-weight: 600; }
+  .svd-jaar__m.is-rood { color: var(--red); font-weight: 800; }
+  .svd-bar { min-height: 30px; border-radius: 999px; display: flex; align-items: center; gap: 8px; padding: 6px 12px; font-size: .76rem; line-height: 1.2; font-weight: 600; }
+  .svd-bar--navy { background: var(--navy); color: #fff; }
+  .svd-bar--dash { border: 2px dashed var(--navy); }
+  .svd-bar--red { background: var(--red); color: #fff; justify-content: center; font-weight: 700; }
+  .svd-bar--licht { background: var(--bg); border: 1px solid var(--border); }
+  .svd-dot { width: 8px; height: 8px; border-radius: 50%; background: #1E9E6A; box-shadow: 0 0 0 4px rgba(30,158,106,.25); flex-shrink: 0; }
+  .svd-jaar__rapport { display: flex; align-items: center; gap: 8px; font-size: .76rem; font-weight: 600; }
+  .svd-jaar__rapport span { width: 14px; height: 14px; border-radius: 50%; background: var(--red-soft); border: 3px solid var(--red); }
+  .svd-jaar__voet { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--border); font-size: .82rem; color: var(--muted); }
+
+  /* 2. Beloftes */
+  .svd-belofte { background: #fff; padding: 112px 0 88px; margin-top: -48px; clip-path: polygon(0 48px, 100% 0, 100% 100%, 0 100%); }
+  .svd-belofte h2 { margin-bottom: 36px; }
+  .svd-belofte__lijst { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+  .svd-belofte__lijst li { border: 1px solid var(--border); border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .svd-belofte__lijst svg { color: var(--red); }
+  .svd-belofte__lijst strong { font-size: 1.12rem; }
+  .svd-belofte__lijst span { font-size: .94rem; line-height: 1.5; color: var(--muted); }
+
+  /* 3. Pakketten */
+  .svd-pk { padding: 96px 0; }
+  .svd-pk__kop { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 32px; }
+  .svd-seg { display: flex; gap: 4px; padding: 6px; background: #fff; border: 1px solid var(--border); border-radius: 999px; flex-shrink: 0; }
+  .svd-seg__btn { border: 0; cursor: pointer; font: inherit; font-size: .95rem; font-weight: 700; padding: 13px 26px; min-height: 48px; border-radius: 999px; background: transparent; color: var(--navy); transition: background-color .2s, color .2s; }
+  .svd-seg__btn:hover { background: var(--bg); }
+  .svd-seg__btn[aria-pressed='true'] { background: var(--navy); color: #fff; }
+
+  .svd-type { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 28px; }
+  .svd-type__lbl { font-size: .9rem; font-weight: 600; color: var(--muted); }
+  .svd-type__knoppen { display: flex; gap: 8px; }
+  .svd-type__btn { cursor: pointer; font: inherit; font-size: .88rem; font-weight: 700; padding: 9px 18px; min-height: 44px; border-radius: 999px; background: #fff; color: var(--navy); border: 2px solid var(--border); }
+  .svd-type__btn[aria-pressed='true'] { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .svd-type__noot { font-size: .82rem; color: var(--muted); }
+
+  .svd-kaarten { border: 0; margin: 0; padding: 12px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: stretch; }
+  .svd-kaart { cursor: pointer; position: relative; display: flex; flex-direction: column; background: #fff; color: var(--navy); border: 2px solid var(--border); border-radius: 22px; padding: 32px 28px 28px; transition: box-shadow .3s, transform .3s, border-color .3s; --muted-k: var(--muted); --lijn: var(--border); }
+  .svd-kaart:hover { border-color: #c9d0da; }
+  .svd-kaart--top { background: var(--navy); color: #fff; border-color: var(--navy); box-shadow: 0 20px 44px rgba(20,26,46,.22); --muted-k: #C3C9D6; --lijn: rgba(255,255,255,.16); }
+  .svd-kaart--top:hover { border-color: var(--navy); }
+  .svd-kaart input { position: absolute; top: 26px; right: 26px; width: 22px; height: 22px; margin: 0; accent-color: var(--red); cursor: pointer; }
+  /* Gekozen pakket: subtiel rood neon-effect */
+  .svd-kaart:has(input:checked) { border-color: #E8465A; box-shadow: 0 0 0 1px rgba(255,138,149,.45), 0 0 10px rgba(232,70,90,.35), 0 0 28px rgba(214,40,58,.18); transform: translateY(-8px); }
+  .svd-kaart:has(input:focus-visible) { outline: 3px solid var(--red); outline-offset: 4px; }
+  .svd-kaart__tag { position: absolute; top: -14px; left: 28px; background: var(--red); color: #fff; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 6px 14px; border-radius: 999px; }
+  .svd .svd-kaart h3 { margin: 0; font-size: 1.9rem; line-height: 1; font-weight: 900; font-stretch: 75%; }
+  .svd-kaart__kort { margin: 8px 0 0; font-size: .94rem; line-height: 1.45; color: var(--muted-k); padding-right: 24px; }
+  .svd-kaart__prijs { margin: 22px 0 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .svd-kaart__prijs strong { font-size: 2.9rem; font-weight: 900; font-stretch: 80%; line-height: 1; }
+  .svd-kaart__prijs span { font-size: .88rem; color: var(--muted-k); }
+  .svd-kaart__lijst { list-style: none; padding: 20px 0 0; margin: 20px 0 24px; border-top: 1px solid var(--lijn); display: grid; gap: 11px; font-size: .94rem; }
+  .svd-kaart__lijst li { display: flex; gap: 10px; align-items: flex-start; }
+  .svd-kaart__lijst li svg { flex-shrink: 0; margin-top: 2px; color: #1E9E6A; }
+  .svd-kaart__lijst li.is-nee { color: #6B7381; }
+  .svd-kaart--top .svd-kaart__lijst li.is-nee { color: #8E97AB; }
+  .svd-kaart__lijst li.is-nee svg { color: currentColor; }
+  .svd-kaart__btn { margin-top: auto; text-align: center; text-decoration: none; font-weight: 800; padding: 15px 20px; border-radius: 999px; border: 2px solid var(--navy); color: var(--navy); transition: background-color .2s, color .2s, border-color .2s; }
+  .svd-kaart--top .svd-kaart__btn { border-color: rgba(255,255,255,.7); color: #fff; }
+  .svd-kaart__btn-verder { display: none; }
+  .svd-kaart:has(input:checked) .svd-kaart__btn { background: var(--red); border-color: var(--red); color: #fff; }
+  .svd-kaart:has(input:checked) .svd-kaart__btn:hover { background: var(--red-dark); border-color: var(--red-dark); }
+  .svd-kaart:has(input:checked) .svd-kaart__btn-kies { display: none; }
+  .svd-kaart:has(input:checked) .svd-kaart__btn-verder { display: inline; }
+  .svd-noot--pk { margin-top: 28px; }
+
+  .svd-tabel { margin-top: 16px; }
+  .svd-tabel summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--red); font-weight: 800; }
+  .svd-tabel summary::-webkit-details-marker { display: none; }
+  .svd-tabel summary::after { content: '▾'; }
+  .svd-tabel[open] summary::after { content: '▴'; }
+  .svd-tabel__scroll { margin-top: 12px; background: #fff; border: 1px solid var(--border); border-radius: 22px; overflow-x: auto; }
+  .svd-tabel table { width: 100%; min-width: 720px; border-collapse: collapse; font-size: .94rem; }
+  .svd-tabel th, .svd-tabel td { padding: 14px 16px; border-top: 1px solid var(--border); text-align: center; }
+  .svd-tabel thead th { border-top: 0; padding: 20px 16px; font-size: 1.05rem; }
+  .svd-tabel thead th span { font-weight: 500; font-size: .82rem; color: var(--muted); }
+  .svd-tabel tbody th { text-align: left; font-weight: 600; padding-left: 28px; width: 40%; }
+  .svd-tabel .is-top { background: var(--red-soft); color: var(--red-dark); }
+  .svd-tabel thead .is-top span { color: var(--red-dark); }
+  .svd-ja { display: inline-flex; color: #1E9E6A; }
+  .svd-nee { color: #6B7381; font-weight: 700; }
+
+  .svd-los { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: #fff; border: 1px solid var(--border); border-radius: 22px; overflow: hidden; }
+  .svd-los__info { padding: 40px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+  .svd .svd-los h3 { margin: 0; font-size: 2.1rem; line-height: 1; font-weight: 900; font-stretch: 75%; }
+  .svd-los__kort { margin: 0; color: var(--muted); }
+  .svd-los__prijs { margin: 8px 0 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .svd-los__prijs strong { font-size: 3.2rem; font-weight: 900; font-stretch: 80%; line-height: 1; }
+  .svd-los__prijs span { font-size: .88rem; color: var(--muted); }
+  .svd-stepper { align-self: stretch; display: flex; align-items: center; gap: 14px; padding: 16px; background: var(--bg); border-radius: 16px; font-weight: 600; }
+  .svd-stepper__knoppen { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+  .svd-stepper button { cursor: pointer; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--navy); background: #fff; color: var(--navy); font: inherit; font-size: 1.25rem; font-weight: 700; }
+  .svd-stepper output { min-width: 36px; text-align: center; font-size: 1.25rem; font-weight: 800; }
+  .svd-los__wat { position: relative; overflow: hidden; background: var(--navy); color: #fff; padding: 40px; }
+  .svd-los__gloed { position: absolute; right: -120px; bottom: -120px; width: 360px; height: 360px; background: radial-gradient(circle, rgba(214,40,58,.45), rgba(214,40,58,0) 65%); }
+  .svd-los__wat ul { position: relative; list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 14px; line-height: 1.45; }
+  .svd-los__wat li { display: flex; gap: 12px; }
+  .svd-los__wat li :global(svg) { flex-shrink: 0; margin-top: 2px; color: #1E9E6A; }
+  .svd-los__wat .svd-mini { position: relative; }
+
+  .svd-opname { margin-top: 28px; display: flex; align-items: center; gap: 20px 28px; background: #fff; border: 1px solid var(--border); border-radius: 22px; padding: 26px 28px; }
+  .svd-opname__ico { width: 52px; height: 52px; border-radius: 50%; background: var(--red-soft); color: var(--red-dark); display: grid; place-items: center; flex-shrink: 0; }
+  .svd-opname div { flex: 1; }
+  .svd-opname strong { font-size: 1.12rem; }
+  .svd-opname p { margin: 6px 0 0; font-size: .94rem; line-height: 1.5; color: var(--muted); }
+  .svd-opname__chip { background: var(--bg); border: 1px solid var(--border); border-radius: 999px; padding: 10px 18px; font-weight: 700; white-space: nowrap; }
+
+  /* 4. Storing */
+  .svd-storing { position: relative; overflow: hidden; background: #0B132B; color: #fff; padding: 120px 0 96px; clip-path: polygon(0 0, 100% 56px, 100% 100%, 0 100%); }
+  .svd-storing__gloed { position: absolute; left: 50%; top: 40%; width: 900px; height: 500px; transform: translate(-50%, -50%); background: radial-gradient(ellipse, rgba(214,40,58,.35), rgba(214,40,58,0) 65%); }
+  .svd-storing__grid { position: relative; display: grid; grid-template-columns: minmax(0, 3fr) minmax(280px, 1fr); gap: 48px; align-items: start; }
+  .svd-storing h2 { color: #fff; margin-bottom: 40px; }
+  .svd-storing__stappen { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+  .svd-storing__stappen li { display: flex; flex-direction: column; gap: 10px; }
+  .svd-storing__stappen strong { font-size: 1.12rem; }
+  .svd-storing__stappen li > span:last-child { font-size: .94rem; line-height: 1.5; color: #C3C9D6; }
+  .svd-n { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #FF8A95; display: grid; place-items: center; font-weight: 900; font-size: 1.1rem; }
+  .svd-n--rood { background: var(--red); border-color: var(--red); }
+  .svd-contact { background: #fff; color: var(--navy); border-radius: 22px; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+  .svd-contact strong { font-size: 1.25rem; }
+  .svd-contact a { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--red); text-decoration: none; }
+  .svd-contact a:hover { color: var(--red-dark); }
+  .svd-contact small { font-size: .88rem; color: var(--muted); }
+
+  /* 5. Vragen + afsluiter */
+  .svd-faq { padding: 96px 0; }
+  .svd-faq__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 56px; align-items: start; }
+  .svd-faq__lijst { display: grid; gap: 12px; }
+  .svd-faq__item { background: #fff; border: 1px solid var(--border); border-radius: 18px; transition: border-color .15s; }
+  .svd-faq__item:hover, .svd-faq__item[open] { border-color: #c9d0da; }
+  .svd-faq__item summary { cursor: pointer; list-style: none; padding: 22px 56px 22px 24px; font-weight: 800; font-size: 1.05rem; position: relative; }
+  .svd-faq__item summary::-webkit-details-marker { display: none; }
+  .svd-faq__item summary::after { content: '+'; position: absolute; right: 24px; top: 50%; transform: translateY(-50%); color: var(--red); font-size: 1.5rem; font-weight: 400; }
+  .svd-faq__item[open] summary::after { content: '–'; }
+  .svd-faq__item p { margin: 0; padding: 0 24px 22px; color: var(--muted); line-height: 1.6; }
+
+  .svd-slot { padding: 0 0 96px; }
+  .svd-slot__kaart { position: relative; overflow: hidden; background: var(--navy); color: #fff; border-radius: 28px; padding: 64px; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+  .svd-slot__streep { position: absolute; top: 0; bottom: 0; right: 22%; width: 90px; background: var(--red); transform: skewX(-18deg); opacity: .9; }
+  .svd-slot__streep--dun { right: calc(22% - 40px); width: 14px; opacity: .6; }
+  .svd-slot__tekst, .svd-slot__btns { position: relative; }
+  .svd-slot h2 { color: #fff; font-size: clamp(2.6rem, 3.8vw, 3.5rem); line-height: .95; max-width: 560px; }
+  .svd-slot__btns { margin-top: 0; }
+
+  @media (max-width: 1199.98px) {
+    .svd-hero__grid { grid-template-columns: minmax(0, 1fr); }
+    .svd-belofte__lijst { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .svd-storing__grid { grid-template-columns: minmax(0, 1fr); }
+    .svd-slot__kaart { flex-direction: column; align-items: flex-start; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .svd *, .svd *::before, .svd *::after { transition: none !important; }
+  }
+</style>
